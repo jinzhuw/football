@@ -1,47 +1,47 @@
 
-from google.appengine.ext import db
+from collections import defaultdict
+#from google.appengine.ext import db
 from db import teams
 
 class Game(db.Model):
-    week = db.IntegerProperty()
-    home = db.IntegerProperty()
-    away = db.IntegerProperty()
+    week = db.IntegerProperty(required=True)
+    home = db.IntegerProperty(required=True)
+    away = db.IntegerProperty(required=True)
+    date = db.DateProperty(required=True)
+    home_score = db.IntegerProperty()
+    away_score = db.IntegerProperty()
     winner = db.IntegerProperty(default=-1)
+
+def load_schedule():
+    schedule = defaultdict(list)
+    f = open('data/schedule.txt', 'r')
+    week = 0 
+    date = None
+    for line in f:
+        line = line.strip()
+        if line.startswith('WEEK'):
+            week = int(line.split()[1])
+        elif line.startswith('-'):
+            date = datetime.strptime(line[1:], '%A, %b. %d')
+        elif line:
+            t = line.split(' at ')
+            away = teams.id(t[0])
+            home = teams.id(t[1])
+            schedule[week].append((date, home, away))
+
+    for week,games in sorted(schedule.iteritems()):
+        print ''
+        print 'Week %d' % week
+        for game in games:
+            print game[0].strftime('%A,'), teams.shortname(game[1]), 'vs', teams.shortname(game[2])
 
 def reset():
     for g in Game.all():
         g.delete()
-
-    thursday = []
-    f = open('../data/thursday.games', 'r') 
-    for line in f:
-        thursday.append(line.split())
-
-    schedule = {}
-    f = open('../data/schedule.raw', 'r')
-    for line in f:
-        data = line.split()
-        team = data[0]
-        for i,opp in enumerate(data[1:]):
-            if team in thursday[i]:
-                pass # skip thursday games
-            week = i + 1
-            home = team
-            if opp.startswith('@'):
-                home = opp[1:]
-                opp = team
-            if week not in schedule:
-                schedule[week] = {}
-            schedule[week][home] = opp
-
-    for week in sorted(schedule):
-        for home in schedule[week]:
-            opp = schedule[week][home]
-            if opp == 'BYE':
-                continue
-            if home == opp:
-                raise Exception('home and away are same team %d, week %d' % (home, week))
-            g = Game(week=week, home=teams.id(home), away=teams.id(opp))
+    
+    for week,games in sorted(schedule.iteritems()):
+        for game in games:
+            g = Game(week=week, home=game[1], away=game[2], date=game[0])
             g.put()
 
 def for_week(week):
@@ -79,5 +79,4 @@ def winners_for_week(week):
     for game in games:
         winners.add(game.winner)
     return winners
-
 

@@ -1,11 +1,11 @@
 
 _rawnames = (
-    ('San Fransisco', 'SF'),
+    ('San Francisco', 'SF'),
     ('Chicago',       'CHI'),
     ('Cincinnati',    'CIN'),
     ('Buffalo',       'BUF'),
     ('Denver',        'DEN'),
-    ('Clevland',      'CLE'),
+    ('Cleveland',     'CLE'),
     ('Tampa Bay',     'TB'),
     ('Arizona',       'ARI'),
     ('San Diego',     'SD'),

@@ -1,0 +1,337 @@
+WEEK 1
+-Wednesday, Sep. 5
+Dallas at NY Giants
+-Sunday, Sep. 9
+San Francisco at Green Bay
+Indianapolis at Chicago
+Philadelphia at Cleveland
+St. Louis at Detroit
+Miami at Houston
+Atlanta at Kansas City
+Jacksonville at Minnesota
+Washington at New Orleans
+Buffalo at NY Jets
+New England at Tennessee
+Seattle at Arizona
+Carolina at Tampa Bay
+Pittsburgh at Denver
+-Monday, Sep. 10
+Cincinnati at Baltimore
+San Diego at Oakland
+
+WEEK 2
+-Thursday, Sep. 13
+Chicago at Green Bay
+-Sunday, Sep. 16
+Kansas City at Buffalo
+New Orleans at Carolina
+Cleveland at Cincinnati
+Minnesota at Indianapolis
+Houston at Jacksonville
+Arizona at New England
+Tampa Bay at NY Giants
+Baltimore at Philadelphia
+Washington at St. Louis
+Dallas at Seattle
+Oakland at Miami
+NY Jets at Pittsburgh
+Tennessee at San Diego
+Detroit at San Francisco
+-Monday, Sep. 17
+Denver at Atlanta
+
+WEEK 3
+-Thursday, Sep. 20
+NY Giants at Carolina
+-Sunday, Sep. 23
+St. Louis at Chicago
+Buffalo at Cleveland
+Tampa Bay at Dallas
+Jacksonville at Indianapolis
+NY Jets at Miami
+San Francisco at Minnesota
+Kansas City at New Orleans
+Detroit at Tennessee
+Cincinnati at Washington
+Philadelphia at Arizona
+Atlanta at San Diego
+Houston at Denver
+Pittsburgh at Oakland
+New England at Baltimore
+-Monday, Sep. 24
+Green Bay at Seattle
+
+WEEK 4
+-Thursday, Sep. 27
+Cleveland at Baltimore
+-Sunday, Sep. 30
+New Orleans at Green Bay
+Carolina at Atlanta
+New England at Buffalo
+Minnesota at Detroit
+Tennessee at Houston
+San Diego at Kansas City
+San Francisco at NY Jets
+Seattle at St. Louis
+Miami at Arizona
+Cincinnati at Jacksonville
+Oakland at Denver
+Washington at Tampa Bay
+NY Giants at Philadelphia
+-Monday, Oct. 1
+Chicago at Dallas
+
+WEEK 5
+-Thursday, Oct. 4
+Arizona at St. Louis
+-Sunday, Oct. 7
+Green Bay at Indianapolis
+Miami at Cincinnati
+Baltimore at Kansas City
+Tennessee at Minnesota
+Cleveland at NY Giants
+Philadelphia at Pittsburgh
+Atlanta at Washington
+Seattle at Carolina
+Chicago at Jacksonville
+Denver at New England
+Buffalo at San Francisco
+San Diego at New Orleans
+-Monday, Oct. 8
+Houston at NY Jets
+
+WEEK 6
+-Thursday, Oct. 11
+Pittsburgh at Tennessee
+-Sunday, Oct. 14
+Green Bay at Houston
+Oakland at Atlanta
+Dallas at Baltimore
+Cincinnati at Cleveland
+St. Louis at Miami
+Indianapolis at NY Jets
+Detroit at Philadelphia
+Kansas City at Tampa Bay
+Buffalo at Arizona
+New England at Seattle
+NY Giants at San Francisco
+Minnesota at Washington
+-Monday, Oct. 15
+Denver at San Diego
+
+WEEK 7
+-Thursday, Oct. 18
+Seattle at San Francisco
+-Sunday, Oct. 21
+Green Bay at St. Louis
+Tennessee at Buffalo
+Dallas at Carolina
+Baltimore at Houston
+Cleveland at Indianapolis
+Arizona at Minnesota
+Washington at NY Giants
+New Orleans at Tampa Bay
+NY Jets at New England
+Jacksonville at Oakland
+Pittsburgh at Cincinnati
+-Monday, Oct. 22
+Detroit at Chicago
+
+WEEK 8
+-Thursday, Oct. 25
+Tampa Bay at Minnesota
+-Sunday, Oct. 28
+Jacksonville at Green Bay
+Carolina at Chicago
+San Diego at Cleveland
+Seattle at Detroit
+Miami at NY Jets
+Atlanta at Philadelphia
+Washington at Pittsburgh
+St. Louis at New England
+Indianapolis at Tennessee
+Oakland at Kansas City
+NY Giants at Dallas
+New Orleans at Denver
+-Monday, Oct. 29
+San Francisco at Arizona
+
+WEEK 9
+-Thursday, Nov. 1
+Kansas City at San Diego
+-Sunday, Nov. 4
+Arizona at Green Bay
+Denver at Cincinnati
+Baltimore at Cleveland
+Buffalo at Houston
+Miami at Indianapolis
+Detroit at Jacksonville
+Chicago at Tennessee
+Carolina at Washington
+Tampa Bay at Oakland
+Minnesota at Seattle
+Pittsburgh at NY Giants
+Dallas at Atlanta
+-Monday, Nov. 5
+Philadelphia at New Orleans
+
+WEEK 10
+-Thursday, Nov. 8
+Indianapolis at Jacksonville
+-Sunday, Nov. 11
+Oakland at Baltimore
+Denver at Carolina
+NY Giants at Cincinnati
+Tennessee at Miami
+Detroit at Minnesota
+Buffalo at New England
+Atlanta at New Orleans
+San Diego at Tampa Bay
+NY Jets at Seattle
+Dallas at Philadelphia
+St. Louis at San Francisco
+Houston at Chicago
+-Monday, Nov. 12
+Kansas City at Pittsburgh
+
+WEEK 11
+-Thursday, Nov. 15
+Miami at Buffalo
+-Sunday, Nov. 18
+Green Bay at Detroit
+Arizona at Atlanta
+Tampa Bay at Carolina
+Cleveland at Dallas
+Jacksonville at Houston
+Cincinnati at Kansas City
+Indianapolis at New England
+NY Jets at St. Louis
+Philadelphia at Washington
+New Orleans at Oakland
+San Diego at Denver
+Baltimore at Pittsburgh
+-Monday, Nov. 19
+Chicago at San Francisco
+
+WEEK 12
+-Thursday, Nov. 22
+Houston at Detroit
+Washington at Dallas
+New England at NY Jets
+-Sunday, Nov. 25
+Green Bay at NY Giants
+Minnesota at Chicago
+Oakland at Cincinnati
+Pittsburgh at Cleveland
+Buffalo at Indianapolis
+Tennessee at Jacksonville
+Denver at Kansas City
+Seattle at Miami
+Atlanta at Tampa Bay
+Baltimore at San Diego
+St. Louis at Arizona
+San Francisco at New Orleans
+-Monday, Nov. 26
+Carolina at Philadelphia
+
+WEEK 13
+-Thursday, Nov. 29
+New Orleans at Atlanta
+-Sunday, Dec. 2
+Minnesota at Green Bay
+Jacksonville at Buffalo
+Seattle at Chicago
+Indianapolis at Detroit
+Carolina at Kansas City
+New England at Miami
+Arizona at NY Jets
+San Francisco at St. Louis
+Houston at Tennessee
+Tampa Bay at Denver
+Pittsburgh at Baltimore
+Cleveland at Oakland
+Cincinnati at San Diego
+Philadelphia at Dallas
+-Monday, Dec. 3
+NY Giants at Washington
+
+WEEK 14
+-Thursday, Dec. 6
+Denver at Oakland
+-Sunday, Dec. 9
+Detroit at Green Bay
+St. Louis at Buffalo
+Atlanta at Carolina
+Dallas at Cincinnati
+Kansas City at Cleveland
+Tennessee at Indianapolis
+NY Jets at Jacksonville
+Chicago at Minnesota
+San Diego at Pittsburgh
+Philadelphia at Tampa Bay
+Baltimore at Washington
+Miami at San Francisco
+New Orleans at NY Giants
+Arizona at Seattle
+-Monday, Dec. 10
+Houston at New England
+
+WEEK 15
+-Thursday, Dec. 13
+Cincinnati at Philadelphia
+-Sunday, Dec. 16
+Green Bay at Chicago
+NY Giants at Atlanta
+Denver at Baltimore
+Washington at Cleveland
+Indianapolis at Houston
+Jacksonville at Miami
+Tampa Bay at New Orleans
+Minnesota at St. Louis
+Detroit at Arizona
+Seattle at Buffalo
+Carolina at San Diego
+Pittsburgh at Dallas
+Kansas City at Oakland
+San Francisco at New England
+-Monday, Dec. 17
+NY Jets at Tennessee
+
+WEEK 16
+-Saturday, Dec. 22
+Atlanta at Detroit
+-Sunday, Dec. 23
+Tennessee at Green Bay
+NY Giants at Baltimore
+Oakland at Carolina
+New Orleans at Dallas
+Minnesota at Houston
+New England at Jacksonville
+Indianapolis at Kansas City
+Buffalo at Miami
+Washington at Philadelphia
+Cincinnati at Pittsburgh
+St. Louis at Tampa Bay
+Cleveland at Denver
+Chicago at Arizona
+San Francisco at Seattle
+San Diego at NY Jets
+
+WEEK 17
+-Sunday, Dec. 30
+Green Bay at Minnesota
+Tampa Bay at Atlanta
+NY Jets at Buffalo
+Baltimore at Cincinnati
+Chicago at Detroit
+Houston at Indianapolis
+Miami at New England
+Carolina at New Orleans
+Philadelphia at NY Giants
+Cleveland at Pittsburgh
+Jacksonville at Tennessee
+Dallas at Washington
+Kansas City at Denver
+Oakland at San Diego
+Arizona at San Francisco
+St. Louis at Seattle
