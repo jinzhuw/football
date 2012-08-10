@@ -1,0 +1,39 @@
+application: iernst-football2
+version: 1
+runtime: python
+api_version: 1
+threadsafe: no
+
+
+handlers:
+#- url: /manage/email.*
+#  script: handlers/manage.py
+#  login: admin
+
+#- url: /manage.*
+#  script: handlers/manage.py
+#  login: required
+
+#- url: /choose.*
+#  script: handlers/choose.py
+
+#- url: /results.*
+#  script: handlers/results.py
+
+#- url: /rules.*
+#  script: handlers/rules.py
+
+- url: /css
+  static_dir: css
+
+- url: /img
+  static_dir: img
+
+- url: /js
+  static_dir: js
+
+- url: /
+  static_dir: templates
+
+#- url: .*
+#  script: handlers/home.py

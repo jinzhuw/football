@@ -1,0 +1,7 @@
+cron:
+- description: weekly breakdown
+  url: /manage/email/breakdown?close=true
+  schedule: every saturday 23:15
+  timezone: America/Los_Angeles
+
+

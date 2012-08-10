@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Players{% endblock %}
+
+{% block content %}
+
+<div id="player">
+{% if player %}
+<h3>{{ player.name }}</h3>
+<h4>{{ player.email }}</h4>
+<span>Week {{ week }} - <a href="/choose?handle={{ handle }}">Pick Selection</a></span> <br/>
+<span><a href="/manage/email/team_picker?handle={{ handle }}">Email Picker</a></span> <br/>
+<br/>
+<h4>Entries</h4>
+<ul>
+{% for e in player.entries %}
+<li>{{ e.name }} - {% if e.active %}Active{% else %}<a href="/manage/rebuy?entry.id={{ e.key.id }}">Rebuy</a>{% endif %}<li>
+{% endfor %}
+</ul>
+<br/>
+<form action="/manage/add_entry" method="post">
+Name: <input type="text" name="entry.name" /><br/>
+<input type="hidden" name="player.id" value="{{ player.key.id }}" />
+<input class="center" type="submit" value="Add Entry" />
+{% else %}
+<form action="/manage/add_player" method="post">
+<span>Name:</span> <input type="text" name="player.name" /><br />
+<span>Email:</span> <input type="text" name="player.email" /><br />
+<input class="center" type="submit" value="Add Player" />
+</form>
+{% endif %}
+</div>
+
+
+<div id="player_list">
+<ul>
+<li><span><a id="new_player" href="/manage/players">New Player</a></span></li>
+{% for p in players %}
+  <li>
+    <span id="Player{{ p.key.id }}"  
+    {% ifequal p.key.id player.key.id %}class="selected"{% endifequal %}>
+    {% ifequal p.key.id player.key.id %}
+        {{ p.name }}
+    {% else %}
+        <a href="/manage/players?id={{ p.key.id }}">{{ p.name }}</a>
+    {% endifequal %}
+    </span>
+  </li>
+{% endfor %}
+</ul>
+</div>
+
+
+{% endblock %}
+
