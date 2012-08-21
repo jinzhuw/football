@@ -3,7 +3,8 @@ from datetime import datetime, timedelta
 
 from google.appengine.ext import db
 
-import settings, timezone
+from db import settings
+from util import timezone
 
 class _Week(db.Model):
     current = db.IntegerProperty()

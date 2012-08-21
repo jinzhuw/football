@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+user settings (name, email, entry names, password)
+
+<form action="/user/login" method="post">
+<fieldset>
+<legend>Login form</legend>
+<label>Username <input type="text" name="username" placeholder="Your username" /></label>
+<label>Password <input type="password" name="password" placeholder="Your password" /></label>
+</fieldset>
+<button>Login</button>
+</form>
+{% endblock %}

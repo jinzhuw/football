@@ -3,12 +3,12 @@ from db import settings
 from util import view, handler
 import webapp2
 
-class RulesHandler(handler.BaseHandler):
+class StandingsHandler(handler.BaseHandler):
     def get(self):
-        view.render(self, 'rules', {})
+        view.render(self, 'standings', {})
 
 app = webapp2.WSGIApplication([
-    ('/rules', RulesHandler),
+    ('/standings', StandingsHandler),
 ],
 config=settings.APP_CONFIG,
 debug=settings.DEBUG)

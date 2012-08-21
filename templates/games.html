@@ -5,35 +5,6 @@ Game Results
 {% endblock %}
 
 {% block content %}
-
-<div id="results">
-<h2>Week {{ week }}</h2>
-<hr/>
-<form name="opengames" action="/manage/games" method="POST">
-<div id="games">
-{% for home,away,winner in complete_games %}
-  <div class="game">
-    <div{% if home == winner %} class="winner"{% endif %}>{{ home }}</div>
-    <div{% if away == winner %} class="winner"{% endif %}>{{ away }}</div>
-  </div>
-{% endfor %}
-
-{% if open_games %}
-{% for home,away,id in open_games %}
-  <div class="game">
-    <div><input type="radio" name="game.{{ id }}" value="{{ home }}"/>{{ home }}</div>
-    <div><input type="radio" name="game.{{ id }}" value="{{ away }}"/>{{ away }}</div>
-  </div>
-{% endfor %}
-{% endif %}
-</div>
-{% if open_games %}
-<!--<span id="save"><a href="javascript:document.opengames.submit();">Save</a></span>-->
-<hr/>
-<input type="submit" value="Save" />
-{% endif %}
-</form>
-</div>
-
+View games by week, and links to edit scores
 {% endblock %}
 

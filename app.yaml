@@ -1,27 +1,31 @@
 application: iernst-football2
 version: 1
-runtime: python
+runtime: python27
 api_version: 1
-threadsafe: no
+threadsafe: yes
 
+libraries:
+- name: pycrypto
+  version: "2.3"
 
 handlers:
-#- url: /manage/email.*
-#  script: handlers/manage.py
-#  login: admin
+- url: /standings.*
+  script: handlers.standings.app
 
-#- url: /manage.*
-#  script: handlers/manage.py
-#  login: required
+- url: /rules.*
+  script: handlers.rules.app
 
-#- url: /choose.*
-#  script: handlers/choose.py
+- url: /picks.*
+  script: handlers.picks.app
 
-#- url: /results.*
-#  script: handlers/results.py
+- url: /games.*
+  script: handlers.games.app
 
-#- url: /rules.*
-#  script: handlers/rules.py
+- url: /user.*
+  script: handlers.user.app
+
+- url: /admin.*
+  script: handlers.admin.app
 
 - url: /css
   static_dir: css
@@ -32,8 +36,7 @@ handlers:
 - url: /js
   static_dir: js
 
-- url: /
-  static_dir: templates
+- url: /.*
+  script: handlers.home.app
 
-#- url: .*
-#  script: handlers/home.py
+# TODO: add robots file

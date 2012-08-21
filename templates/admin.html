@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Admin{% endblock %}
+
+{% block content %}
+<div class="tabbable">
+    <ul class="nav nav-tabs">
+    {% for section in users %}
+        <li {% if forloop.first %}class="active"{% endif %}>
+            <a href="#users{{ section.0 }}" data-toggle="tab">{{ section.0 }}</a>
+        </li>
+    {% endfor %}
+    </ul>
+    <div class="tab-content" style="width: 100%">
+    {% for section in users %}
+        {% if section.1 %}
+        <div class="tab-pane accordian {% if forloop.first %}active{% endif %}" id="users{{ section.0 }}">
+            {% for user in section.1 %}
+            <div class="accordian-group" style="border: 1px solid #E5E5E5; border-radius: 4px 4px 4px 4px; margin-bottom: 2px">
+                <div class="accordian-heading" style="border-bottom: 0 none"><a class="accordian-toggle" style="display: block; padding: 8px 15px" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }}</a></div>
+                <div id="user{{ user.0.key.id }}" class="accordian-body collapse">
+                   <!--<img src="/img/loading.gif"/>-->
+                    <span>Email: <small>{{ user.0.email }}</small></span>
+                    <table class="table table-condensed">
+                    <caption>Entries</caption>
+                    <thead>
+                        <tr>
+                            <th>Entry Name</th>
+                            <th>Activated</th>
+                            <th>Alive</th>
+                            <th>Edit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in user.1 %}
+                        <tr>
+                            <td>{{ entry.name }}</td> 
+                            <td>{{ entry.activated }}</td>
+                            <td>{{ entry.alive }}</td>
+                            <td>Action link</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    </table>                    
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+</div>
+
+<script type="text/javascript">
+    // TODO: make this a shared block in base
+    window.onload = function () {
+        $(".collapse").collapse({toggle: false});
+        // move to a loadUsers function
+        /*
+        loadUsers = function(data, textStatus, xhr) {
+            for (var player in data) {
+                data[player]
+            }
+        };
+        $.ajax({
+            url: '/admin/entries',
+            type: 'GET',
+            dataType: 'json',
+            success: loadUsers,
+            error: function (xhr, textStatus, errorThrown) {
+                alert('error: ' + xhr + ',' + textStatus + ', ' + errorThrown); 
+            }
+        });
+        */
+    }
+</script>
+
+<form action="/admin/newuser" method="post">
+<fieldset>
+<legend>Create user form</legend>
+<label>Name <input type="text" name="name" placeholder="Joe Schmoe" /></label>
+<label>Email  <input type="text" name="email" placeholder="joe@example.com" /></label>
+</fieldset>
+<button>Create user</button>
+</form>
+{% endblock %}
