@@ -47,22 +47,25 @@ def add_entry(player_id):
 def name_entry(entry_id, name):
     entry = Entry.get_by_id(entry_id)
     entry.name = name
-    entry.enabled = True
+    entry.activated = True
     entry.put()
     _create_pick(entry)
 
-def reactivate_entry(entry_id):
+def buyback_entry(entry_id):
     entry = Entry.get_by_id(entry_id)
-    entry.active = True
+    entry.alive = True
     entry.put()
     _create_pick(entry)
+
+def get_entries(player):
+    return Entry.gql('WHERE player_id = :1', player.key.id())
 
 def get_all_entries():
     return Entry.all()
 
 def _create_pick(entry):
     week = weeks.current()
-    p = Pick(key_name=pick_key(week, entry), player=entry.player, entry=entry, week=week)
+    p = Pick(key_name=pick_key(week, entry), player_id=entry.player_id, entry=entry, week=week)
     p.put()
 
 def iterpicks(use_cursors=False):
@@ -95,7 +98,7 @@ def all_picks(week):
 
 def player_picks(player, week):
     picks = {}
-    for p in Pick.gql('WHERE week = :1 and player = :2 and team != -1', week, player):
+    for p in Pick.gql('WHERE week = :1 and player_id = :2 and activated = True', week, player.key.id()):
         picks[p.entry.key().id()] = p
     return picks
 
@@ -227,15 +230,14 @@ def count_picks(week):
         choices[teams.longname(team)] = count
     return choices, nopick
 
-'''
 from Crypto.Cipher import AES
 coder = AES.new(settings.SYMMETRIC_KEY)
 
 def random_string(n):
     return ''.join(random.choice(string.letters + string.digits) for x in range(n))
 
-def encrypt_handle(week, player):
-    data = '%d,%d,' % (week, player.key().id())
+def encrypt_handle(week, user_id):
+    data = '%d,%d,' % (week, user_id)
     pad_len = 16 - len(data) % 16
     data += random_string(pad_len)
     return base64.urlsafe_b64encode(coder.encrypt(data))
@@ -243,9 +245,7 @@ def encrypt_handle(week, player):
 def decrypt_handle(data):
     data = data.encode('utf8') # incase we have a unicode string
     d = coder.decrypt(base64.urlsafe_b64decode(data))
-    week, player_id, extra = d.split(',', 2)
-    player = Player.get_by_id(int(player_id))
-    return (int(week), player)
-'''
+    week, user_id, extra = d.split(',', 2)
+    return (int(week), user_id)
 
 

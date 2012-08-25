@@ -1,4 +1,4 @@
-application: iernst-football2
+application: jgsuicidepool
 version: 1
 runtime: python27
 api_version: 1
@@ -40,3 +40,8 @@ handlers:
   script: handlers.home.app
 
 # TODO: add robots file
+
+skip_files:
+- ^old/
+#- ^Crypto/
+

@@ -11,6 +11,8 @@ class _Week(db.Model):
 
 def current():
     week = _Week.get_by_key_name('singleton')
+    if not week:
+        week = _Week(key_name='singleton', current=1)
     return week.current
 
 def reset():

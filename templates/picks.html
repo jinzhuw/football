@@ -3,5 +3,21 @@
 {% block title %}Picks{% endblock %}
 
 {% block content %}
-Make picks for the week
+<h2>Picks for Week </h2>
+
+<div class="accordian" id="picker">
+<form action="/picks" method="post">
+{% for entry,team in chosen %}
+    <div class="accordian-group" style="border: 1px solid #E5E5E5; border-radius: 4px 4px 4px 4px; margin-bottom: 2px">
+        <div class="accordian-heading" style="border-bottom: 0 none">
+            <a class="accordian-toggle" style="display: block; padding: 8px 15px" href="#entry{{ entry.key.id }}" data-toggle="collapse" data-parent="picker">{{ entry.name }}</a><span style="float: right">{{ team }}</span>
+        </div>
+        <div class="accordian-body collapse">
+            Team selection
+        </div>
+    </div>
+{% endfor %}
+</form>
+</div>
+
 {% endblock %}

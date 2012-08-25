@@ -3,8 +3,51 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-user settings (name, email, entry names, password)
+<h2>Info</h2>
+<div class="settings_form" id="name_form">
+    <form action="" method="POST">
+        <span class="settings_label">Name:</span>
+        <span class="settings_value">{{ user.name }}</span>
+        <button class="btn btn-mini" type="submit">Edit</button>
+    </form>
+</div>
+<div class="settings_form" id="email_form">
+    <form action="" method="POST">
+        <span class="settings_label">Email:</span>
+        <span class="settings_value">{{ user.email }}</span>
+        <button class="btn btn-mini" type="submit">Edit</button>
+    </form>
+</div>
 
+<h2>Entries</h2>
+{% if new_entries %}
+<div id="new_entries_form" class="alert alert-block alert-info">
+<p>You have {{ num_new_entries }} unnamed entr{{ num_new_entries|pluralize:"y,ies" }}! Please name {{ num_new_entries|pluralize:"it,them" }} below:</p>
+<form action="/user/entries" method="POST">
+{% for entry in new_entries %}
+<input type="text" name="entry_{{ entry.key.id }}" placeholder="{{ user.name }} {{ forloop.counter }}"/><br/>
+<input type="hidden" name="default_{{ entry.key.id }}" value="{{ user.name }} {{ forloop.counter }}"/><br/>
+{% endfor %}
+<button class="btn btn-primary" type="submit">Save</button>
+</form>
+</div>
+{% endif %}
+
+{% for entry in entries %}
+<div class="entry_info">
+<span class="entry_name">{{ entry.name }}</span>
+{% if entry.alive %}
+<span class="label label-info">Alive</span>
+{% else %}
+<span class="label label-important">Eliminated</span>
+{% endif %}
+</div>
+{% endfor %}
+
+
+
+
+<br/>
 <form action="/user/login" method="post">
 <fieldset>
 <legend>Login form</legend>
