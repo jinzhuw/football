@@ -1,7 +1,4 @@
 
-from google.appengine.dist import use_library
-#use_library('django', '1.2')
-
 import os
 import logging
 
@@ -13,32 +10,35 @@ from db import settings
 pages = (
     ('Home', '/'),
     ('Rules', '/rules'),
-    ('Standings', '/standings'),
+    ('Results', '/results'),
 )
 user_pages = (
     ('Picks', '/picks'),
-    ('Settings', '/user/settings'),
 )
 admin_pages = (
+    ('Users', '/users'),
     ('Games', '/games'),
     ('Admin', '/admin'),
 )
 
-def render(handler, page, args, cache_ttl=0): 
+def render(handler, page, args, cache_ttl=0, css=False, js=False): 
     fullpath = os.path.join(os.path.dirname(__file__), '../templates/%s.html' % page)
+
+    if css:
+        args['css'] = page
+    if js:
+        args['js'] = page
 
     args['active_nav'] = handler.request.path
 
     user = handler.user
     args['user'] = handler.user
-    left_navs = list(pages)
-    right_navs = list()
+    navs = list(pages)
     if user:
-        right_navs.extend(user_pages)
+        navs.extend(user_pages)
         #if user.is_admin:
-    left_navs.extend(admin_pages)
-    args['left_navs'] = left_navs
-    args['right_navs'] = right_navs
+    navs.extend(admin_pages)
+    args['navs'] = navs
 
     data = template.render(fullpath, args)
     if cache_ttl:
@@ -57,11 +57,3 @@ def cache_hit(handler, page):
 
 def clear_cache(page):
     memcache.delete(page)
-
-def html_template(tmpl):
-    html = ['<html><body>']
-    for line in tmpl.split('\n\n'):
-        line = line.strip()
-        html.append('<p>%s</p>' % line.replace('\n', '<br/>\n'))
-    html.append('</body></html>')
-    return '\n'.join(html)

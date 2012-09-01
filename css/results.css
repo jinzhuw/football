@@ -1,0 +1,65 @@
+
+#results-container {
+    margin-top: -10px;
+    padding: 0;
+}
+
+#results-header {
+    position: relative;
+    background-color: #F5F5F5;
+    border: 1px solid #E3E3E3;
+    border-radius: 4px 4px 0px 0px;
+    min-height: 20px;
+    border-bottom: none;
+}
+
+#results-table-header {
+    border-radius: 4px 4px 0 0;
+    border-bottom: none;
+}
+
+.header-data {
+    margin: 0px;
+    font-size: 18px;
+    text-align: center;
+    padding: 20px;
+}
+
+#results-header a {
+    cursor: pointer;
+}
+
+.results-elements {
+    margin: 0 15px;
+}
+
+#results-table {
+    background-color: #F5F5F5; 
+    border: 1px solid #E3E3E3;
+    border-radius: 0px 0px 4px 4px; 
+    border-top: none;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    min-height: 20px;
+    text-align: center;
+}
+
+.results-table-entryname {
+    width: 200px;
+}
+
+.results-table-week {
+    width: 70px;
+    text-align: center;
+}
+
+.table-striped td.loss {
+    background-color: #FF0033;
+}
+.results-table-data td.buyback {
+    background-color: #33FF00;
+}
+.results-table-data td.rule-violation {
+    background-color: #996633;
+}
+

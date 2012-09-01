@@ -1,337 +1,337 @@
 WEEK 1
 -Wednesday, Sep. 5
-Dallas at NY Giants
+Dallas, NY Giants, 5:30pm
 -Sunday, Sep. 9
-San Francisco at Green Bay
-Indianapolis at Chicago
-Philadelphia at Cleveland
-St. Louis at Detroit
-Miami at Houston
-Atlanta at Kansas City
-Jacksonville at Minnesota
-Washington at New Orleans
-Buffalo at NY Jets
-New England at Tennessee
-Seattle at Arizona
-Carolina at Tampa Bay
-Pittsburgh at Denver
+Jacksonville, Minnesota, 10:00am
+Indianapolis, Chicago, 10:00am
+New England, Tennessee, 10:00am
+Miami, Houston, 10:00am
+Buffalo, NY Jets, 10:00am
+St. Louis, Detroit, 10:00am
+Atlanta, Kansas City, 10:00am
+Washington, New Orleans, 10:00am
+Philadelphia, Cleveland, 10:00am
+Carolina, Tampa Bay, 1:25pm
+Seattle, Arizona, 1:25pm
+San Francisco, Green Bay, 1:25pm
+Pittsburgh, Denver, 5:20pm
 -Monday, Sep. 10
-Cincinnati at Baltimore
-San Diego at Oakland
+Cincinnati, Baltimore, 4:00pm
+San Diego, Oakland, 7:15pm
 
 WEEK 2
 -Thursday, Sep. 13
-Chicago at Green Bay
+Chicago, Green Bay, 5:20pm
 -Sunday, Sep. 16
-Kansas City at Buffalo
-New Orleans at Carolina
-Cleveland at Cincinnati
-Minnesota at Indianapolis
-Houston at Jacksonville
-Arizona at New England
-Tampa Bay at NY Giants
-Baltimore at Philadelphia
-Washington at St. Louis
-Dallas at Seattle
-Oakland at Miami
-NY Jets at Pittsburgh
-Tennessee at San Diego
-Detroit at San Francisco
+Minnesota, Indianapolis, 10:00am
+New Orleans, Carolina, 10:00am
+Arizona, New England, 10:00am
+Tampa Bay, NY Giants, 10:00am
+Oakland, Miami, 10:00am
+Kansas City, Buffalo, 10:00am
+Cleveland, Cincinnati, 10:00am
+Houston, Jacksonville, 10:00am
+Baltimore, Philadelphia, 10:00am
+Dallas, Seattle, 1:05pm
+Washington, St. Louis, 1:05pm
+Tennessee, San Diego, 1:25pm
+NY Jets, Pittsburgh, 1:25pm
+Detroit, San Francisco, 5:20pm
 -Monday, Sep. 17
-Denver at Atlanta
+Denver, Atlanta, 5:30pm
 
 WEEK 3
 -Thursday, Sep. 20
-NY Giants at Carolina
+NY Giants, Carolina, 5:20pm
 -Sunday, Sep. 23
-St. Louis at Chicago
-Buffalo at Cleveland
-Tampa Bay at Dallas
-Jacksonville at Indianapolis
-NY Jets at Miami
-San Francisco at Minnesota
-Kansas City at New Orleans
-Detroit at Tennessee
-Cincinnati at Washington
-Philadelphia at Arizona
-Atlanta at San Diego
-Houston at Denver
-Pittsburgh at Oakland
-New England at Baltimore
+Kansas City, New Orleans, 10:00am
+Jacksonville, Indianapolis, 10:00am
+NY Jets, Miami, 10:00am
+Cincinnati, Washington, 10:00am
+Detroit, Tennessee, 10:00am
+Tampa Bay, Dallas, 10:00am
+San Francisco, Minnesota, 10:00am
+St. Louis, Chicago, 10:00am
+Buffalo, Cleveland, 10:00am
+Atlanta, San Diego, 1:05pm
+Philadelphia, Arizona, 1:05pm
+Houston, Denver, 1:25pm
+Pittsburgh, Oakland, 1:25pm
+New England, Baltimore, 5:20pm
 -Monday, Sep. 24
-Green Bay at Seattle
+Green Bay, Seattle, 5:30pm
 
 WEEK 4
 -Thursday, Sep. 27
-Cleveland at Baltimore
+Cleveland, Baltimore, 5:20pm
 -Sunday, Sep. 30
-New Orleans at Green Bay
-Carolina at Atlanta
-New England at Buffalo
-Minnesota at Detroit
-Tennessee at Houston
-San Diego at Kansas City
-San Francisco at NY Jets
-Seattle at St. Louis
-Miami at Arizona
-Cincinnati at Jacksonville
-Oakland at Denver
-Washington at Tampa Bay
-NY Giants at Philadelphia
+New England, Buffalo, 10:00am
+Tennessee, Houston, 10:00am
+San Diego, Kansas City, 10:00am
+Minnesota, Detroit, 10:00am
+Carolina, Atlanta, 10:00am
+San Francisco, NY Jets, 10:00am
+Seattle, St. Louis, 10:00am
+Oakland, Denver, 1:05pm
+Miami, Arizona, 1:05pm
+Cincinnati, Jacksonville, 1:05pm
+New Orleans, Green Bay, 1:25pm
+Washington, Tampa Bay, 1:25pm
+NY Giants, Philadelphia, 5:20pm
 -Monday, Oct. 1
-Chicago at Dallas
+Chicago, Dallas, 5:30pm
 
 WEEK 5
 -Thursday, Oct. 4
-Arizona at St. Louis
+Arizona, St. Louis, 5:20pm
 -Sunday, Oct. 7
-Green Bay at Indianapolis
-Miami at Cincinnati
-Baltimore at Kansas City
-Tennessee at Minnesota
-Cleveland at NY Giants
-Philadelphia at Pittsburgh
-Atlanta at Washington
-Seattle at Carolina
-Chicago at Jacksonville
-Denver at New England
-Buffalo at San Francisco
-San Diego at New Orleans
+Atlanta, Washington, 10:00am
+Green Bay, Indianapolis, 10:00am
+Philadelphia, Pittsburgh, 10:00am
+Tennessee, Minnesota, 10:00am
+Cleveland, NY Giants, 10:00am
+Miami, Cincinnati, 10:00am
+Baltimore, Kansas City, 10:00am
+Chicago, Jacksonville, 1:05pm
+Seattle, Carolina, 1:05pm
+Buffalo, San Francisco, 1:25pm
+Denver, New England, 1:25pm
+San Diego, New Orleans, 5:20pm
 -Monday, Oct. 8
-Houston at NY Jets
+Houston, NY Jets, 5:30pm
 
 WEEK 6
 -Thursday, Oct. 11
-Pittsburgh at Tennessee
+Pittsburgh, Tennessee, 5:20pm
 -Sunday, Oct. 14
-Green Bay at Houston
-Oakland at Atlanta
-Dallas at Baltimore
-Cincinnati at Cleveland
-St. Louis at Miami
-Indianapolis at NY Jets
-Detroit at Philadelphia
-Kansas City at Tampa Bay
-Buffalo at Arizona
-New England at Seattle
-NY Giants at San Francisco
-Minnesota at Washington
+Cincinnati, Cleveland, 10:00am
+Oakland, Atlanta, 10:00am
+Dallas, Baltimore, 10:00am
+Kansas City, Tampa Bay, 10:00am
+Indianapolis, NY Jets, 10:00am
+St. Louis, Miami, 10:00am
+Detroit, Philadelphia, 10:00am
+Buffalo, Arizona, 1:05pm
+New England, Seattle, 1:05pm
+NY Giants, San Francisco, 1:25pm
+Minnesota, Washington, 1:25pm
+Green Bay, Houston, 5:20pm
 -Monday, Oct. 15
-Denver at San Diego
+Denver, San Diego, 5:30pm
 
 WEEK 7
 -Thursday, Oct. 18
-Seattle at San Francisco
+Seattle, San Francisco, 5:20pm
 -Sunday, Oct. 21
-Green Bay at St. Louis
-Tennessee at Buffalo
-Dallas at Carolina
-Baltimore at Houston
-Cleveland at Indianapolis
-Arizona at Minnesota
-Washington at NY Giants
-New Orleans at Tampa Bay
-NY Jets at New England
-Jacksonville at Oakland
-Pittsburgh at Cincinnati
+Arizona, Minnesota, 10:00am
+New Orleans, Tampa Bay, 10:00am
+Green Bay, St. Louis, 10:00am
+Washington, NY Giants, 10:00am
+Tennessee, Buffalo, 10:00am
+Dallas, Carolina, 10:00am
+Baltimore, Houston, 10:00am
+Cleveland, Indianapolis, 10:00am
+NY Jets, New England, 1:25pm
+Jacksonville, Oakland, 1:25pm
+Pittsburgh, Cincinnati, 5:20pm
 -Monday, Oct. 22
-Detroit at Chicago
+Detroit, Chicago, 5:30pm
 
 WEEK 8
 -Thursday, Oct. 25
-Tampa Bay at Minnesota
+Tampa Bay, Minnesota, 5:20pm
 -Sunday, Oct. 28
-Jacksonville at Green Bay
-Carolina at Chicago
-San Diego at Cleveland
-Seattle at Detroit
-Miami at NY Jets
-Atlanta at Philadelphia
-Washington at Pittsburgh
-St. Louis at New England
-Indianapolis at Tennessee
-Oakland at Kansas City
-NY Giants at Dallas
-New Orleans at Denver
+Jacksonville, Green Bay, 10:00am
+Carolina, Chicago, 10:00am
+San Diego, Cleveland, 10:00am
+Seattle, Detroit, 10:00am
+Miami, NY Jets, 10:00am
+Atlanta, Philadelphia, 10:00am
+Washington, Pittsburgh, 10:00am
+St. Louis, New England, 10:00am
+Indianapolis, Tennessee, 10:00am
+Oakland, Kansas City, 1:05pm
+NY Giants, Dallas, 1:25pm
+New Orleans, Denver, 5:20pm
 -Monday, Oct. 29
-San Francisco at Arizona
+San Francisco, Arizona, 5:30pm
 
 WEEK 9
 -Thursday, Nov. 1
-Kansas City at San Diego
+Kansas City, San Diego, 5:20pm
 -Sunday, Nov. 4
-Arizona at Green Bay
-Denver at Cincinnati
-Baltimore at Cleveland
-Buffalo at Houston
-Miami at Indianapolis
-Detroit at Jacksonville
-Chicago at Tennessee
-Carolina at Washington
-Tampa Bay at Oakland
-Minnesota at Seattle
-Pittsburgh at NY Giants
-Dallas at Atlanta
+Arizona, Green Bay, 10:00am
+Denver, Cincinnati, 10:00am
+Baltimore, Cleveland, 10:00am
+Buffalo, Houston, 10:00am
+Miami, Indianapolis, 10:00am
+Detroit, Jacksonville, 10:00am
+Chicago, Tennessee, 10:00am
+Carolina, Washington, 10:00am
+Tampa Bay, Oakland, 1:05pm
+Minnesota, Seattle, 1:05pm
+Pittsburgh, NY Giants, 1:25pm
+Dallas, Atlanta, 5:20pm
 -Monday, Nov. 5
-Philadelphia at New Orleans
+Philadelphia, New Orleans, 5:30pm
 
 WEEK 10
 -Thursday, Nov. 8
-Indianapolis at Jacksonville
+Indianapolis, Jacksonville, 5:20pm
 -Sunday, Nov. 11
-Oakland at Baltimore
-Denver at Carolina
-NY Giants at Cincinnati
-Tennessee at Miami
-Detroit at Minnesota
-Buffalo at New England
-Atlanta at New Orleans
-San Diego at Tampa Bay
-NY Jets at Seattle
-Dallas at Philadelphia
-St. Louis at San Francisco
-Houston at Chicago
+Oakland, Baltimore, 10:00am
+Denver, Carolina, 10:00am
+NY Giants, Cincinnati, 10:00am
+Tennessee, Miami, 10:00am
+Detroit, Minnesota, 10:00am
+Buffalo, New England, 10:00am
+Atlanta, New Orleans, 10:00am
+San Diego, Tampa Bay, 10:00am
+NY Jets, Seattle, 1:05pm
+Dallas, Philadelphia, 1:25pm
+St. Louis, San Francisco, 1:25pm
+Houston, Chicago, 5:20pm
 -Monday, Nov. 12
-Kansas City at Pittsburgh
+Kansas City, Pittsburgh, 5:30pm
 
 WEEK 11
 -Thursday, Nov. 15
-Miami at Buffalo
+Miami, Buffalo, 5:20pm
 -Sunday, Nov. 18
-Green Bay at Detroit
-Arizona at Atlanta
-Tampa Bay at Carolina
-Cleveland at Dallas
-Jacksonville at Houston
-Cincinnati at Kansas City
-Indianapolis at New England
-NY Jets at St. Louis
-Philadelphia at Washington
-New Orleans at Oakland
-San Diego at Denver
-Baltimore at Pittsburgh
+Green Bay, Detroit, 10:00am
+Arizona, Atlanta, 10:00am
+Tampa Bay, Carolina, 10:00am
+Cleveland, Dallas, 10:00am
+Jacksonville, Houston, 10:00am
+Cincinnati, Kansas City, 10:00am
+Indianapolis, New England, 10:00am
+NY Jets, St. Louis, 10:00am
+Philadelphia, Washington, 10:00am
+New Orleans, Oakland, 1:05pm
+San Diego, Denver, 1:25pm
+Baltimore, Pittsburgh, 5:20pm
 -Monday, Nov. 19
-Chicago at San Francisco
+Chicago, San Francisco, 5:30pm
 
 WEEK 12
 -Thursday, Nov. 22
-Houston at Detroit
-Washington at Dallas
-New England at NY Jets
+Houston, Detroit, 9:30am
+Washington, Dallas, 1:15pm
+New England, NY Jets, 5:20pm
 -Sunday, Nov. 25
-Green Bay at NY Giants
-Minnesota at Chicago
-Oakland at Cincinnati
-Pittsburgh at Cleveland
-Buffalo at Indianapolis
-Tennessee at Jacksonville
-Denver at Kansas City
-Seattle at Miami
-Atlanta at Tampa Bay
-Baltimore at San Diego
-St. Louis at Arizona
-San Francisco at New Orleans
+Minnesota, Chicago, 10:00am
+Oakland, Cincinnati, 10:00am
+Pittsburgh, Cleveland, 10:00am
+Buffalo, Indianapolis, 10:00am
+Tennessee, Jacksonville, 10:00am
+Denver, Kansas City, 10:00am
+Seattle, Miami, 10:00am
+Atlanta, Tampa Bay, 10:00am
+Baltimore, San Diego, 1:05pm
+St. Louis, Arizona, 1:25pm
+San Francisco, New Orleans, 1:25pm
+Green Bay, NY Giants, 5:20pm
 -Monday, Nov. 26
-Carolina at Philadelphia
+Carolina, Philadelphia, 5:30pm
 
 WEEK 13
 -Thursday, Nov. 29
-New Orleans at Atlanta
+New Orleans, Atlanta, 5:20pm
 -Sunday, Dec. 2
-Minnesota at Green Bay
-Jacksonville at Buffalo
-Seattle at Chicago
-Indianapolis at Detroit
-Carolina at Kansas City
-New England at Miami
-Arizona at NY Jets
-San Francisco at St. Louis
-Houston at Tennessee
-Tampa Bay at Denver
-Pittsburgh at Baltimore
-Cleveland at Oakland
-Cincinnati at San Diego
-Philadelphia at Dallas
+Minnesota, Green Bay, 10:00am
+Jacksonville, Buffalo, 10:00am
+Seattle, Chicago, 10:00am
+Indianapolis, Detroit, 10:00am
+Carolina, Kansas City, 10:00am
+New England, Miami, 10:00am
+Arizona, NY Jets, 10:00am
+San Francisco, St. Louis, 10:00am
+Houston, Tennessee, 10:00am
+Tampa Bay, Denver, 1:05pm
+Pittsburgh, Baltimore, 1:25pm
+Cleveland, Oakland, 1:25pm
+Cincinnati, San Diego, 1:25pm
+Philadelphia, Dallas, 5:20pm
 -Monday, Dec. 3
-NY Giants at Washington
+NY Giants, Washington, 5:30pm
 
 WEEK 14
 -Thursday, Dec. 6
-Denver at Oakland
+Denver, Oakland, 5:20pm
 -Sunday, Dec. 9
-Detroit at Green Bay
-St. Louis at Buffalo
-Atlanta at Carolina
-Dallas at Cincinnati
-Kansas City at Cleveland
-Tennessee at Indianapolis
-NY Jets at Jacksonville
-Chicago at Minnesota
-San Diego at Pittsburgh
-Philadelphia at Tampa Bay
-Baltimore at Washington
-Miami at San Francisco
-New Orleans at NY Giants
-Arizona at Seattle
+St. Louis, Buffalo, 10:00am
+Atlanta, Carolina, 10:00am
+Dallas, Cincinnati, 10:00am
+Kansas City, Cleveland, 10:00am
+Tennessee, Indianapolis, 10:00am
+NY Jets, Jacksonville, 10:00am
+Chicago, Minnesota, 10:00am
+San Diego, Pittsburgh, 10:00am
+Philadelphia, Tampa Bay, 10:00am
+Baltimore, Washington, 10:00am
+Miami, San Francisco, 1:05pm
+New Orleans, NY Giants, 1:25pm
+Arizona, Seattle, 1:25pm
+Detroit, Green Bay, 5:20pm
 -Monday, Dec. 10
-Houston at New England
+Houston, New England, 5:30pm
 
 WEEK 15
 -Thursday, Dec. 13
-Cincinnati at Philadelphia
+Cincinnati, Philadelphia, 5:20pm
 -Sunday, Dec. 16
-Green Bay at Chicago
-NY Giants at Atlanta
-Denver at Baltimore
-Washington at Cleveland
-Indianapolis at Houston
-Jacksonville at Miami
-Tampa Bay at New Orleans
-Minnesota at St. Louis
-Detroit at Arizona
-Seattle at Buffalo
-Carolina at San Diego
-Pittsburgh at Dallas
-Kansas City at Oakland
-San Francisco at New England
+Green Bay, Chicago, 10:00am
+NY Giants, Atlanta, 10:00am
+Denver, Baltimore, 10:00am
+Washington, Cleveland, 10:00am
+Indianapolis, Houston, 10:00am
+Jacksonville, Miami, 10:00am
+Tampa Bay, New Orleans, 10:00am
+Minnesota, St. Louis, 10:00am
+Detroit, Arizona, 1:05pm
+Seattle, Buffalo, 1:05pm
+Carolina, San Diego, 1:05pm
+Pittsburgh, Dallas, 1:25pm
+Kansas City, Oakland, 1:25pm
+San Francisco, New England, 5:20pm
 -Monday, Dec. 17
-NY Jets at Tennessee
+NY Jets, Tennessee, 5:30pm
 
 WEEK 16
 -Saturday, Dec. 22
-Atlanta at Detroit
+Atlanta, Detroit, 5:30pm
 -Sunday, Dec. 23
-Tennessee at Green Bay
-NY Giants at Baltimore
-Oakland at Carolina
-New Orleans at Dallas
-Minnesota at Houston
-New England at Jacksonville
-Indianapolis at Kansas City
-Buffalo at Miami
-Washington at Philadelphia
-Cincinnati at Pittsburgh
-St. Louis at Tampa Bay
-Cleveland at Denver
-Chicago at Arizona
-San Francisco at Seattle
-San Diego at NY Jets
+Tennessee, Green Bay, 10:00am
+NY Giants, Baltimore, 10:00am
+Oakland, Carolina, 10:00am
+New Orleans, Dallas, 10:00am
+Minnesota, Houston, 10:00am
+New England, Jacksonville, 10:00am
+Indianapolis, Kansas City, 10:00am
+Buffalo, Miami, 10:00am
+Washington, Philadelphia, 10:00am
+Cincinnati, Pittsburgh, 10:00am
+St. Louis, Tampa Bay, 10:00am
+Cleveland, Denver, 1:05pm
+Chicago, Arizona, 1:25pm
+San Francisco, Seattle, 1:15pm
+San Diego, NY Jets, 5:20pm
 
 WEEK 17
 -Sunday, Dec. 30
-Green Bay at Minnesota
-Tampa Bay at Atlanta
-NY Jets at Buffalo
-Baltimore at Cincinnati
-Chicago at Detroit
-Houston at Indianapolis
-Miami at New England
-Carolina at New Orleans
-Philadelphia at NY Giants
-Cleveland at Pittsburgh
-Jacksonville at Tennessee
-Dallas at Washington
-Kansas City at Denver
-Oakland at San Diego
-Arizona at San Francisco
-St. Louis at Seattle
+Green Bay, Minnesota, 10:00am
+Tampa Bay, Atlanta, 10:00am
+NY Jets, Buffalo, 10:00am
+Baltimore, Cincinnati, 10:00am
+Chicago, Detroit, 10:00am
+Houston, Indianapolis, 10:00am
+Miami, New England, 10:00am
+Carolina, New Orleans, 10:00am
+Philadelphia, NY Giants, 10:00am
+Cleveland, Pittsburgh, 10:00am
+Jacksonville, Tennessee, 10:00am
+Dallas, Washington, 10:00am
+Kansas City, Denver, 1:25pm
+Oakland, San Diego, 1:25pm
+Arizona, San Francisco, 1:25pm
+St. Louis, Seattle, 1:25pm

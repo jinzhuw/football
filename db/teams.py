@@ -53,6 +53,17 @@ def fullname(team):
     n = _rawnames[team]
     return '%s %s' % (n[0], n[2])
 
+def mascotname(team):
+    if team == -1:
+        return 'No Pick'
+    return _rawnames[team][2]
+
+def large_logo_x(team):
+    return (team * 80) % (8 * 80)
+
+def large_logo_y(team):
+    return (team / 8) * 80
+
 _ids = {}
 for i,name in enumerate(_rawnames):
     _ids[name[0]] = i

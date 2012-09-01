@@ -6,14 +6,17 @@ threadsafe: yes
 
 libraries:
 - name: pycrypto
-  version: "2.3"
+  version: "latest"
+
+- name: django
+  version: "latest"
 
 handlers:
-- url: /standings.*
-  script: handlers.standings.app
+- url: /results.*
+  script: handlers.results.app
 
 - url: /rules.*
-  script: handlers.rules.app
+  script: handlers.main.app
 
 - url: /picks.*
   script: handlers.picks.app
@@ -21,11 +24,14 @@ handlers:
 - url: /games.*
   script: handlers.games.app
 
-- url: /user.*
-  script: handlers.user.app
+- url: /setup.*
+  script: handlers.setup.app
 
 - url: /admin.*
   script: handlers.admin.app
+
+- url: /users.*
+  script: handlers.users.app
 
 - url: /css
   static_dir: css
@@ -36,12 +42,19 @@ handlers:
 - url: /js
   static_dir: js
 
+- url: /login.*
+  script: handlers.main.app
+
+- url: /logout
+  script: handlers.main.app
+
 - url: /.*
-  script: handlers.home.app
+  script: handlers.main.app
 
 # TODO: add robots file
 
 skip_files:
 - ^old/
 #- ^Crypto/
+- (.*\.py[co])
 

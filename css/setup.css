@@ -1,0 +1,42 @@
+
+
+.alert {
+    display: inline;
+    margin-bottom: 0;
+    margin-left: 30px;
+}
+
+.finish-loading {
+    text-align: center;
+}
+
+.modal {
+    display: none;
+}
+
+.modal input {
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.finish-element {
+    display: none;
+}
+
+.finish-info {
+    padding: 5px;
+}
+
+.finish-label {
+    font-weight: bold;
+    text-align: right;
+    padding: 5px 20px 5px 30px;
+}
+
+.finish-data {
+    padding: 5px;
+}
+
+#finish-entries .finish-label {
+    vertical-align: top;
+}

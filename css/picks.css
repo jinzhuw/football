@@ -1,0 +1,145 @@
+
+.header {
+    margin-left: 0;
+    text-align: center;
+}
+
+.deadline {
+    font-size: small;
+}
+
+.games {
+    text-align: center;
+}
+
+.selected_team {
+    background-color: #D8D8D8;
+}
+
+.hilight_team {
+    background-color: #D8D8D8;
+}
+
+.entry {
+    display: block;
+    padding: 8px 15px;
+}
+
+.status {
+    float: left;
+    background-color: #6E6E6E;
+    color: white;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-size: smaller;
+    display: none;
+}
+
+.team_chosen {
+    float: right;
+}
+
+#picker {
+    background-color:#FEFEFF;
+}
+
+.visual_pick {
+    background-color: #EEEEEE;
+    border: 1px solid #CCCCCC;
+    margin: 15px;
+    display: inline-block;
+}
+
+.pick_header {
+    background: #4e8de5;
+    background: -moz-linear-gradient(top, #4e8de5 0%, #005cce 99%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4e8de5), color-stop(99%,#005cce)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #4e8de5 0%,#005cce 99%); /* Chrome10+,Safari5.1+ */
+    background: -ms-linear-gradient(top, #4e8de5 0%,#005cce 99%);
+    background: -o-linear-gradient(top, #4e8de5 0%,#005cce 99%);
+    background: linear-gradient(to bottom, #4e8de5 0%,#005cce 99%);
+    color: #FFFFFF;
+    height: 27px;
+    width: 223px;
+}
+
+.pick_header .date {
+    float:left;
+}
+
+.pick_header div {
+    padding: 0 5px 2px 8px;
+}
+
+.team_select {
+    background-color: #F2F2F2;
+    color: #000000;
+    text-decoration: none;
+}
+
+.visiting {
+    -moz-border-bottom-colors: none;
+    -moz-border-image: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #CCCCCC #999999 #CCCCCC #CCCCCC;
+    border-style: solid dashed solid solid;
+    border-width: 0 1px 0 0;
+}
+
+.team_info {
+    float: left;
+    margin: auto;
+    width: 111px;
+}
+
+.team_box {
+    border: 0 solid #000000;
+    display: inline;
+    text-align: center;
+    width: 111px;
+    padding-top: 10px;
+}
+
+.team_logo {
+    background-image: url('/img/teams.gif');
+    margin: auto;
+    width: 80px;
+    height: 80px;
+    margin-top: 22px;
+    overflow: hidden;
+    padding: 0;
+}
+
+.team_city {
+    color: #333333;
+    font-size: smaller;
+    font-weight: bold;
+    margin-bottom: -8px;
+}
+
+.team_mascot {
+    color: #333333;
+    font-size: larger;
+    font-weight: bold;
+    padding-bottom: 8px;
+}
+
+.at {
+    background-color: silver;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    /*font-family: Segoe UI,Arial,Helvetica,sans-serif;*/
+    font-size: small;
+    height: 15px;
+    padding: 3px 3px 0px 3px;
+    margin-left: 100px;
+    margin-top: 85px;
+    position: absolute;
+    text-align: center;
+    width: 15px;
+    line-height: 10px;
+}
+

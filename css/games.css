@@ -1,0 +1,51 @@
+
+.games-container {
+    text-align: center;
+}
+
+.game {
+    display: inline-block;
+    margin: 20px;
+    text-align: left;
+}
+
+.game-header {
+    text-align: left;
+    padding: 5px 10px;    
+    border-collapse: separate;
+    border-color: #DDDDDD #DDDDDD -moz-use-text-color #DDDDDD;
+    border-radius: 4px 4px 4px 4px;
+    border-style: solid solid none solid;
+    border-width: 1px 1px 0 1px;
+}
+
+table.game-data {
+    width: 200px;
+    height: 80px;
+}
+
+td.team-name {
+    vertical-align: middle;
+    padding-left: 10px;
+}
+
+.winner {
+    font-weight: bold;
+}
+
+td.score {
+    width: 35px;
+    vertical-align: middle;
+    text-align: right;
+}
+
+td.score span {
+    margin-right: 10px;
+}
+
+td.score input {
+    width: 20px;
+    margin: 0px;
+    text-align: right;
+}
+

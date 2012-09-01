@@ -26,7 +26,7 @@ def increment():
     week.current += 1
     week.put()
 
-week0 = datetime(2011, 9, 3, 23, 0, tzinfo=timezone.Pacific)
+week0 = datetime(2012, 9, 1, 23, 0, tzinfo=timezone.Pacific)
 def deadline(week):
     offset = timedelta(weeks=week)
     return week0 + offset

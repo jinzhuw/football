@@ -1,10 +1,34 @@
 {% extends "base.html" %}
 
 {% block title %}
-Game Results
+Games - Week {{ week }}
 {% endblock %}
 
 {% block content %}
-View games by week, and links to edit scores
+<h4 class="well">Games for Week {{ week }}</h4>
+
+<div class="games-container">
+{% for game in games %}
+    <div class="game" game-id="{{ game.key.id }}">
+        <table class="table-condensed table-bordered game-data">
+        <caption class="game-header">
+            <small>{% if game.complete %}Final{% else %}{{ game.date|date:"N j, g:ia" }}{% endif %}</small>
+            <div class="pull-right"><button class="btn btn-mini"><i class="icon-edit"></i></button></div>
+        </caption>
+        <tbody>
+            <tr{% if game.visiting == game.winner %} class="winner"{% endif %}>
+                <td class="team-name">{{ game.visiting_city }}</td>
+                <td class="score" team="visiting">{% if game.complete %}{{ game.visiting_score }}{% endif %}</td>
+            </tr>
+            <tr{% if game.home == game.winner %} class="winner"{% endif %}>
+                <td class="team-name">{{ game.home_city }}</td>
+                <td class="score" team="home">{% if game.complete %}{{ game.home_score }}{% endif %}</td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+{% endfor %}
+</div>
+
 {% endblock %}
 

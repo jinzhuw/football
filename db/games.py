@@ -1,6 +1,8 @@
 
 import json
 import urllib2
+import logging
+from datetime import datetime
 from collections import defaultdict
 
 from google.appengine.ext import db
@@ -11,10 +13,37 @@ class Game(db.Model):
     week = db.IntegerProperty(required=True)
     home = db.IntegerProperty(required=True)
     visiting = db.IntegerProperty(required=True)
-    date = db.DateProperty(required=True)
+    date = db.DateTimeProperty(required=True)
     home_score = db.IntegerProperty(default=-1)
     visiting_score = db.IntegerProperty(default=-1)
     winner = db.IntegerProperty(default=-1)
+
+    def complete(self):
+        return self.winner != -1
+
+    def home_city(self):
+        return teams.cityname(self.home)
+
+    def home_mascot(self):
+        return teams.mascotname(self.home)
+
+    def home_x(self):
+        return teams.large_logo_x(self.home)
+
+    def home_y(self):
+        return teams.large_logo_y(self.home)
+
+    def visiting_city(self):
+        return teams.cityname(self.visiting)
+
+    def visiting_mascot(self):
+        return teams.mascotname(self.visiting)
+
+    def visiting_x(self):
+        return teams.large_logo_x(self.visiting)
+
+    def visiting_y(self):
+        return teams.large_logo_y(self.visiting)
 
 def load_schedule():
     schedule = defaultdict(list)
@@ -28,22 +57,31 @@ def load_schedule():
         elif line.startswith('-'):
             date = datetime.strptime(line[1:], '%A, %b. %d')
         elif line:
-            t = line.split(' at ')
-            visiting = teams.id(t[0])
-            home = teams.id(t[1])
-            schedule[week].append((date, home, visiting))
+            try:
+                data = line.split(',')
+                t = datetime.strptime(data[2].strip(), '%I:%M%p') 
+                visiting = teams.id(data[0])
+                home = teams.id(data[1].strip())
+                dt = datetime(date.year, date.month, date.day, t.hour, t.minute)
+                schedule[week].append((dt, home, visiting))
+            except:
+                logging.error('problem on line: %s', line)
+                raise
 
+    return schedule
+    '''
     for week,games in sorted(schedule.iteritems()):
         print ''
         print 'Week %d' % week
         for game in games:
             print game[0].strftime('%A,'), teams.shortname(game[1]), 'vs', teams.shortname(game[2])
+    '''
 
 def reset():
     for g in Game.all():
         g.delete()
     
-    for week,games in sorted(schedule.iteritems()):
+    for week,games in load_schedule().iteritems():
         for game in games:
             g = Game(week=week, home=game[1], visiting=game[2], date=game[0])
             g.put()
@@ -78,29 +116,30 @@ def load_scores(week):
 
     return loaded 
 
-def update(id, home_score, visiting_score):
-    game = Game.get_by_id(id)
+def update(game_id, home_score, visiting_score):
+    game = Game.get_by_id(game_id)
     logging.info('Updating status for game %s (%d) vs %s (%d)',
                  teams.shortname(game.home), home_score,
                  teams.shortname(game.visiting), visiting_score)
     game.home_score = home_score
     game.visiting_score = visiting_score
-    g.winner = g.home if home_score > visiting_score else g.visiting
+    game.winner = game.home if home_score > visiting_score else game.visiting
     game.put() 
 
-def for_week(week):
-    '''
-    Return two lists of games, incomplete and complete.
-
-    Each element is a tuple of home and visiting team long names. Additionally,
-    the complete games have the winning team as the third element of the tuple.
-    The incomplete games have the game id as the third element.
-    '''
-    incomplete = []
-    complete = []
+def games_for_week(week):
+    """
+    Returns a dict of games for a given week, keyed by date. Each game is a dict of:
+    id - Game unique id
+    h - Home team name
+    v - Visiting team name
+    f - boolean, True if the game is finished
+    hs - Home team score
+    vs - Visiting team score
+    """
+    return Game.gql('WHERE week = :1', week)
+    """
     status = defaultdict(list)
-    games = Game.gql('WHERE week = :1', week)        
-    for g in games:
+    for g in Game.gql('WHERE week = :1', week):
         date = g.date.strftime('%A, %B %d')
         home = teams.cityname(g.home)
         visiting = teams.cityname(g.visiting)
@@ -113,7 +152,8 @@ def for_week(week):
             'vs': g.visiting_score,
         })
             
-    return scores
+    return status
+    """
 
 def complete_for_week(week):
     games = Game.gql('WHERE week = :1 AND winner = -1', week)                

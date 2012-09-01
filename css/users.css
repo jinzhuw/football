@@ -1,0 +1,43 @@
+
+.nav li a.muted:hover {
+    color: #999999;
+    background: none;
+    border-color: transparent;
+}
+
+.users-tabs {
+    margin-bottom: 0;
+}
+
+.users-section .accordian-heading {
+    border-bottom: 0 none;
+    display: block;
+    padding: 8px 15px;
+}
+
+.users-section .accordian-body {
+    padding: 0px 20px;
+}
+
+.tab-content {
+    border: 1px solid #E5E5E5;
+    border-radius: 0px 0px 4px 4px;
+    border-top: none;
+    margin-bottom: 30px;
+}
+
+.tab-pane {
+    border: 1px solid #E5E5E5;
+    border-radius: 4px 4px 4px 4px;
+    margin: 20px;
+}
+
+.entry-table {
+    margin-bottom: 20px;
+    background-color: transparent;
+}
+
+.entry-table td {
+    padding: 5px; 
+    height: 40px;
+}
