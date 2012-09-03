@@ -33,8 +33,8 @@ def deadline(week):
 
 def check_deadline(week):
     now = datetime.now(timezone.Pacific)
-    if settings.NODEADLINE:
-        return True
+    #if settings.NODEADLINE:
+    #    return True
     return now < deadline(week)
 
 def results(week):

@@ -3,16 +3,38 @@
 {% block title %}Admin{% endblock %}
 
 {% block content %}
-<h4>Users</h4>
-<hr/>
-<div class="tabbable">
-    <ul class="nav nav-tabs users-tabs">
+
+<div class="pull-left">
+
+<div id="new-user-form" class="control-box">
+<h4>Create User</h4>
+<label>Email</label><input type="text" id="new-email" placeholder="joe@example.com" />
+<label>Entries</label><input type="text" id="new-num-entries" placeholder="1" />
+<button class="btn btn-primary pull-right">Create user</button>
+<div class="clearfix"></div>
+</div>
+
+<div class="control-box">
+<h4>Unactivated</h4>
+<table class="table" id="unactivated-users">
+{% for user in new_users %}
+<tr><td>{{ user.0.email }}</td><td><a class="btn btn-small btn-info" href="/login/{{ user.3 }}">Login</a></td></tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
+
+<div id="users-list" class="tabbable">
+    <div class="tab-header">
     {% for section in users %}
-        <li {% if forloop.first %}class="active"{% endif %}>
-            <a {% if section.1 %}href="#users{{ section.0 }}" data-toggle="tab"{% else %}class="muted"{% endif %}>{% if section.1 %}<strong>{{ section.0 }}</strong>{% else %}{{ section.0 }}{% endif %}</strong></a>
-        </li>
+        <a {% if section.1 %}href="#users{{ section.0 }}" data-toggle="tab" {% if forloop.first %}class="active"{% endif %}{% else %}class="muted"{% endif %}><div>
+            {% if section.1 %}<strong>{{ section.0 }}</strong>
+            {% else %}{{ section.0 }}
+            {% endif %}
+        </div></a>
     {% endfor %}
-    </ul>
+    </div>
 
     <div class="tab-content">
     {% for section in users %}
@@ -21,17 +43,17 @@
         <div class="tab-pane accordian {% if forloop.first %}active{% endif %}" id="users{{ section.0 }}">
             {% for user in section.1 %}
             <div class="accordian-group users-section">
-                <div class="accordian-heading" style="border-bottom: 0 none"><a class="accordian-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small>({{user.0.email }})</small></a></div>
+                <div class="accordian-heading" style="border-bottom: 0 none"><a class="accordian-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small> - {{user.0.email }}</small></a></div>
                 <div id="user{{ user.0.key.id }}" class="accordian-body collapse">
                     <h5>Actions</h5>
                     <div class="btn-group">
-                        <a class="btn" href="/login/{{ user.2 }}" >Login as user</a>
-                        <button class="btn">Send Picks Email</button>
-                        <button class="btn">Add Entry</button>
+                        <a class="btn" href="/login/{{ user.3 }}" >Login as user</a>
+                        <button class="btn disabled">Send Picks Email</button>
+                        <button class="btn new-entry-btn" user-id="{{ user.0.key.id }}">Add Entry</button>
                     </div>
-                    <h5>Entries</h5>
-                    {% if new_entries %}
-                    <div class="alert alert-info">{{ num_entries }} new entries</div>
+                    <h5 class="entries-section">Entries</h5>
+                    {% if user.2 != 0 %}
+                    <div class="alert alert-info">{{ user.2 }} new entries</div>
                     {% endif %}
                     <table class="entry-table">
                         {% for entry in user.1 %}
@@ -39,7 +61,7 @@
                         <tr>
                             <td>{% if entry.alive %}<span class="label label-success">Alive</span>{% else %}<span class="label label-important">Eliminated</span>{% endif %}</td>
                             <td>{{ entry.name }}</td> 
-                            <td>{% if not entry.alive or forloop.first or forloop.last %}<button class="btn">Buyback</button>{% endif %}</td>
+                            <td>{% if not entry.alive %}<button class="btn">Buyback</button>{% endif %}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
@@ -53,47 +75,6 @@
     {% endfor %}
     </div>
 </div>
-
-<h4>New Users (Unactivated)</h4>
-<hr/>
-
-<div>
-{% for user in unnamed %}
-<span>Email: <small>{{ user.0.email }}</small></span>
-<span><a href="/login/{{ user.2 }}">Login</a></span>
-{% endfor %}
 </div>
 
-<script type="text/javascript">
-    // TODO: make this a shared block in base
-    window.onload = function () {
-        $(".collapse").collapse({toggle: false});
-        // move to a loadUsers function
-        /*
-        loadUsers = function(data, textStatus, xhr) {
-            for (var player in data) {
-                data[player]
-            }
-        };
-        $.ajax({
-            url: '/users/entries',
-            type: 'GET',
-            dataType: 'json',
-            success: loadUsers,
-            error: function (xhr, textStatus, errorThrown) {
-                alert('error: ' + xhr + ',' + textStatus + ', ' + errorThrown); 
-            }
-        });
-        */
-    }
-</script>
-
-<form action="/users/newuser" method="post">
-<fieldset>
-<legend>Create user form</legend>
-<label>Email  <input type="text" name="email" placeholder="joe@example.com" /></label>
-<label>Entries <input type="text" name="num_entries" placeholder="1" /></label>
-</fieldset>
-<button>Create user</button>
-</form>
 {% endblock %}

@@ -162,7 +162,8 @@ Results.prototype.set_table = function(header, div) {
                     team = entry_data[week_count].team;
                     classes.push(entry_data[week_count].type);
                 }
-                
+            } else {
+                classes.push('empty');
             }
             table_html += '<td class="';
             for (var i = 0; i < classes.length; i++) {

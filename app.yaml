@@ -4,6 +4,9 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 
+builtins:
+- deferred: on
+
 libraries:
 - name: pycrypto
   version: "latest"
@@ -12,6 +15,10 @@ libraries:
   version: "latest"
 
 handlers:
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
 - url: /results.*
   script: handlers.results.app
 
@@ -55,6 +62,6 @@ handlers:
 
 skip_files:
 - ^old/
-#- ^Crypto/
+- ^Crypto/
 - (.*\.py[co])
 

@@ -1,4 +1,8 @@
 
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function setup_1_to_2() {
     var name = $('#name').val();
     if (name) {
@@ -19,7 +23,16 @@ function setup_1_to_2() {
 }
 
 function check_server_entry_name(name) {
-    return false;
+    var failed = true;
+    $.ajax({
+        'async': false,
+        'url': '/setup/checkentry/' + escape(name),
+        'type': 'GET',
+        'success': function() { failed = false; },
+        'error': function() { failed = true; },
+    });
+
+    return failed;
 }
 
 function setup_2_to_3() {
@@ -31,18 +44,20 @@ function setup_2_to_3() {
         if (!name) {
             name = $(this).attr('default');
         }
+        name = capitalize(name);
         if (entry_names.indexOf(name) != -1) {
             $(this).after('<div class="alert alert-error">You already used ' + name + '</div>' );
             errors = true;
-            return;
         }
         if (check_server_entry_name(name)) {
             $(this).after('<div class="alert alert-error">' + name + ' is in use by another user</div>' );
             errors = true;
-            return;
         }
         entry_names.push(name);
     });
+    if (errors) {
+        return false;
+    }
     var list = '<ul class="unstyled">';
     for (var i = 0; i < entry_names.length; i++) {
         list += '<li>' + entry_names[i] + '</li>';
@@ -79,7 +94,7 @@ function submit_setup(success) {
             name = $(this).attr('default');
         }
         var entry_id = $(this).attr('entry-id');
-        args['entry_' + entry_id] = name;
+        args['entry_' + entry_id] = capitalize(name);
     });
     $.post('/setup/activation', args, success);
 }
@@ -131,8 +146,22 @@ function change_password() {
 }
 
 function name_entries() {
+    $('.alert').hide();
 
-    return redirect_to_picks();
+    args = {}
+    $('.entry').each(function() {
+        var name = $(this).val();
+        if (!name) {
+            name = $(this).attr('default');
+        }
+        if (check_server_entry_name(name)) {
+            $(this).after('<div class="alert alert-error">' + name + ' is in use by another user</div>' );
+            return;
+        }
+        var entry_id = $(this).attr('entry-id');
+        args['entry_' + entry_id] = capitalize(name);
+    });
+    $.post('/setup/entries', args, redirect_to_picks);
     return false;
 }
 

@@ -1,22 +1,59 @@
+
 import webapp2
+import random
+import string
+import time
+from google.appengine.ext import db
 
-SYMMETRIC_KEY = 'awp3o9j&^%@q2fw3'
+class _Settings(db.Model):
+    login_key = db.StringProperty(multiline=True)
+    session_key = db.StringProperty(multiline=True)
+    email_source = db.StringProperty()
+    debug = db.BooleanProperty()
 
-NODEADLINE = False
+_cached_settings = None
+_cached_ttl = None
 
-DEBUG = False
+def _random_string(length):
+    return str(''.join(random.choice(string.printable) for x in range(length)))
 
-ADMINS = (
-    'rjernst@gmail.com',
-    'ryan@iernst.net',
-    'test@example.com',
-    'jgonzales6@gmail.com',
-)
+def _load_settings():
+    settings = _Settings.get_by_key_name('singleton') 
+    if not settings:
+        settings = _Settings(key_name='singleton')
+        settings.login_key = _random_string(16)
+        settings.session_key = _random_string(16)
+        settings.email_source = 'Jack Gonzales <jgonzales6@gmail.com>'
+        settings.debug = True
+        settings.put()
+    return settings
 
-EMAIL_SOURCE = 'Jack Gonzales <jgonzales6@gmail.com>'
-EMAIL_ENABLED = True
+def _cached(real_func):
+    def func():
+        if not _cached_ttl or time.time() > _cached_ttl:
+            global _cached_settings, _cached_ttl
+            # TODO: make this actually cached for prod
+            _cached_ttl = time.time()# + 10 # + 86400 # only lookup settings every day
+            _cached_settings = _load_settings()
+        return real_func()
+    return func
 
-APP_CONFIG = webapp2.Config()
-APP_CONFIG['webapp2_extras.sessions'] = {'secret_key': 'abcdefg'}
+@_cached
+def login_key():
+    return str(_cached_settings.login_key)
 
+@_cached
+def app_config():
+    cfg = webapp2.Config()
+    cfg['webapp2_extras.sessions'] = {'secret_key': str(_cached_settings.session_key)}
+    return cfg
+
+@_cached
+def email_source():
+    return _cached_settings.email_source
+
+@_cached
+def debug():
+    return _cached_settings.debug
+    
 

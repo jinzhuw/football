@@ -1,9 +1,10 @@
 
 
 .alert {
-    display: inline;
+    /*display: inline;*/
     margin-bottom: 0;
-    margin-left: 30px;
+    margin-top: 10px;
+    /*margin-left: 30px;*/
 }
 
 .finish-loading {

@@ -5,6 +5,7 @@ from util import view, handler
 import webapp2
 
 class PicksHandler(handler.BaseHandler):
+    @handler.user
     def get(self):
         if not self.user:
             self.redirect('/')
@@ -20,7 +21,10 @@ class PicksHandler(handler.BaseHandler):
         deadline_passed = not weeks.check_deadline(week)
         games_data = []
         if not deadline_passed:
-            games_data = sorted(games.games_for_week(week), key=lambda g: g.date)
+            for g in sorted(games.games_for_week(week), key=lambda g: g.date):
+                if g.date.weekday() in [0, 6]:
+                    games_data.append(g) 
+             
         args = {
             'week': week,
             'picks': sorted(picks),
@@ -33,6 +37,7 @@ class PicksHandler(handler.BaseHandler):
         view.render(self, 'picks', args, css=True, js=True)
 
 class PickSetter(handler.BaseHandler):
+    @handler.user
     def post(self, entry_id):
         if not self.user:
             self.redirect('/')
@@ -44,6 +49,6 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/picks/<entry_id>', handler=PickSetter),
     ('/picks', PicksHandler),
 ],
-config=settings.APP_CONFIG,
-debug=settings.DEBUG)
+config=settings.app_config(),
+debug=settings.debug())
 

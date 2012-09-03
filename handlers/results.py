@@ -10,6 +10,6 @@ class ResultsHandler(handler.BaseHandler):
 app = webapp2.WSGIApplication([
     ('/results', ResultsHandler),
 ],
-config=settings.APP_CONFIG,
-debug=settings.DEBUG)
+config=settings.app_config(),
+debug=settings.debug())
 

@@ -4,6 +4,7 @@ from util import view, handler
 import webapp2
 
 class GamesHandler(handler.BaseHandler):
+    @handler.admin
     def get(self):
         week = weeks.current()
         current_games = games.games_for_week(week)
@@ -15,12 +16,14 @@ class GamesHandler(handler.BaseHandler):
         })
 
 class SetScoreHandler(handler.BaseHandler):
+    @handler.admin
     def post(self, game_id):
         home = int(self.request.POST.get('home')) 
         visiting = int(self.request.POST.get('visiting')) 
         games.update(int(game_id), home, visiting)
 
 class GamesResetHandler(handler.BaseHandler):
+    @handler.admin
     def get(self):
         games.reset()
         self.redirect('/')
@@ -30,6 +33,6 @@ app = webapp2.WSGIApplication([
     ('/games/reset', GamesResetHandler),
     ('/games', GamesHandler),
 ],
-config=settings.APP_CONFIG,
-debug=settings.DEBUG)
+config=settings.app_config(),
+debug=settings.debug())
 

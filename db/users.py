@@ -17,6 +17,8 @@ class User(db.Model):
     password = db.StringProperty(multiline=True)
     salt = db.StringProperty(multiline=True)
     password_reset = db.BooleanProperty(default=False)
+    created = db.DateTimeProperty(auto_now_add=True)
+    updated = db.DateTimeProperty(auto_now=True)
 
 def create(email):
     existing = User.gql('WHERE email = :1', email)
@@ -50,7 +52,7 @@ def set_user_password(user, password):
     user.password = _hash_password(user.salt, password)
     user.put()
 
-token_coder = AES.new(settings.SYMMETRIC_KEY)
+token_coder = AES.new(settings.login_key())
 def make_login_token(user):
     data = '%s,' % user.key().id()
     pad_len = 32 - len(data) % 32

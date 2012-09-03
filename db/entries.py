@@ -15,8 +15,11 @@ from db import teams, weeks, settings
 class Entry(db.Model):
     user_id = db.IntegerProperty(required=True)
     name = db.StringProperty()
-    activated = db.BooleanProperty(default=False)
     alive = db.BooleanProperty(default=True)
+
+    @property
+    def activated(self):
+        return self.name is not None
 
 class Status(object):
     OPEN, CLOSED, WIN, LOSS, VIOLATION = range(5)
@@ -50,7 +53,6 @@ def add_entry(user_id):
 def name_entry(entry_id, name):
     entry = Entry.get_by_id(entry_id)
     entry.name = name
-    entry.activated = True
     entry.put()
     _create_pick(entry)
 
@@ -69,8 +71,8 @@ def entries_for_user(user):
 def entry_name_exists(entry_name):
     return Entry.gql('WHERE name = :1', entry_name).count() > 0
 
-def has_unnamed_entries(user):
-    return Entry.gql('WHERE user_id = :1 and activated = False', user.key().id()).count() > 0
+def unnamed_entries(user_id):
+    return Entry.gql('WHERE user_id = :1 and name = NULL', user_id).count()
 
 def picks_for_user(user, week):
     picks = {}
@@ -134,23 +136,4 @@ def count_picks(week):
             continue
         choices[teams.longname(team)] = count
     return choices, nopick
-
-from Crypto.Cipher import AES
-coder = AES.new(settings.SYMMETRIC_KEY)
-
-def random_string(n):
-    return ''.join(random.choice(string.letters + string.digits) for x in range(n))
-
-def encrypt_handle(week, user_id):
-    data = '%d,%d,' % (week, user_id)
-    pad_len = 16 - len(data) % 16
-    data += random_string(pad_len)
-    return base64.urlsafe_b64encode(coder.encrypt(data))
-
-def decrypt_handle(data):
-    data = data.encode('utf8') # incase we have a unicode string
-    d = coder.decrypt(base64.urlsafe_b64decode(data))
-    week, user_id, extra = d.split(',', 2)
-    return (int(week), user_id)
-
 

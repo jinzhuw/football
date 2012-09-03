@@ -36,8 +36,8 @@ def render(handler, page, args, cache_ttl=0, css=False, js=False):
     navs = list(pages)
     if user:
         navs.extend(user_pages)
-        #if user.is_admin:
-    navs.extend(admin_pages)
+        if user.is_admin:
+            navs.extend(admin_pages)
     args['navs'] = navs
 
     data = template.render(fullpath, args)

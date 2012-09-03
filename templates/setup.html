@@ -139,9 +139,9 @@
         <h3>Name New Entries</h3>   
     </div>
     <div class="modal-body">
-        <p>You have {{ num_new_entries }} new entr{{ new_entries|length|pluralize:"y,ies" }}! Please name {{ new_entries|length|pluralize:"it,them" }} below:</p>
+        <p>You have {{ new_entries|length }} new entr{{ new_entries|length|pluralize:"y,ies" }}! Please name {{ new_entries|length|pluralize:"it,them" }} below:</p>
         {% for entry in new_entries %}
-        <input type="text" class="entry" entry-id="{{ entry.key.id }}" placeholder="{{ user.name }} {{ entries|length|add:forloop.counter }}" default="{{ user.name }} {{ entries|length|add:forloop.counter }}" />
+        <input type="text" class="entry" entry-id="{{ entry.key.id }}" placeholder="{{ user.name }} #{{ old_entries|add:forloop.counter }}" default="{{ user.name }} #{{ old_entries|add:forloop.counter }}" />
         {% endfor %}
     </div>
     <div class="modal-footer">

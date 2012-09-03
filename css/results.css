@@ -44,22 +44,25 @@
     text-align: center;
 }
 
-.results-table-entryname {
+#results-container td.results-table-entryname {
     width: 200px;
 }
 
-.results-table-week {
-    width: 70px;
+#results-container td.results-table-week {
+    width: 80px;
     text-align: center;
 }
 
-.table-striped td.loss {
+#results-table-data td.loss {
     background-color: #FF0033;
 }
-.results-table-data td.buyback {
+#results-table-data td.buyback {
     background-color: #33FF00;
 }
-.results-table-data td.rule-violation {
+#results-table-data td.rule-violation {
     background-color: #996633;
+}
+#results-table-data td.empty {
+    background-color: #F5F5F5;
 }
 

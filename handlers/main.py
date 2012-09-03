@@ -32,7 +32,7 @@ class TokenLoginHandler(handler.BaseHandler):
         self.login(user)
         if not self.user.name:
             self.redirect('/setup/activation')
-        elif entries.has_unnamed_entries(self.user):
+        elif entries.unnamed_entries(self.user.key().id()) > 0:
             self.redirect('/setup/entries')
         else:
             self.redirect('/picks')
@@ -49,6 +49,6 @@ app = webapp2.WSGIApplication([
     ('/rules', RulesHandler),
     ('/', HomeHandler),
 ],
-config=settings.APP_CONFIG,
-debug=settings.DEBUG)
+config=settings.app_config(),
+debug=settings.debug())
 

@@ -4,6 +4,22 @@ import webapp2
 from db.users import User
 from webapp2_extras import sessions
 
+def admin(real_func):
+    def func(self, *args, **kwargs):
+        if self.user and self.user.is_admin:
+            real_func(self, *args, **kwargs)
+        else:
+            self.abort(403)
+    return func
+
+def user(real_func):
+    def func(self, *args, **kwargs):
+        if self.user is not None:
+            real_func(self, *args, **kwargs)
+        else:
+            self.abort(403)
+    return func
+
 class BaseHandler(webapp2.RequestHandler):
 
     _user = None

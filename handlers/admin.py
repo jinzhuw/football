@@ -14,6 +14,6 @@ class AdminHandler(handler.BaseHandler):
 app = webapp2.WSGIApplication([
     ('/admin', AdminHandler),
 ], 
-config=settings.APP_CONFIG,
-debug=settings.DEBUG)
+config=settings.app_config(),
+debug=settings.debug())
 
