@@ -27,7 +27,7 @@ class UsersHandler(handler.BaseHandler):
                         user_entries.append(e)
                     else:
                         new_entries += 1
-                sections[user.name[0]].append((user, user_entries, new_entries, token))
+                sections[user.name[0].upper()].append((user, user_entries, new_entries, token))
         new_users.sort(key=lambda x: x[0].created)
         view.render(self, 'users', {'users': sorted(sections.items()), 'new_users': new_users}, css=True, js=True)
 

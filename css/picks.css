@@ -49,6 +49,8 @@
     border: 1px solid #CCCCCC;
     margin: 15px;
     display: inline-block;
+    zoom:1;
+    *display: inline;
 }
 
 .pick_header {

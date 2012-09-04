@@ -18,6 +18,11 @@
         /* turn off anchor focus border */
         :focus {outline:none;}
         ::-moz-focus-inner {border:0;}
+
+        /* fix IE horribleness with bootsrap collapse*/
+        .collapse {
+            overflow: hidden !important;
+        }
     </style>
 
 
@@ -37,6 +42,8 @@
     -->
 
     <!-- dummy init() so page specific js files can override --> 
+    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.js"></script>
     <script type="text/javascript">
         function init_page() {}
         function init() {
@@ -52,9 +59,6 @@
     {% if js %}
     <script src="/js/{{ js }}.js" type="text/javascript"></script>
     {% endif %}
-    <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
-    <script type="text/javascript" src="/js/bootstrap.js"></script>
-    <script type="text/javascript" src="/js/bootstrap-collapse.js"></script>
 
 </head>
 

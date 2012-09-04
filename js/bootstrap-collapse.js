@@ -67,7 +67,9 @@
 
       this.$element[dimension](0)
       this.transition('addClass', $.Event('show'), 'shown')
+      /*this.$element.addClass('in')*/
       this.$element[dimension](this.$element[0][scroll])
+      /*$.support.transition && this.$element[dimension](this.$element[0][scroll])*/
     }
 
   , hide: function () {
@@ -76,6 +78,7 @@
       dimension = this.dimension()
       this.reset(this.$element[dimension]())
       this.transition('removeClass', $.Event('hide'), 'hidden')
+      /*this.$element.removeClass('in')*/
       this.$element[dimension](0)
     }
 
@@ -143,7 +146,7 @@
  /* COLLAPSIBLE DATA-API
   * ==================== */
 
-  $(function () {
+  /*$(function () {
     $('body').on('click.collapse.data-api', '[data-toggle=collapse]', function ( e ) {
       var $this = $(this), href
         , target = $this.attr('data-target')
@@ -152,6 +155,6 @@
         , option = $(target).data('collapse') ? 'toggle' : $this.data()
       $(target).collapse(option)
     })
-  })
+  })*/
 
 }(window.jQuery);
