@@ -41,7 +41,11 @@ def _hash_password(salt, password):
     return h.hexdigest()
 
 def get_user_by_password(email, password):
-    user = [u for u in User.gql('WHERE email = :1', email)][0]
+    user = [u for u in User.gql('WHERE email = :1', email)]
+    if not user:
+        logging.error('Bad login: unknown email %s', email)
+        return None
+    user = user[0]
     if user.password != _hash_password(user.salt, password):
         logging.error('Bad login: Incorrect password for user %s', email)
         return None

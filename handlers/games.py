@@ -29,8 +29,8 @@ class GamesResetHandler(handler.BaseHandler):
         self.redirect('/')
 
 app = webapp2.WSGIApplication([
+    #('/games/reset', GamesResetHandler),
     webapp2.Route('/games/<game_id>', handler=SetScoreHandler),
-    ('/games/reset', GamesResetHandler),
     ('/games', GamesHandler),
 ],
 config=settings.app_config(),

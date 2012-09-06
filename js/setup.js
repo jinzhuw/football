@@ -3,22 +3,48 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function valid_name(string) {
+    var name_regex = /^[a-z]+$/i;
+    return string.search(name_regex) == 0;
+}
+
 function setup_1_to_2() {
-    var name = $('#name').val();
-    if (name) {
-        var i = 1;
-        $('.entry').each(function() {
-            var default_name = name + ' #' + i;
-            $(this).attr('default', default_name);
-            $(this).attr('placeholder', default_name);
-            $(this).val('');
-            i += 1;
-        });
-        $('#finish-name .finish-data').text(name);
-        $('#setup_1').fadeOut('fast', function() {
-            $('#setup_2').fadeIn('slow');
-        });
+    $('.alert').hide();
+    var firstname = $('#firstname').val();
+    if (!firstname) {
+        $('#firstname').after('<div class="alert alert-error">You must enter a first name</div>' );
+        return false;
+    } else if (!valid_name(firstname)) {
+        $('#firstname').after('<div class="alert alert-error">Name contain only letters</div>' );
+        return false;
+    } else {
+        firstname = capitalize(firstname);
+        $('#firstname').val(firstname);
     }
+    var lastname = $('#lastname').val();
+    if (!lastname) {
+        $('#lastname').after('<div class="alert alert-error">You must enter a last name</div>' );
+        return false;
+    } else if (!valid_name(lastname)) {
+        $('#lastname').after('<div class="alert alert-error">Name must contain only letters</div>' );
+        return false;
+    } else {
+        lastname = capitalize(lastname);
+        $('#lastname').val(lastname);
+    }
+    var name = firstname + ' ' + lastname
+    var i = 1;
+    $('.entry').each(function() {
+        var default_name = name + ' #' + i;
+        $(this).attr('default', default_name);
+        $(this).attr('placeholder', default_name);
+        $(this).val('');
+        i += 1;
+    });
+    $('#finish-name .finish-data').text(name);
+    $('#setup_1').fadeOut('fast', function() {
+        $('#setup_2').fadeIn('slow');
+    });
     return false;
 }
 
@@ -81,8 +107,10 @@ function validate_password(empty_allowed) {
 }
 
 function submit_setup(success) {
+    var firstname = $('#firstname').val();
+    var lastname = $('#lastname').val();
     var args = {
-        'name': $('#name').val(),
+        'name': firstname + ' ' + lastname
     }
     var password = $('#new_password').val();
     if (password) {

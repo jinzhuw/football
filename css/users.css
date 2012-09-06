@@ -1,15 +1,4 @@
 
-/*.nav li a.muted:hover {
-    color: #999999;
-    background: none;
-    border-color: transparent;
-}*/
-
-/*.users-tabs {
-    margin-bottom: 0;
-    border-bottom: none;
-}*/
-
 .tab-header a {
     display: inline-block;
     border: 1px solid #E5E5E5;
@@ -49,7 +38,6 @@
 }
 
 .users-section .accordian-heading {
-    /*border-bottom: 0 none;*/
     display: block;
     padding: 8px 15px;
 }
@@ -100,6 +88,6 @@ hr.line {
     padding: 15px;
     background-color: white;
     margin: 20px 10px;
-    width: 250px;
+    width: 275px;
 }
 
