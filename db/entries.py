@@ -102,26 +102,24 @@ def alive_entries():
     return entries
 
 def iterpicks(use_cursors=False):
-    picks = Pick.gql('ORDER BY week')
-    if not use_cursors:
-        return picks
-    return _iterpicks_with_cursors()
+    if use_cursors:
+        return _iterpicks_with_cursors()
+    else:
+        return Pick.gql('ORDER BY entry_id')
 
 def _iterpicks_with_cursors():
     limit = 100
-    picks = Pick.gql('ORDER BY week LIMIT %d' % limit)
+    picks = Pick.gql('ORDER BY entry_id LIMIT %d' % limit)
     found = limit
     while found == limit:
         found = 0
         for pick in picks.fetch(limit):
-            logging.info('Yielding pick for entry %r', pick.entry.name)
             found += 1
-            if pick.status == Status.OPEN:
+            if not pick.closed:
                 continue
             yield pick
         logging.info('Finished fetch. Found %d', found)
         picks.with_cursor(picks.cursor())
-    logging.info('DONE ITERATING')
 
 def all_picks(week):
     picks = {}
@@ -174,14 +172,18 @@ def last_week_picks(week):
 def picks_for_week(week):
     return Pick.gql('WHERE week = :1', week)   
 
+def get_pick_counts(week):
+    counts = defaultdict(int)
+    for p in Pick.gql('WHERE week = :1', week):
+        counts[p.team] += 1
+    return counts
+
 def set_picks_status(week):
     # TODO: only need 1 query and postprocessing for complete/winners
     winners = games.winners_for_week(week)
     picks = []
     winning_entries = set()
-    counts = defaultdict(int)
     for p in Pick.gql('WHERE week = :1', week):
-        counts[p.team] += 1
         # violations are set when picks are closed
         if p.team not in winners:
             p.status = Status.LOSS
@@ -203,7 +205,7 @@ def set_picks_status(week):
             alive_entries.append((e.user_id, e.key().id()))
     db.put(entries_to_save)
 
-    return (counts, alive_entries)
+    return alive_entries
 
 def initialize_picks(week):
     active = Entry.gql('WHERE active = True')

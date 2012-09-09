@@ -9,10 +9,10 @@ cron:
   schedule: every tue 10:00 
   timezone: America/Los_Angeles
 
-- description: send breakdown
-  url: /admin/send-breakdown
-  schedule: every sat 23:30
-  timezone: America/Los_Angeles
+#- description: send breakdown
+#  url: /admin/send-breakdown
+#  schedule: every sat 23:30
+#  timezone: America/Los_Angeles
 
 - description: send pick link
   url: /admin/send-pick-links

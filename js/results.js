@@ -6,12 +6,19 @@ function init_page() {
         results.update_controls();
     }
 
-    //TEST BEGIN
-    test_results = new TestData();
-    //TEST END
+    results_data = {}
+    $.ajax({
+        'url': '/results/data',
+        'method': 'GET',
+        'async': false,
+        'dataType': 'json',
+        'success': function(data) {
+            results_data = data; 
+        }
+    });    
 
     results = new Results();
-    results.set_data(test_results.test_data);
+    results.set_data(results_data);//test_results.test_data);
     results.set_table($('#results-table-header'), $('#results-table-data'));
     results.set_header($('#results-container'), $('#results-header'));
     results.update_controls();
@@ -61,18 +68,26 @@ Results.prototype.set_data = function(results) {
     this._end_week = null;
     
     for (var s_index in results) {
-        this._sorted.push({'name': s_index, 'weeks': results[s_index].length});
+        var num_weeks = results[s_index].length;
+        var last_week = results[s_index][num_weeks - 1];
+        var status = 0;
+        if (typeof(last_week) != 'string') {
+            status = 1;
+        }
+        this._sorted.push({'name': s_index, 'weeks': num_weeks, 'status': status});
     }
 
     this._sorted.sort(function(one, two) {
 	    if (one.weeks == two.weeks) {
-	        if (one.name < two.name) {
-	            return -1;
-            } else if (one.name > two.name) {
-                return 1;
+            if (one.status == two.status) {
+	            if (one.name < two.name) {
+	                return -1;
+                } else if (one.name > two.name) {
+                    return 1;
+                }
+                return 0;
             }
-
-            return 0;
+            return one.status - two.status;
         }
 
 	    return one.weeks < two.weeks ? 1 : -1; 
@@ -160,7 +175,7 @@ Results.prototype.set_table = function(header, div) {
                 }
                 else {
                     team = entry_data[week_count].team;
-                    classes.push(entry_data[week_count].type);
+                    classes.push(entry_data[week_count].status);
                 }
             } else {
                 classes.push('empty');

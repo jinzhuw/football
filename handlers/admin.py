@@ -1,5 +1,5 @@
 
-from db import settings, users, entries, weeks, games
+from db import settings, users, entries, weeks, games, analysis
 from util import view, handler, email as mail
 from collections import defaultdict
 import string
@@ -13,6 +13,9 @@ class ClosePicksHandler(handler.BaseHandler):
         current_time = weeks.current_time()
         if current_time > weeks.deadline(week):
             entries.close_picks(week)
+            counts = entries.get_pick_counts(week)
+            logging.info('Saving counts: %s', counts)
+            analysis.save_counts(week, counts)
             self.redirect('/admin')
             return
 
@@ -25,7 +28,7 @@ class ClosePicksHandler(handler.BaseHandler):
         self.redirect('/admin')
 
 def ok_to_advance(week):
-    return entries.picks_closed(week) and games.games_complete(week)
+    return entries.picks_closed(week)# and games.games_complete(week)
 
 class AdvanceWeekHandler(handler.BaseHandler):
     def get(self):
@@ -34,8 +37,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
             self.abort(409)
             return
 
-        (team_counts, alive_entries) = entries.set_picks_status(week)
-        # store breakdown (new model or in games?)
+        alive_entries = entries.set_picks_status(week)
 
         weeks.increment()
         entries.create_picks(weeks.current(), alive_entries)
@@ -44,6 +46,10 @@ class AdvanceWeekHandler(handler.BaseHandler):
 
 class SendBreakdownHandler(handler.BaseHandler):
     def get(self):
+        week = weeks.current()
+        (no_pick, picks) = analysis.get_counts(week)
+        emails = users.get_all_emails()
+        deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')
 
 class SendSinglePickLinksHandler(handler.BaseHandler):

@@ -134,21 +134,22 @@ plain_breakdown = dedent('''
     %(link)s
     
     Below is the distribution of picks:
-    No Pick - %(nopick)d
+    No Pick - %(no_pick)d
     %(picks)s
 ''')
 html_breakdown = _html_template(plain_breakdown)
-def email_breakdown(week, picks, nopick, emails):
+def email_breakdown(week, no_pick, picks, emails):
     args = {
         'week': week,
         'link': 'http://www.jgsuicidepool.com/results',
-        'nopick': nopick,
+        'no_pick': no_pick,
         'picks': '\n'.join('%s - %d' % e for e in sorted(picks.iteritems()))
     }
     plain = plain_breakdown % args
     args['link'] = '<a href="%(link)s">%(link)s</a>' % args
     args['picks'] = args['picks'].replace('\n', '<br/>') 
     html = html_breakdown % args
+    logging.info('Sending breakdown:\n%s', plain)
  
-    _send_email(emails, '2012 NFL Suicide Pool: Week %d Breakdown' % week, plain, html)
+    _send_mail(emails, '2012 NFL Suicide Pool: Week %d Breakdown' % week, plain, html)
 

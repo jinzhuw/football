@@ -74,3 +74,9 @@ def get_user_by_token(token):
         logging.error('Bad login: invalid token, user_id = %s', user_id)
     return user
 
+def get_all_emails():
+    emails = []
+    for user in db.GqlQuery('SELECT email FROM User'):
+        emails.append(user.email)
+    return emails
+

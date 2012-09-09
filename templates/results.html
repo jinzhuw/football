@@ -4,29 +4,25 @@
 
 {% block content %}
 
-<div class="alert alert-info">
-<strong>Note:</strong> Below are the full results from the 2011 season. They are provided here as a demonstration of the new website.  The 2012 results will begin showing up after the week 1 picks are in.
-</div>
-
 <div id="results-container" class="container">
     <div id="results-header">
         <div class="row header-data">
             <span class="pull-left">
-                <button id="back-all" class="btn back"><i class="icon-step-backward"></i></button>
-                <button id="back-one" class="btn back"><i class="icon-chevron-left"></i></button>
+                <button id="back-all" class="btn back disabled"><i class="icon-step-backward"></i></button>
+                <button id="back-one" class="btn back disabled"><i class="icon-chevron-left"></i></button>
             </span>
             <span class="pull-right">
-                <button id="forward-one" class="btn forward"><i class="icon-chevron-right"></i></button>
-                <button id="forward-all" class="btn forward"><i class="icon-step-forward"></i></button>
+                <button id="forward-one" class="btn forward disabled"><i class="icon-chevron-right"></i></button>
+                <button id="forward-all" class="btn forward disabled"><i class="icon-step-forward"></i></button>
             </span>
-            <span class="clearfix">2011 Results</span>
+            <span class="clearfix">2012 Results</span>
         </div>
         <div id="results-table-header" class="row results-elements"></div>
     </div>
-    <div id="results-table"><div id="results-table-data" class="row results-elements"></div>
+    <div id="results-table"><div id="results-table-data" class="row results-elements"><img src="/img/loading-big.gif"/></div></div>
 
     <!-- TEST DATA -->
-    <script type="text/javascript" src="js/test-results.js"></script>
+    <!--<script type="text/javascript" src="js/test-results.js"></script>-->
 </div>
 
 {% endblock %}

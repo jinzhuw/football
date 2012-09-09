@@ -1,6 +1,7 @@
 
 import os
 import logging
+import json
 
 from google.appengine.ext.webapp import template
 from google.appengine.api import memcache, users
@@ -45,14 +46,21 @@ def render(handler, page, args, cache_ttl=0, css=False, js=False):
         memcache.set(page, data, cache_ttl)
     handler.response.out.write(data)
 
-def is_admin():
-    user = users.get_current_user()
-    return user and user.email() in settings.ADMINS
+def render_json(handler, page, data, cache_ttl=0):
+    s = json.dumps(data) 
+    handler.response.headers['Content-Type'] = 'application/json'
+    handler.response.out.write(s)
+    if cache_ttl:
+        logging.debug('Caching page %s', page)
+        memcache.set(page, s, cache_ttl)
 
 def cache_hit(handler, page):
     data = memcache.get(page)
     if data is not None:
+        logging.debug('Using cached data for page %s', page)
         handler.response.out.write(data)
+        if hasattr(handler, 'type') and handler.type == 'json':
+            handler.response.headers['Content-Type'] = 'application/json'
     return data is not None
 
 def clear_cache(page):
