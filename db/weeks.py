@@ -13,6 +13,7 @@ def current():
     week = _Week.get_by_key_name('singleton')
     if not week:
         week = _Week(key_name='singleton', current=1)
+        week.put()
     return week.current
 
 def reset():
@@ -41,4 +42,5 @@ def results(week):
     # tuesday 8 am
     return deadline(week) + timedelta(days=2, hours=9)
      
-
+def current_time():
+    return datetime.now(timezone.Pacific)

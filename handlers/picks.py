@@ -1,6 +1,6 @@
 
 import logging
-from db import settings, weeks, entries, games
+from db import settings, weeks, entries, games, teams
 from util import view, handler
 import webapp2
 
@@ -37,13 +37,25 @@ class PicksHandler(handler.BaseHandler):
         view.render(self, 'picks', args, css=True, js=True)
 
 class PickSetter(handler.BaseHandler):
+    def get(self, entry_id):
+        self.redirect('/login/%s' % entry_id) # this is really the login token
+
     @handler.user
     def post(self, entry_id):
         if not self.user:
             self.redirect('/')
             return
         team = int(self.request.body)
-        entries.select_team(int(entry_id), weeks.current(), team)
+        week = weeks.current()
+        game = games.game_for_team(week, team)
+        current_time = weeks.current_time()
+        if current_time < weeks.deadline(week) and \
+           current_time < game.tz_deadline():
+            entries.select_team(int(entry_id), weeks.current(), team)
+        else:
+            logging.warning('Attempt to set pick after deadline, user %s, team %s',
+                            self.user.name, teams.shortname(team))
+            self.abort(403)
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/picks/<entry_id>', handler=PickSetter),

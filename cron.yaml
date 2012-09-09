@@ -1,7 +1,37 @@
 cron:
-- description: weekly breakdown
-  url: /manage/email/breakdown?close=true
-  schedule: every saturday 23:15
+- description: close picks
+  url: /admin/close-picks
+  schedule: every wed,fri,sat 23:15
+  timezone: America/Los_Angeles
+
+- description: advance week
+  url: /admin/advance-week
+  schedule: every tue 10:00 
+  timezone: America/Los_Angeles
+
+- description: send breakdown
+  url: /admin/send-breakdown
+  schedule: every sat 23:30
+  timezone: America/Los_Angeles
+
+- description: send pick link
+  url: /admin/send-pick-links
+  schedule: every tue 8:00
+  timezone: America/Los_Angeles
+
+- description: send pick reminder
+  url: /admin/send-pick-links?reminder=true
+  schedule: every fri 23:00
+  timezone: America/Los_Angeles
+
+- description: send analysis
+  url: /admin/send-analysis
+  schedule: every tue 8:00
+  timezone: America/Los_Angeles
+
+- description: load scores
+  url: /games/load-scores
+  schedule: every mon,thu,sun 21:00
   timezone: America/Los_Angeles
 
 

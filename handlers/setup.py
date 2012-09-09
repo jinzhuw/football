@@ -52,7 +52,7 @@ class UpdateEmailHandler(handler.BaseHandler):
         # TODO: check format of email
         # TODO: check if email exists
         email = self.request.POST.get('email')
-        self.user.email = email
+        self.user.email = email.lower()
         self.user.put()
         self.redirect('/picks')
 

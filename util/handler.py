@@ -6,7 +6,8 @@ from webapp2_extras import sessions
 
 def admin(real_func):
     def func(self, *args, **kwargs):
-        if self.user and self.user.is_admin:
+        if self.user and self.user.is_admin or \
+           self.request.headers.get('X-Appengine-Cron') == 'true':
             real_func(self, *args, **kwargs)
         else:
             self.abort(403)

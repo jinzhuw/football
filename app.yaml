@@ -6,6 +6,7 @@ threadsafe: yes
 
 builtins:
 - deferred: on
+- appstats: on
 
 libraries:
 - name: pycrypto
@@ -19,8 +20,14 @@ handlers:
   static_files: robots.txt
   upload: robots.txt
 
+- url: /stats.*
+  script: google.appengine.ext.appstats.ui.app
+
 - url: /results.*
   script: handlers.results.app
+
+- url: /analysis.*
+  script: handlers.analysis.app
 
 - url: /rules.*
   script: handlers.main.app
@@ -55,11 +62,13 @@ handlers:
 - url: /logout
   script: handlers.main.app
 
-- url: /.*
+- url: /
   script: handlers.main.app
 
 skip_files:
 - ^old/
-- ^Crypto/
+- ^lib/
+- ^bin/
+#- ^Crypto/
 - (.*\.py[co])
 

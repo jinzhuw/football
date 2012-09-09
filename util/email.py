@@ -1,16 +1,47 @@
 
-from db import settings, weeks
+from db import settings, weeks, users
 from textwrap import dedent
 from google.appengine.api import mail
 import logging
+import time
 
-def html_template(tmpl):
+def _html_template(tmpl):
     html = ['<html><body>']
     for line in tmpl.split('\n\n'):
         line = line.strip()
         html.append('<p>%s</p>' % line.replace('\n', '<br/>\n'))
     html.append('</body></html>')
     return '\n'.join(html)
+
+def _send_mail(emails, subject, plain, html):
+    if not settings.email_enabled():
+        logging.warning('Email disabled, would have sent:')
+        logging.warning('To: %s\nSubject: %s\nBody: %s', emails, subject, plain)
+        return
+    kwargs = {}
+    if len(emails) == 1:
+        to = emails[0]
+    else:
+        to = settings.email_source()
+        kwargs['bcc'] = emails
+    num_retries = 3
+    sleep = 2
+    while num_retries > 0:
+        try:
+            mail.send_mail(
+                subject=subject,
+                sender=settings.email_source(),
+                to=to,
+                body=plain,
+                html=html,
+                **kwargs
+            )
+            return
+        except Exception:
+            logging.exception('Failed to send email to %s for %s, retrying', emails, subject) 
+        num_retries -= 1
+        time.sleep(sleep)
+        sleep *= 2
 
 new_user_template = dedent('''
     You have been added to to the 2012 Jack Gonzales' NFL Suicide Pool.
@@ -22,7 +53,7 @@ new_user_template = dedent('''
 
     Good luck!
 ''')
-html_new_user_template = html_template(new_user_template)
+html_new_user_template = _html_template(new_user_template)
 
 def email_new_user(email, token, num_entries):
     logging.info('Emailing new user %s', email)
@@ -35,24 +66,7 @@ def email_new_user(email, token, num_entries):
     args['deadline'] = '<strong>%s</strong>' % args['deadline']
     args['link'] = '<a href="%(link)s">Activate Your Account</a>' % args
     html = html_new_user_template % args
-
-    num_retries = 3
-    sleep = 2
-    while num_retries > 0:
-        try:
-            mail.send_mail(
-                sender=settings.email_source(),
-                to=email,
-                subject='2012 NFL Suicide Pool: Activate Your Account',
-                body=plain,
-                html=html
-            )
-            return
-        except Exception:
-            logging.exception('Failed to send activation for %r, retrying', email) 
-        num_retries -= 1
-        time.sleep(sleep)
-        sleep *= 2
+    _send_mail([email], '2012 NFL Suicide Pool: Activate Your Account', plain, html)
 
 picks_template = dedent('''
     Hello %(name)s!
@@ -63,50 +77,55 @@ picks_template = dedent('''
     Make your picks for Week %(week)d by clicking the following link:
     %(link)s
 
-    You have until %(deadline)s to save your picks.
+    You have until %(deadline)s to make your picks.
 
     Good luck!
 ''')
-html_picks_template = html_template(picks_template)
+html_picks_template = _html_template(picks_template)
 
-def email_picks_link(user, week):
+reminder_picks_template = dedent('''
+    Hello %(name)s!
 
-    alive_entries = Entry.gql('WHERE alive = True and user_id = :1', user.key().id())
-    if alive_entries.count() == 0:
-        logging.info('No active entries for %s', user.name)
-        return
+    You still haven't chosen all of your picks for Week %(week)d.
+
+    You have the following active entries without a pick:
+    %(entries)s
+
+    Click the following link to make your picks:
+    %(link)s
+
+    You have until %(deadline)s to make your picks.
+
+    Good luck!
+''')
+#    You have until 11pm the night before a game to select that game, or %(deadline)s, whichever comes first.
+reminder_html_picks_template = _html_template(reminder_picks_template)
+
+def email_picks_link(user, entries, week, reminder):
+
+    subject = '2012 NFL Suicide Pool: Your Picks for Week %d' % week
+    if reminder:
+        subject = 'REMINDER: ' + subject
+        
     token = users.make_login_token(user)
     args = {
-        'name': player.name,
-        'entries': '\n'.join(e.name for e in active_entries),
-        'link': 'http://football.iernst.net/choose?handle=%s' % handle,
+        'name': user.name,
+        'entries': '\n'.join(e for e in entries),
+        'link': 'http://www.jgsuicidepool.com/login/%s' % token,
         'week': week,
         'deadline': weeks.deadline(week).strftime('%A, %B %d at %I:%M%p'),
     }
-    plain = plain_pick % args
+    plain_template = picks_template
+    html_template = html_picks_template
+    if reminder:
+        plain_template = reminder_picks_template 
+        html_template = reminder_html_picks_template
+    plain = picks_template % args
     args['deadline'] = '<b>%s</b>' % args['deadline']
     args['entries'] = args['entries'].replace('\n', '<br/>')
     args['link'] = '<a href="%(link)s">%(link)s</a>' % args
-    html = html_pick % args
-
-    num_retries = 3
-    sleep = 2
-    while num_retries > 0:
-        try:
-            mail.send_mail(
-                sender=settings.email_source(),
-                to='%s <%s>' % (player.name, player.email),
-                subject='Suicide Pool: Your Picks for Week %d' % week,
-                body=plain,
-                html=html
-            )
-            return
-        except Exception:
-            logging.exception('Failed to send team picker for %r, email = %r, retrying',
-                              player.name, player.email) 
-        num_retries -= 1
-        time.sleep(sleep)
-        sleep *= 2
+    html = html_template % args
+    _send_mail([user.email], subject, plain, html)
 
 plain_breakdown = dedent('''
     The picks for Week %(week)d are in!
@@ -118,12 +137,11 @@ plain_breakdown = dedent('''
     No Pick - %(nopick)d
     %(picks)s
 ''')
-html_breakdown = html_template(plain_breakdown)
-def email_breakdown(week):
-    picks, nopick = count_picks(week) 
+html_breakdown = _html_template(plain_breakdown)
+def email_breakdown(week, picks, nopick, emails):
     args = {
         'week': week,
-        'link': 'http://football.iernst.net/results',
+        'link': 'http://www.jgsuicidepool.com/results',
         'nopick': nopick,
         'picks': '\n'.join('%s - %d' % e for e in sorted(picks.iteritems()))
     }
@@ -132,20 +150,5 @@ def email_breakdown(week):
     args['picks'] = args['picks'].replace('\n', '<br/>') 
     html = html_breakdown % args
  
-    email_all('Suicide Pool: Week %d Breakdown' % week, plain, html)
-   
-def email_all(subject, plain, html):
-    addresses = []
-    for p in Player.all():
-        addresses.append(p.email)
+    _send_email(emails, '2012 NFL Suicide Pool: Week %d Breakdown' % week, plain, html)
 
-    logging.info('Sending breakdown email to %d players', len(addresses))
-
-    mail.send_mail(
-        sender=settings.email_source(),
-        to='football@iernst.net',
-        bcc=addresses,
-        subject=subject,
-        body=plain,
-        html=html
-    )

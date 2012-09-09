@@ -1,15 +1,33 @@
 
-// 1. send picks email
-// 3. buyback
-
 
 function send_picks_email() {
-    
+    var buttons = $(this).parent();
+    var user_id = buttons.attr('user-id');
+    $.ajax({
+        'url': '/admin/send-pick-links/' + user_id,
+        'type': 'POST',
+        'success': function(data) {
+            buttons.after('<div class="alert alert-info">Email sent</div>');
+        }
+    });    
+    return false;
+}
+
+function resend_activation() {
+    var button_column = $(this).parent();
+    var user_id = $(this).attr('user-id');
+    $.ajax({
+        'url': '/users/resend-activation/' + user_id,
+        'type': 'POST',
+        'success': function(data) {
+            button_column.html('<span class="alert alert-info">Sent</span>');
+        }
+    }); 
     return false;
 }
 
 function new_entry() {
-    var user_id = $(this).attr('user-id');
+    var user_id = $(this).parent().attr('user-id');
     var user_section = $(this).closest('.accordian-body');
     $.ajax({
         'url': '/users/entries/' + user_id,
@@ -20,6 +38,21 @@ function new_entry() {
             user_section.find('.entries-section').after(entries_alert);
         }
     });    
+    return false;
+}
+
+function buyback_entry() {
+    var entry_id = $(this).attr('entry-id');
+    var buyback_column = $(this).parent();
+    var entry_status = $(this).parent().parent().find('.status');
+    $.ajax({
+        'url': '/users/buyback/' + entry_id,
+        'type': 'POST',
+        'success': function() {
+            buyback_column.html('');
+            entry_status.html('<span class="label label-success">Alive</span>');
+        }
+    });
     return false;
 }
 
@@ -68,5 +101,8 @@ function init_page() {
     $('.collapse').collapse({toggle: false});
 
     $('.new-entry-btn').click(new_entry);
+    $('.send-pick-links').click(send_picks_email);
     $('#new-user-form').find('.btn-primary').click(add_new_user);
+    $('.buyback').click(buyback_entry);
+    $('.resend').click(resend_activation);
 }

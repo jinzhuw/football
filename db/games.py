@@ -1,22 +1,32 @@
 
 import json
-import urllib2
 import logging
-from datetime import datetime
+import urllib2
+from datetime import datetime, timedelta
 from collections import defaultdict
 
 from google.appengine.ext import db
 
 from db import teams
+from util import timezone
 
 class Game(db.Model):
     week = db.IntegerProperty(required=True)
     home = db.IntegerProperty(required=True)
     visiting = db.IntegerProperty(required=True)
     date = db.DateTimeProperty(required=True)
+    deadline = db.DateTimeProperty()
     home_score = db.IntegerProperty(default=-1)
     visiting_score = db.IntegerProperty(default=-1)
     winner = db.IntegerProperty(default=-1)
+
+    def tz_date(self):
+        d = self.date
+        return datetime(d.year, d.month, d.day, d.hour, d.minute, tzinfo=timezone.Pacific)
+
+    def tz_deadline(self):
+        d = self.deadline
+        return datetime(d.year, d.month, d.day, d.hour, d.minute, tzinfo=timezone.Pacific)
 
     def complete(self):
         return self.winner != -1
@@ -62,7 +72,7 @@ def load_schedule():
                 t = datetime.strptime(data[2].strip(), '%I:%M%p') 
                 visiting = teams.id(data[0])
                 home = teams.id(data[1].strip())
-                dt = datetime(date.year, date.month, date.day, t.hour, t.minute)
+                dt = datetime(2012, date.month, date.day, t.hour, t.minute)
                 schedule[week].append((dt, home, visiting))
             except:
                 logging.error('problem on line: %s', line)
@@ -83,12 +93,19 @@ def reset():
     
     for week,games in load_schedule().iteritems():
         for game in games:
-            g = Game(week=week, home=game[1], visiting=game[2], date=game[0])
+            date = game[0]
+            deadline = datetime(date.year, date.month, date.day, 0, 0)
+            g = Game(week=week, home=game[1], visiting=game[2], date=date, deadline=deadline)
             g.put()
 
 def load_scores(week):
     scores_url = 'http://www.nfl.com/liveupdate/scorestrip/ss.json'
     data = urllib2.urlopen(scores_url)
+
+    if not data:
+        logging.error('Failed to retrieve scores data')
+        return
+    
     j = json.loads(data.read())
     if j['w'] != str(week):
         logging.warning('Could not load scores for week %d, data contains week %s', week, j['w'])
@@ -97,7 +114,7 @@ def load_scores(week):
     scores = {}
     for g in j['gms']:
         if 'F' in g['q']:
-            scores[g['h']] = (g['hs'], g['as'])
+            scores[g['h']] = (g['hs'], g['vs'])
         else:
             logging.debug('Skipping game %s vs %s, game state is %s', g['h'], g['v'], g['q'])
 
@@ -155,9 +172,9 @@ def games_for_week(week):
     return status
     """
 
-def complete_for_week(week):
-    games = Game.gql('WHERE week = :1 AND winner = -1', week)                
-    return games.count() == 0
+def open_past_deadline(week, current_time):
+    return Game.gql('WHERE week = :1 AND winner = -1 AND deadline < :2',
+                    week, current_time.replace(tzinfo=timezone.Pacific))
 
 def winners_for_week(week):
     winners = set()
@@ -165,4 +182,17 @@ def winners_for_week(week):
     for game in games:
         winners.add(game.winner)
     return winners
+
+def games_complete(week):
+    return Game.gql('WHERE week = :1 AND winner = -1', week).count() == 0
+
+def game_for_team(week, team):
+    home = Game.gql('WHERE week = :1 AND home = :2', week, team).get()
+    if home:
+        return home
+    visiting = Game.gql('WHERE week = :1 AND visiting = :2', week, team).get()
+    if not visiting:
+        logging.error('Could not find game for team %d in week %d', team, week)
+    return visiting
+
 

@@ -5,7 +5,9 @@ Games - Week {{ week }}
 {% endblock %}
 
 {% block content %}
-<h4 class="well">Games for Week {{ week }}</h4>
+<div class="well header">
+    <h4>Games for Week {{ week }}</h4>
+</div>
 
 <div class="games-container">
 {% for game in games %}

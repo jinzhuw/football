@@ -17,14 +17,18 @@ function reset_game_data(game, control, scores, original) {
     home_column.html(home_score);
     visiting_score = parseInt(visiting_score);
     home_score = parseInt(home_score);
+    var changed = false;
     if (!isNaN(visiting_score) && !isNaN(home_score)) {
+        changed = true;
         if (visiting_score > home_score) {
             visiting_column.parent().addClass('winner'); 
         } else {
             home_column.parent().addClass('winner'); 
         }
     }
-    game.find('caption small').text('Final');
+    if (changed) {
+        game.find('caption small').text('Final');
+    }
     control.html('<button class="btn btn-mini"><i class="icon-edit"></i></button>');
     add_edit_scores_handler(game);
 }

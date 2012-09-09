@@ -10,10 +10,17 @@ class GamesHandler(handler.BaseHandler):
         current_games = games.games_for_week(week)
         view.render(self, 'games', {
             'week': week,
-            'games': current_games,
+            'games': sorted(current_games, key=lambda x: x.date),
             'css': 'games',
             'js': 'games'
         })
+
+class LoadScoresHandler(handler.BaseHandler):
+    @handler.admin
+    def get(self):
+        week = weeks.current()
+        games.load_scores(week)
+        self.redirect('/games')
 
 class SetScoreHandler(handler.BaseHandler):
     @handler.admin
@@ -29,7 +36,8 @@ class GamesResetHandler(handler.BaseHandler):
         self.redirect('/')
 
 app = webapp2.WSGIApplication([
-    #('/games/reset', GamesResetHandler),
+    ('/games/reset', GamesResetHandler),
+    ('/games/load-scores', LoadScoresHandler),
     webapp2.Route('/games/<game_id>', handler=SetScoreHandler),
     ('/games', GamesHandler),
 ],

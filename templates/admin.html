@@ -3,5 +3,12 @@
 {% block title %}Admin{% endblock %}
 
 {% block content %}
+    ('/admin/close-picks', ClosePicksHandler),
+    ('/admin/advance-week', AdvanceWeekHandler),
+    ('/admin/send-breakdown', SendBreakdownHandler),
+    webapp2.Route('/admin/send-pick-links/<user_id>', SendSinglePickLinksHandler),
+    ('/admin/send-pick-links', SendPickLinksHandler),
+    ('/admin/send-analysis', SendAnalysisHandler),
+    ('/admin', AdminHandler),
 admin settings
 {% endblock %}

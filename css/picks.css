@@ -158,3 +158,7 @@
 hr.line {
     margin: 0;
 }
+
+.closed {
+    background-color: #D8D8D8
+}

@@ -14,8 +14,8 @@
     <div class="accordian-group">
         <div class="accordian-heading">
             <span class="entry team_chosen" id="entry_{{ entry_id }}_team">{{ pick.team_city }}</span>
-            {% if deadline_passed %}
-            <span class="entry accordian-toggle">{{ entry_name }}</span>
+            {% if deadline_passed or pick.closed %}
+            <span class="entry accordian-toggle closed">{{ entry_name }}</span>
             {% else %}
             <a class="entry accordian-toggle" href="#entry{{ entry_id }}" entry-id="{{ entry_id }}" selected-team="{{ pick.team }}" data-toggle="collapse" data-parent="#picker">{{ entry_name }}</a>
             {% endif %}
@@ -27,9 +27,9 @@
             <div class="visual_pick">
                 <div class="pick_header">
                     <div class="pull-right">
-                    {{ game.date|date:'g:ia' }}
+                    {{ game.tz_date|date:'g:ia' }}
                     </div>
-                    <div class="date">{{ game.date|date:'l, N j' }}</div>
+                    <div class="date">{{ game.tz_date|date:'l, N j' }}</div>
                 </div>
                 <a class="team_select" href="">
                     <div class="team_info visiting" id="entry_{{ entry_id }}_team_{{ game.visiting }}" team-id="{{ game.visiting }}" team-name="{{ game.visiting_city }}" entry-id="{{ entry_id }}">

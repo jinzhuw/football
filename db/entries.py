@@ -4,13 +4,14 @@ import base64
 import random
 import string
 import time
+from collections import defaultdict
 from textwrap import dedent
 
 from google.appengine.ext import db
 from google.appengine.api import mail
 
 from util import view
-from db import teams, weeks, settings
+from db import teams, weeks, settings, games
 
 class Entry(db.Model):
     user_id = db.IntegerProperty(required=True)
@@ -22,14 +23,15 @@ class Entry(db.Model):
         return self.name is not None
 
 class Status(object):
-    OPEN, CLOSED, WIN, LOSS, VIOLATION = range(5)
+    NONE, WIN, LOSS, VIOLATION = range(4)
 
 class Pick(db.Model):
     user_id = db.IntegerProperty(required=True)
     entry_id = db.IntegerProperty(required=True)
     week = db.IntegerProperty()
     team = db.IntegerProperty(default=-1)
-    status = db.IntegerProperty(default=Status.OPEN, choices=range(5))
+    closed = db.BooleanProperty(default=False)
+    status = db.IntegerProperty(default=Status.NONE, choices=range(4))
     modified = db.DateTimeProperty(auto_now=True) 
 
     def team_city(self):
@@ -45,6 +47,14 @@ def _create_pick(entry):
     week = weeks.current()
     p = Pick(key_name=_pick_key(week, entry.key().id()), user_id=entry.user_id, entry_id=entry.key().id(), week=week)
     p.put()
+    return p
+
+def create_picks(week, entries):
+    new_picks = []
+    for (user_id, entry_id) in entries:
+        p = Pick(key_name=_pick_key(week, entry_id), user_id=user_id, entry_id=entry_id, week=week)
+        new_picks.append(p)
+    db.put(new_picks)
 
 def add_entry(user_id):
     entry = Entry(user_id=user_id)
@@ -54,13 +64,15 @@ def name_entry(entry_id, name):
     entry = Entry.get_by_id(entry_id)
     entry.name = name
     entry.put()
-    _create_pick(entry)
+    return _create_pick(entry)
 
 def buyback_entry(entry_id):
     entry = Entry.get_by_id(entry_id)
+    if not entry:
+        return None
     entry.alive = True
     entry.put()
-    _create_pick(entry)
+    return _create_pick(entry)
 
 def entries_for_user(user):
     entries = {}
@@ -82,6 +94,12 @@ def picks_for_user(user, week):
 
 def get_all_entries():
     return Entry.all()
+
+def alive_entries():
+    entries = {}
+    for e in Entry.gql('WHERE alive = True'):
+        entries[e.key().id()] = e
+    return entries
 
 def iterpicks(use_cursors=False):
     picks = Pick.gql('ORDER BY week')
@@ -117,6 +135,75 @@ def select_team(entry_id, week, team):
     p = Pick.get_by_key_name(key)
     p.team = team
     p.put()
+
+def close_picks(week, teams=None):
+    """Close any picks that have the given teams in the given week"""
+    if teams is not None:
+        logging.info('Closing teams: %s', teams)
+        teams_list = ', '.join('%d' % x for x in teams)
+        extra = 'team IN (%s)' % teams_list
+    else:
+        last_week = last_week_picks(week)
+        logging.info('Closing all open entries')
+        extra = 'closed = False'
+    to_save = []
+    query = 'WHERE week = %d AND %s' % (week, extra)
+    logging.info('Finding picks: %s', query)
+    for p in Pick.gql(query):
+        p.closed = True
+        if teams is None and (p.team == -1 or p.team == last_week.get(p.entry_id)):
+            p.status = Status.VIOLATION
+        to_save.append(p)
+    db.put(to_save)
+
+def picks_closed(week):
+    return Pick.gql('WHERE week = :1 AND closed = False', week).count() == 0
+
+def nopicks(week):
+    return Pick.gql('WHERE week = :1 AND team = -1', week)
+
+def last_week_picks(week):
+    if week == 1:
+        return {}
+    entries = {}
+    for p in db.GqlQuery('SELECT entry_id,team FROM Pick WHERE week = :1 AND status = :2',
+                         week - 1, Status.WIN):
+        entries[p.entry_id] = p.team 
+    return entries
+
+def picks_for_week(week):
+    return Pick.gql('WHERE week = :1', week)   
+
+def set_picks_status(week):
+    # TODO: only need 1 query and postprocessing for complete/winners
+    winners = games.winners_for_week(week)
+    picks = []
+    winning_entries = set()
+    counts = defaultdict(int)
+    for p in Pick.gql('WHERE week = :1', week):
+        counts[p.team] += 1
+        # violations are set when picks are closed
+        if p.team not in winners:
+            p.status = Status.LOSS
+        elif p.status != Status.VIOLATION:
+            p.status = Status.WIN
+            winning_entries.add(p.entry_id)
+        else:
+            continue
+        picks.append(p)
+    db.put(picks)
+
+    entries_to_save = []
+    alive_entries = []
+    for e in Entry.gql('WHERE alive = True'):
+        if e.key().id() not in winning_entries:
+            e.alive = False
+            entries_to_save.append(e)
+        else:
+            alive_entries.append((e.user_id, e.key().id()))
+    db.put(entries_to_save)
+
+    return (counts, alive_entries)
 
 def initialize_picks(week):
     active = Entry.gql('WHERE active = True')

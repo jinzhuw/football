@@ -21,3 +21,12 @@ div.dropdown-menu {
     background: -ms-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* IE10+ */
     background: linear-gradient(to bottom, #f2f2f2 0%,#ffffff 100%); /* W3C */
 }
+
+/* turn off anchor focus border */
+:focus {outline:none;}
+::-moz-focus-inner {border:0;}
+
+/* fix IE horribleness with bootsrap collapse*/
+.collapse {
+    overflow: hidden !important;
+}

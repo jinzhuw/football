@@ -10,6 +10,7 @@ class _Settings(db.Model):
     session_key = db.StringProperty(multiline=True)
     email_source = db.StringProperty()
     debug = db.BooleanProperty()
+    email_enabled = db.BooleanProperty(default=True)
 
 _cached_settings = None
 _cached_ttl = None
@@ -26,14 +27,14 @@ def _load_settings():
         settings.email_source = 'Jack Gonzales <jgonzales6@gmail.com>'
         settings.debug = True
         settings.put()
+    settings.put()
     return settings
 
 def _cached(real_func):
     def func():
         if not _cached_ttl or time.time() > _cached_ttl:
             global _cached_settings, _cached_ttl
-            # TODO: make this actually cached for prod
-            _cached_ttl = time.time()# + 10 # + 86400 # only lookup settings every day
+            _cached_ttl = time.time() + 600 # only lookup settings every 10 minutes
             _cached_settings = _load_settings()
         return real_func()
     return func
@@ -55,5 +56,9 @@ def email_source():
 @_cached
 def debug():
     return _cached_settings.debug
+
+@_cached
+def email_enabled():
+    return _cached_settings.email_enabled
     
 

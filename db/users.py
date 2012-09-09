@@ -21,6 +21,7 @@ class User(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
 
 def create(email):
+    email = email.lower()
     existing = User.gql('WHERE email = :1', email)
     if existing.count() != 0:
         logging.error('Email %s already exists', email)
@@ -41,6 +42,7 @@ def _hash_password(salt, password):
     return h.hexdigest()
 
 def get_user_by_password(email, password):
+    email = email.lower()
     user = [u for u in User.gql('WHERE email = :1', email)]
     if not user:
         logging.error('Bad login: unknown email %s', email)

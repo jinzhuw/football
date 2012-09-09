@@ -18,7 +18,7 @@
 <h4>Unactivated</h4>
 <table class="table" id="unactivated-users">
 {% for user in new_users %}
-<tr><td>{{ user.0.email }}</td><td><a class="btn btn-small btn-info" href="/login/{{ user.3 }}">Login</a></td></tr>
+<tr><td>{{ user.0.email }}</td><td><a class="btn btn-small btn-info" href="/login/{{ user.3 }}">Login</a></td><td><button class="btn btn-small btn-info resend" user-id="{{ user.0.key.id }}">Resend</button></td></tr>
 {% endfor %}
 </table>
 </div>
@@ -28,7 +28,7 @@
 <div id="users-list" class="tabbable">
     <div class="tab-header">
     {% for section in users %}
-        <a {% if section.1 %}href="#users{{ section.0 }}" data-toggle="tab" {% if forloop.first %}class="active"{% endif %}{% else %}class="muted"{% endif %}><div>
+        <a {% if section.1 %}href="#users{{ section.0 }}" data-toggle="tab" {% else %}class="muted"{% endif %}><div>
             {% if section.1 %}<strong>{{ section.0 }}</strong>
             {% else %}{{ section.0 }}
             {% endif %}
@@ -46,10 +46,10 @@
                 <div class="accordian-heading" style="border-bottom: 0 none"><a class="accordian-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small> - {{user.0.email }}</small></a></div>
                 <div id="user{{ user.0.key.id }}" class="accordian-body collapse">
                     <h5>Actions</h5>
-                    <div class="btn-group">
+                    <div class="btn-group btn-group-vertical" user-id="{{ user.0.key.id }}">
                         <a class="btn" href="/login/{{ user.3 }}" >Login as user</a>
-                        <button class="btn disabled">Send Picks Email</button>
-                        <button class="btn new-entry-btn" user-id="{{ user.0.key.id }}">Add Entry</button>
+                        <a class="btn send-pick-links">Send Picks Email</a>
+                        <a class="btn new-entry-btn">Add Entry</a>
                     </div>
                     <h5 class="entries-section">Entries</h5>
                     {% if user.2 != 0 %}
@@ -59,9 +59,9 @@
                         {% for entry in user.1 %}
                         {% if entry.activated %}
                         <tr>
-                            <td>{% if entry.alive %}<span class="label label-success">Alive</span>{% else %}<span class="label label-important">Eliminated</span>{% endif %}</td>
+                            <td class="status">{% if entry.alive %}<span class="label label-success">Alive</span>{% else %}<span class="label label-important">Eliminated</span>{% endif %}</td>
                             <td>{{ entry.name }}</td> 
-                            <td>{% if not entry.alive %}<button class="btn">Buyback</button>{% endif %}</td>
+                            <td>{% if not entry.alive %}<button class="btn buyback" entry-id="{{ entry.key.id }}">Buyback</button>{% endif %}</td>
                         </tr>
                         {% endif %}
                         {% endfor %}
