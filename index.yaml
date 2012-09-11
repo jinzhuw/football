@@ -18,6 +18,11 @@ indexes:
 
 - kind: Pick
   properties:
+  - name: closed
+  - name: entry_id
+
+- kind: Pick
+  properties:
   - name: status
   - name: week
   - name: entry_id
@@ -25,6 +30,23 @@ indexes:
 
 - kind: Pick
   properties:
+  - name: team
+  - name: week
+  - name: status
+
+- kind: Pick
+  properties:
+  - name: week
+  - name: entry_id
+  - name: status
+
+- kind: Pick
+  properties:
   - name: week
   - name: entry_id
   - name: team
+
+- kind: Pick
+  properties:
+  - name: week
+  - name: status

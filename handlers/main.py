@@ -11,31 +11,27 @@ class RulesHandler(handler.BaseHandler):
     def get(self):
         view.render(self, 'rules', {})
 
-class PasswordLoginHandler(handler.BaseHandler):
-    def get(self):
-        view.render(self, 'user', {})
-
-    def post(self):
-        email = self.request.POST.get('email')
-        password = self.request.POST.get('password')
-        user = users.get_user_by_password(email, password)
-        if not user:
-            self.abort(403)
-        self.login(user)
-        self.redirect('/picks')
-
-class TokenLoginHandler(handler.BaseHandler):
-    def get(self, token):
-        user = users.get_user_by_token(token)
+class LoginHandler(handler.BaseHandler):
+    def _login(self, user):
         if not user:
             self.abort(403)
         self.login(user)
         if not self.user.name:
             self.redirect('/setup/activation')
-        elif entries.unnamed_entries(self.user.key().id()) > 0:
+        elif entries.has_unnamed_entries(self.user.key().id()):
             self.redirect('/setup/entries')
         else:
             self.redirect('/picks')
+
+    def get(self, token):
+        user = users.get_user_by_token(token)
+        self._login(user)
+
+    def post(self):
+        email = self.request.POST.get('email')
+        password = self.request.POST.get('password')
+        user = users.get_user_by_password(email, password)
+        self._login(user)
 
 class LogoutHandler(handler.BaseHandler):
     def get(self):
@@ -43,8 +39,8 @@ class LogoutHandler(handler.BaseHandler):
         self.redirect('/')
 
 app = webapp2.WSGIApplication([
-    webapp2.Route('/login/<token>', handler=TokenLoginHandler),
-    ('/login', PasswordLoginHandler),
+    webapp2.Route('/login/<token>', LoginHandler),
+    ('/login', LoginHandler),
     ('/logout', LogoutHandler),
     ('/rules', RulesHandler),
     ('/', HomeHandler),

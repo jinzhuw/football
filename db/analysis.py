@@ -20,19 +20,16 @@ class AnalysisComment(db.Model):
 
 class Stats(db.Model):
     week = db.IntegerProperty(required=True)
-    alive = db.IntegerProperty(required=True)
-    dead = db.IntegerProperty(required=True)
-    wins = db.IntegerProperty(required=True)
-    losses = db.IntegerProperty(required=True)
-    violations = db.IntegerProperty(required=True)
+    wins = db.IntegerProperty(default=0)
+    losses = db.IntegerProperty(default=0)
+    violations = db.IntegerProperty(default=0)
 
 class TeamStats(db.Model):
     week = db.IntegerProperty(required=True)
     team = db.IntegerProperty(required=True)
     count = db.IntegerProperty(required=True)
 
-
-def save_counts(week, team_counts):
+def save_team_counts(week, team_counts):
     # wipe out any old numbers
     to_delete = [s for s in TeamStats.gql('WHERE week = :1', week)]
     if to_delete:
@@ -42,7 +39,7 @@ def save_counts(week, team_counts):
         to_put.append(TeamStats(week=week, team=team, count=count))
     db.put(to_put)
 
-def get_counts(week):
+def get_team_counts(week):
     picks = {}
     no_pick = 0 
     for s in TeamStats.gql('WHERE week = :1', week):
@@ -51,4 +48,13 @@ def get_counts(week):
         else:
             picks[teams.fullname(s.team)] = s.count
     return (no_pick, picks)
+
+def save_status_counts(week, wins, losses, violations):
+    stats = Stats.gql('WHERE week = :1', week).get() 
+    if stats is None:
+        stats = Stats(week=week)
+    stats.wins = wins
+    stats.losses = losses
+    stats.violations = violations
+    stats.put()
         

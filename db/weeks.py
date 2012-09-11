@@ -33,10 +33,9 @@ def deadline(week):
     return week0 + offset
 
 def check_deadline(week):
-    now = datetime.now(timezone.Pacific)
     #if settings.NODEADLINE:
     #    return True
-    return now < deadline(week)
+    return current_time() < deadline(week)
 
 def results(week):
     # tuesday 8 am
@@ -44,4 +43,4 @@ def results(week):
      
 def current_time():
     return datetime.now(timezone.Pacific)
-    #return datetime(2012, 9, 29, 23, 30, tzinfo=timezone.Pacific)
+    #return datetime(2012, 9, 15, 23, 01, tzinfo=timezone.Pacific)

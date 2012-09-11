@@ -11,6 +11,12 @@ function reset_game_data(game, control, scores, original) {
         visiting_score = visiting.val();
         home_score = home.val();
     }
+    if (!home_score) {
+        home_score = home.attr('default'); 
+    }
+    if (!visiting_score) {
+        visiting_score = visiting.attr('default'); 
+    }
     var visiting_column = visiting.parent();
     var home_column = home.parent();
     visiting_column.html(visiting_score);

@@ -34,7 +34,7 @@ def _cached(real_func):
     def func():
         if not _cached_ttl or time.time() > _cached_ttl:
             global _cached_settings, _cached_ttl
-            _cached_ttl = time.time() + 600 # only lookup settings every 10 minutes
+            _cached_ttl = time.time() # + 600 # only lookup settings every 10 minutes
             _cached_settings = _load_settings()
         return real_func()
     return func

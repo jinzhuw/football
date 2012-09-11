@@ -22,7 +22,7 @@ admin_pages = (
     ('Admin', '/admin'),
 )
 
-def render(handler, page, args, cache_ttl=0, css=False, js=False): 
+def render(handler, page, args, css=False, js=False): 
     fullpath = os.path.join(os.path.dirname(__file__), '../templates/%s.html' % page)
 
     if css:
@@ -42,22 +42,33 @@ def render(handler, page, args, cache_ttl=0, css=False, js=False):
     args['navs'] = navs
 
     data = template.render(fullpath, args)
-    if cache_ttl:
-        memcache.set(page, data, cache_ttl)
     handler.response.out.write(data)
+    return data
 
-def render_json(handler, page, data, cache_ttl=0):
+def render_json(handler, data):
     s = json.dumps(data) 
     handler.response.headers['Content-Type'] = 'application/json'
     handler.response.out.write(s)
-    if cache_ttl:
-        logging.debug('Caching page %s', page)
-        memcache.set(page, s, cache_ttl)
+    return s
 
-def cache_hit(handler, page):
-    data = memcache.get(page)
+class cached:
+    def __init__(self, ttl):
+        self.ttl = ttl
+
+    def __call__(self, f):
+        def func(handler, *args, **kwargs):
+            force = handler.request.get('force')
+            if not force and _cache_hit(handler, handler.request.path):
+                return
+            logging.debug('Caching page %s', handler.request.path)
+            data = f(handler, *args, **kwargs)
+            memcache.set(handler.request.path, data, self.ttl)
+        return func
+
+def _cache_hit(handler, key):
+    data = memcache.get(key)
     if data is not None:
-        logging.debug('Using cached data for page %s', page)
+        logging.debug('Using cached data for page %s', key)
         handler.response.out.write(data)
         if hasattr(handler, 'type') and handler.type == 'json':
             handler.response.headers['Content-Type'] = 'application/json'

@@ -77,7 +77,7 @@ picks_template = dedent('''
     Make your picks for Week %(week)d by clicking the following link:
     %(link)s
 
-    You have until %(deadline)s to make your picks.
+    You have until 11pm the night before a game to select that game, or %(deadline)s, whichever comes first.
 
     Good luck!
 ''')
@@ -98,7 +98,6 @@ reminder_picks_template = dedent('''
 
     Good luck!
 ''')
-#    You have until 11pm the night before a game to select that game, or %(deadline)s, whichever comes first.
 reminder_html_picks_template = _html_template(reminder_picks_template)
 
 def email_picks_link(user, entries, week, reminder):

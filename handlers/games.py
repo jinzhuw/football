@@ -1,5 +1,5 @@
 
-from db import settings, games, weeks
+from db import settings, games, weeks, entries
 from util import view, handler
 import webapp2
 
@@ -11,15 +11,15 @@ class GamesHandler(handler.BaseHandler):
         view.render(self, 'games', {
             'week': week,
             'games': sorted(current_games, key=lambda x: x.date),
-            'css': 'games',
-            'js': 'games'
-        })
+        }, css=True, js=True)
 
 class LoadScoresHandler(handler.BaseHandler):
     @handler.admin
     def get(self):
         week = weeks.current()
-        games.load_scores(week)
+        results = games.load_scores(week)
+        if entries.set_pick_status(week, results):
+            view.clear_cache('/results/data')
         self.redirect('/games')
 
 class SetScoreHandler(handler.BaseHandler):
@@ -27,7 +27,10 @@ class SetScoreHandler(handler.BaseHandler):
     def post(self, game_id):
         home = int(self.request.POST.get('home')) 
         visiting = int(self.request.POST.get('visiting')) 
-        games.update(int(game_id), home, visiting)
+        game = games.Game.get_by_id(int(game_id))
+        winner, loser = games.update(game, home, visiting)
+        if entries.set_pick_status(weeks.current(), ([winner], [loser])):
+            view.clear_cache('/results/data')
 
 class GamesResetHandler(handler.BaseHandler):
     @handler.admin

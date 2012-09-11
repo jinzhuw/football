@@ -19,10 +19,11 @@ class PicksHandler(handler.BaseHandler):
             if entry.activated:
                 picks.append((entry.name, entry.key().id(), pick))
         deadline_passed = not weeks.check_deadline(week)
+        current_time = weeks.current_time()
         games_data = []
         if not deadline_passed:
             for g in sorted(games.games_for_week(week), key=lambda g: g.date):
-                if g.date.weekday() in [0, 6]:
+                if current_time < g.tz_deadline():
                     games_data.append(g) 
              
         args = {

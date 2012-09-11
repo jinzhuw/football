@@ -18,7 +18,7 @@ function init_page() {
     });    
 
     results = new Results();
-    results.set_data(results_data);//test_results.test_data);
+    results.set_data(results_data);
     results.set_table($('#results-table-header'), $('#results-table-data'));
     results.set_header($('#results-container'), $('#results-header'));
     results.update_controls();
@@ -59,7 +59,7 @@ var Results = function() {
     this._start_week = null;
 
     this._header_top = null;
-    this._week_names = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', '    Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
+    this._week_names = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
 };
 
 Results.prototype.set_data = function(results) {

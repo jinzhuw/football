@@ -12,10 +12,12 @@ class ClosePicksHandler(handler.BaseHandler):
         week = weeks.current()
         current_time = weeks.current_time()
         if current_time > weeks.deadline(week):
-            entries.close_picks(week)
-            counts = entries.get_pick_counts(week)
+            closed = entries.close_picks(week)
+            if closed > 0:
+                view.clear_cache('/results/data')
+            counts = entries.get_team_counts(week)
             logging.info('Saving counts: %s', counts)
-            analysis.save_counts(week, counts)
+            analysis.save_team_counts(week, counts)
             self.redirect('/admin')
             return
 
@@ -24,21 +26,42 @@ class ClosePicksHandler(handler.BaseHandler):
             past_deadline.append(g.home)
             past_deadline.append(g.visiting)
 
-        entries.close_picks(week, past_deadline)
+        closed = entries.close_picks(week, past_deadline)
+        if closed > 0:
+            view.clear_cache('/results/data')
         self.redirect('/admin')
 
 def ok_to_advance(week):
-    return entries.picks_closed(week)# and games.games_complete(week)
+    return entries.picks_closed(week) and (games.games_complete(week) or settings.debug())
 
 class AdvanceWeekHandler(handler.BaseHandler):
     def get(self):
         week = weeks.current()
-        if not ok_to_advance(week):
+
+        # make sure all the picks are closed
+        if not entries.picks_closed(week):
+            logging.error('Cannot advance week, all picks are not closed')
             self.abort(409)
             return
 
-        alive_entries = entries.set_picks_status(week)
+        if not games.games_complete(week):
+            results = games.load_scores(week)
+            if entries.set_pick_status(week, results):
+                view.clear_cache('/results/data')
+        # all the games better be complete by now...
+        if not games.games_complete(week) and not settings.debug():
+            logging.error('Cannot advance week, games are not complete')
+            self.abort(409)
+        
+        counts = entries.get_status_counts(week)
+        analysis.save_status_counts(
+            week,
+            counts.get(entries.Status.WIN, 0),
+            counts.get(entries.Status.LOSS, 0),
+            counts.get(entries.Status.VIOLATION, 0)
+        )
 
+        alive_entries = entries.deactivate_dead_entries(week)
         weeks.increment()
         entries.create_picks(weeks.current(), alive_entries)
 

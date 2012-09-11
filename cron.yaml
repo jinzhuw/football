@@ -1,22 +1,22 @@
 cron:
 - description: close picks
   url: /admin/close-picks
-  schedule: every wed,fri,sat 23:15
+  schedule: every wed,fri,sat 23:01
   timezone: America/Los_Angeles
 
 - description: advance week
   url: /admin/advance-week
-  schedule: every tue 10:00 
+  schedule: every mon 23:59
   timezone: America/Los_Angeles
 
-#- description: send breakdown
-#  url: /admin/send-breakdown
-#  schedule: every sat 23:30
-#  timezone: America/Los_Angeles
+- description: send breakdown
+  url: /admin/send-breakdown
+  schedule: every sat 23:05
+  timezone: America/Los_Angeles
 
-- description: send pick link
+- description: send weekly pick link
   url: /admin/send-pick-links
-  schedule: every tue 8:00
+  schedule: every tue 6:00
   timezone: America/Los_Angeles
 
 - description: send pick reminder
@@ -24,14 +24,29 @@ cron:
   schedule: every fri 23:00
   timezone: America/Los_Angeles
 
-- description: send analysis
-  url: /admin/send-analysis
-  schedule: every tue 8:00
+#- description: send analysis
+#  url: /admin/send-analysis
+#  schedule: every tue 8:00
+#  timezone: America/Los_Angeles
+
+- description: load scores for MNF and TNF
+  url: /games/load-scores
+  schedule: every mon,thu 21:00
   timezone: America/Los_Angeles
 
-- description: load scores
+- description: load scores for 10am games on Sunday
   url: /games/load-scores
-  schedule: every mon,thu,sun 21:00
+  schedule: every sun 13:45
+  timezone: America/Los_Angeles
+
+- description: load scores for 1:30pm games on Sunday
+  url: /games/load-scores
+  schedule: every sun 17:15
+  timezone: America/Los_Angeles
+
+- description: load score for Sunday night game
+  url: /games/load-scores
+  schedule: every sun 21:00
   timezone: America/Los_Angeles
 
 

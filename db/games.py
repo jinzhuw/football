@@ -79,13 +79,6 @@ def load_schedule():
                 raise
 
     return schedule
-    '''
-    for week,games in sorted(schedule.iteritems()):
-        print ''
-        print 'Week %d' % week
-        for game in games:
-            print game[0].strftime('%A,'), teams.shortname(game[1]), 'vs', teams.shortname(game[2])
-    '''
 
 def reset():
     for g in Game.all():
@@ -94,7 +87,7 @@ def reset():
     for week,games in load_schedule().iteritems():
         for game in games:
             date = game[0]
-            deadline = datetime(date.year, date.month, date.day, 0, 0)
+            deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
             g = Game(week=week, home=game[1], visiting=game[2], date=date, deadline=deadline)
             g.put()
 
@@ -118,30 +111,40 @@ def load_scores(week):
         else:
             logging.debug('Skipping game %s vs %s, game state is %s', g['h'], g['v'], g['q'])
 
-    loaded = False
+    winners = set()
+    losers = set()
     for g in games:
+        if g.winner != -1:
+            continue
         s = scores.get(teams.shortname(g.home))
         if s:
-            logging.info('Setting results for game %s (%d) vs %s (%d)',
-                         teams.shortname(g.home), s[0],
-                         teams.shortname(g.visiting), s[1])
-            g.home_score = s[0]
-            g.visiting_score = s[1]
-            g.winner = g.home if s[0] > s[1] else g.visiting
-            g.put() 
-            loaded = True
+            (winner, loser) = update(g, s[0], s[1])
+            winners.add(winner)
+            losers.add(loser)
 
-    return loaded 
+    if winners:
+        return (winners, losers)
+    return None
 
-def update(game_id, home_score, visiting_score):
-    game = Game.get_by_id(game_id)
+def update(game, home_score, visiting_score):
     logging.info('Updating status for game %s (%d) vs %s (%d)',
                  teams.shortname(game.home), home_score,
                  teams.shortname(game.visiting), visiting_score)
     game.home_score = home_score
     game.visiting_score = visiting_score
-    game.winner = game.home if home_score > visiting_score else game.visiting
+    if home_score > visiting_score:
+        winner = game.home
+        loser = game.visiting
+    elif home_score < visiting_score:
+        winner = game.visiting
+        loser = game.home
+    else:
+        raise Exception('Tie game (%d - %d, %d - %d)...dont know what to do....' % \
+                        game.home, home_score, game.visiting, visiting_score)
+        
+    game.winner = winner
     game.put() 
+    return (winner, loser)
 
 def games_for_week(week):
     """
@@ -174,14 +177,18 @@ def games_for_week(week):
 
 def open_past_deadline(week, current_time):
     return Game.gql('WHERE week = :1 AND winner = -1 AND deadline < :2',
-                    week, current_time.replace(tzinfo=timezone.Pacific))
+                    week, current_time.replace(tzinfo=None))
 
-def winners_for_week(week):
+def results_for_week(week):
     winners = set()
-    games = Game.gql('WHERE week = :1', week)
-    for game in games:
-        winners.add(game.winner)
-    return winners
+    losers = set()
+    for g in Game.gql('WHERE week = :1', week):
+        winners.add(g.winner)
+        if g.winner == g.home:
+            losers.add(g.visiting)
+        else:
+            losers.add(g.home)
+    return (winners, losers)
 
 def games_complete(week):
     return Game.gql('WHERE week = :1 AND winner = -1', week).count() == 0
