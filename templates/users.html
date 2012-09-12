@@ -40,11 +40,11 @@
     {% for section in users %}
 
         {% if section.1 %}
-        <div class="tab-pane accordian {% if forloop.first %}active{% endif %}" id="users{{ section.0 }}">
+        <div class="tab-pane accordion {% if forloop.first %}active{% endif %}" id="users{{ section.0 }}">
             {% for user in section.1 %}
-            <div class="accordian-group users-section">
-                <div class="accordian-heading" style="border-bottom: 0 none"><a class="accordian-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small> - {{user.0.email }}</small></a></div>
-                <div id="user{{ user.0.key.id }}" class="accordian-body collapse">
+            <div class="accordion-group users-section">
+                <div class="accordion-heading"><a class="accordion-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small> - {{user.0.email }}</small></a></div>
+                <div id="user{{ user.0.key.id }}" class="accordion-body collapse">
                     <h5>Actions</h5>
                     <div class="btn-group btn-group-vertical" user-id="{{ user.0.key.id }}">
                         <a class="btn" href="/login/{{ user.3 }}" >Login as user</a>

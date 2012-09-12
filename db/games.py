@@ -31,23 +31,11 @@ class Game(db.Model):
     def complete(self):
         return self.winner != -1
 
-    def home_city(self):
-        return teams.cityname(self.home)
-
-    def home_mascot(self):
-        return teams.mascotname(self.home)
-
     def home_x(self):
         return teams.large_logo_x(self.home)
 
     def home_y(self):
         return teams.large_logo_y(self.home)
-
-    def visiting_city(self):
-        return teams.cityname(self.visiting)
-
-    def visiting_mascot(self):
-        return teams.mascotname(self.visiting)
 
     def visiting_x(self):
         return teams.large_logo_x(self.visiting)

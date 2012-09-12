@@ -9,53 +9,23 @@
 <!--<div class="pull-right deadline"><strong>Deadline{% if deadline_passed %} passed{% endif %}</strong>: {{ deadline }}</div>-->
 </div>
 
-<div class="accordian" id="picker">
+<div class="accordion" id="picker" current-time="{{ current_time }}">
 {% for entry_name,entry_id,pick in picks %}
-    <div class="accordian-group">
-        <div class="accordian-heading">
-            <span class="entry team_chosen" id="entry_{{ entry_id }}_team">{{ pick.team_city }}</span>
+    <div class="accordion-group" entry-id="{{ entry_id }}" selected-team-id="{{ pick.team }}">
+        <div class="accordion-heading">
+            <span class="entry team-chosen" id="entry-{{ entry_id }}-team">{{ pick.team_fullname }}</span>
             {% if deadline_passed or pick.closed %}
-            <span class="entry accordian-toggle closed">{{ entry_name }}</span>
+            <span class="entry closed">{{ entry_name }}</span>
             {% else %}
-            <a class="entry accordian-toggle" href="#entry{{ entry_id }}" entry-id="{{ entry_id }}" selected-team="{{ pick.team }}" data-toggle="collapse" data-parent="#picker">{{ entry_name }}</a>
+            <a class="entry accordion-toggle" href="#entry{{ entry_id }}" data-toggle="collapse" data-parent="#picker">{{ entry_name }}</a>
             {% endif %}
         </div>
-        <div id="entry{{ entry_id }}" class="accordian-body collapse games">
-        {% if not deadline_passed %}
+        {% if not deadline_passed and not pick.closed %}
+        <div id="entry{{ entry_id }}" class="accordion-body collapse games">
         <hr class="line" />
-        {% for game in games %}
-            <div class="visual_pick">
-                <div class="pick_header">
-                    <div class="pull-right">
-                    {{ game.tz_date|date:'g:ia' }}
-                    </div>
-                    <div class="date">{{ game.tz_date|date:'l, N j' }}</div>
-                </div>
-                <a class="team_select" href="">
-                    <div class="team_info visiting" id="entry_{{ entry_id }}_team_{{ game.visiting }}" team-id="{{ game.visiting }}" team-name="{{ game.visiting_city }}" entry-id="{{ entry_id }}">
-                        <div class="status alert"></div>
-                        <div class="team_box">
-                            <div class="team_logo" style="background-position:-{{ game.visiting_x }}px -{{ game.visiting_y }}px"></div>
-                            <div class="team_city">{{ game.visiting_city }}</div>
-                            <div class="team_mascot">{{ game.visiting_mascot }}</div>
-                        </div>
-                    </div>
-                </a>
-                <a class="team_select" href="">
-                    <div class="team_info" id="entry_{{ entry_id }}_team_{{ game.home }}" team-id="{{ game.home }}" team-name="{{ game.home_city }}" entry-id="{{ entry_id }}">
-                        <div class="status"></div>
-                        <div class="team_box">
-                            <div class="team_logo" style="background-position:-{{ game.home_x }}px -{{ game.home_y }}px"></div>
-                            <div class="team_city">{{ game.home_city }}</div>
-                            <div class="team_mascot">{{ game.home_mascot }}</div>
-                        </div>
-                    </div>
-                </a>
-                <div class="at">at</div>
-            </div>
-        {% endfor %}
-        {% endif %}
+        <img src="/img/loading-big.gif"/>
         </div>
+        {% endif %}
     </div>
 {% endfor %}
 </div>

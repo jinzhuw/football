@@ -34,8 +34,8 @@ class Pick(db.Model):
     status = db.IntegerProperty(default=Status.NONE, choices=range(4))
     modified = db.DateTimeProperty(auto_now=True) 
 
-    def team_city(self):
-        return teams.cityname(self.team)
+    def team_fullname(self):
+        return teams.fullname(self.team)
 
     def team_shortname(self):
         return teams.shortname(self.team)
