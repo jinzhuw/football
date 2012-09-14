@@ -15,6 +15,9 @@ libraries:
 - name: django
   version: "latest"
 
+- name: lxml
+  version: "latest"
+
 handlers:
 - url: /robots.txt
   static_files: robots.txt
@@ -69,6 +72,6 @@ skip_files:
 - ^old/
 - ^lib/
 - ^bin/
-- ^Crypto/
+#- ^Crypto/
 - (.*\.py[co])
 

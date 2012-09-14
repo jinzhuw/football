@@ -9,9 +9,10 @@ from textwrap import dedent
 
 from google.appengine.ext import db
 from google.appengine.api import mail
+from google.appengine.ext import deferred
 
 from util import view
-from db import teams, weeks, settings, games
+from db import teams, weeks, settings, games, users
 
 class Entry(db.Model):
     user_id = db.IntegerProperty(required=True)
@@ -58,11 +59,13 @@ def _create_pick(entry, week, save=True):
         p.put()
     return p
 
-def name_entry(entry_id, name):
+def name_entry(entry_id, name, week=None):
+    if week is None:
+        week = weeks.current()
     entry = Entry.get_by_id(entry_id)
     entry.name = name
     entry.put()
-    return _create_pick(entry, weeks.current())
+    return _create_pick(entry, week)
 
 def buyback_entry(entry_id):
     entry = Entry.get_by_id(entry_id)
@@ -144,8 +147,8 @@ def all_picks(week):
 def entry_name_exists(entry_name):
     return Entry.gql('WHERE name = :1', entry_name).count() > 0
 
-def has_unnamed_entries(user_id):
-    return Entry.gql('WHERE user_id = :1 and name = NULL', user_id).count() > 0
+def unnamed_entries(user_id):
+    return Entry.gql('WHERE user_id = :1 AND name = NULL AND active = True', user_id).count()
 
 def picks_closed(week):
     return Pick.gql('WHERE week = :1 AND closed = False', week).count() == 0
@@ -214,7 +217,7 @@ def set_pick_status(week, game_results=None):
         winners, losers = games.results_for_week(week)
     else:
         winners, losers = game_results
-        if len(winners) < 15:
+        if len(winners) < 10:
             # if there are a lot of games being handled, look at all picks for the week
             winners_list = ', '.join('%d' % x for x in winners)
             losers_list = ', '.join('%d' % x for x in losers)
@@ -236,21 +239,41 @@ def set_pick_status(week, game_results=None):
     db.put(picks)
     return len(picks) != 0
 
+def _name_unnamed_entries(user_id, entries, week):
+    # SPECIAL CASE
+    # this means the entry doesnt have a pick (unnamed), so create a violation pick and deactivate
+    user = users.User.get_by_id(user_id)
+    num_named_entries = Entry.gql('WHERE name != NULL AND user_id = :1', user_id).count()
+    for entry_id in entries:
+        num_named_entries += 1
+        p = name_entry(entry_id, user.name + ' #' + num_named_entries, week)
+        p.status = Status.VIOLATION
+        p.put()
+
 def deactivate_dead_entries(week):
     picks = {}
     for p in db.GqlQuery('SELECT entry_id,status FROM Pick WHERE week = :1', week):
         picks[p.entry_id] = p.status
     
+    unnamed = defaultdict(list)
     entries_to_save = []
     alive_entries = []
     for e in Entry.gql('WHERE alive = True'):
-        status = picks[e.key().id()]
+        entry_id = e.key().id()
+        status = picks.get(entry_id)
+        if status is None:
+            status = Status.VIOLATION
+            unnamed[e.user_id].append(entry_id)
+
         if status != Status.WIN:
             e.alive = False
             entries_to_save.append(e)
         else:
             alive_entries.append(e)
     db.put(entries_to_save)
+
+    for user_id,entries in unnamed.iteritems():
+        deferred.defer(_name_unnamed_entries, user_id, entries, week)
 
     return alive_entries
 

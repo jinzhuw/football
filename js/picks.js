@@ -11,6 +11,7 @@ function visually_select_team(team_info, entry_id) {
 }
 
 function select_team(entry_id, team, team_info) {
+    $('#entry-' + entry_id + '-team').html('<img src="/img/loading.gif"/>'); 
     $.ajax({
         'url': '/picks/' + entry_id,
         'type': 'POST',
@@ -81,9 +82,9 @@ function add_picker_for_entry(entry_section, games, start_ndx) {
 }
 
 function init_page() {
-    //$('.collapse').collapse({toggle: false});
+    var week = $('#picker').attr('week');
     $.ajax({
-        'url': '/picks/data',
+        'url': '/picks/games/' + week,
         'type': 'GET',
         'async': false,
         'dataType': 'json',

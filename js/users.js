@@ -4,10 +4,13 @@ function send_picks_email() {
     var buttons = $(this).parent();
     var user_id = buttons.attr('user-id');
     $.ajax({
-        'url': '/admin/send-pick-links/' + user_id,
+        'url': '/users/picks-email/' + user_id,
         'type': 'POST',
         'success': function(data) {
             buttons.after('<div class="alert alert-info">Email sent</div>');
+        },
+        'error': function(data) {
+            buttons.after('<div class="alert alert-error">Failed to send email</div>');
         }
     });    
     return false;
@@ -28,7 +31,7 @@ function resend_activation() {
 
 function new_entry() {
     var user_id = $(this).parent().attr('user-id');
-    var user_section = $(this).closest('.accordian-body');
+    var user_section = $(this).closest('.accordion-body');
     $.ajax({
         'url': '/users/entries/' + user_id,
         'type': 'POST',

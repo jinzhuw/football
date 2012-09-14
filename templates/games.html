@@ -19,11 +19,11 @@ Games - Week {{ week }}
         </caption>
         <tbody>
             <tr{% if game.visiting == game.winner %} class="winner"{% endif %}>
-                <td class="team-name">{{ game.visiting_city }}</td>
+                <td class="team-name">{{ game.visiting_fullname }}</td>
                 <td class="score" team="visiting">{% if game.complete %}{{ game.visiting_score }}{% endif %}</td>
             </tr>
             <tr{% if game.home == game.winner %} class="winner"{% endif %}>
-                <td class="team-name">{{ game.home_city }}</td>
+                <td class="team-name">{{ game.home_fullname }}</td>
                 <td class="score" team="home">{% if game.complete %}{{ game.home_score }}{% endif %}</td>
             </tr>
         </tbody>

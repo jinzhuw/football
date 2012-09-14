@@ -9,7 +9,7 @@
 <!--<div class="pull-right deadline"><strong>Deadline{% if deadline_passed %} passed{% endif %}</strong>: {{ deadline }}</div>-->
 </div>
 
-<div class="accordion" id="picker" current-time="{{ current_time }}">
+<div class="accordion" id="picker" current-time="{{ current_time }}" week="{{ week }}">
 {% for entry_name,entry_id,pick in picks %}
     <div class="accordion-group" entry-id="{{ entry_id }}" selected-team-id="{{ pick.team }}">
         <div class="accordion-heading">

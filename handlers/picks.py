@@ -28,11 +28,11 @@ class PicksHandler(handler.BaseHandler):
         
         view.render(self, 'picks', args, css=True, js=True)
 
-class PicksDataHandler(handler.BaseHandler):
+class PicksGamesHandler(handler.BaseHandler):
     @handler.user
     @view.cached(86400)
-    def get(self):
-        week = weeks.current()
+    def get(self, week):
+        week = int(week)
         data = []
         for g in games.games_for_week(week):
             data.append({
@@ -78,7 +78,7 @@ class PickSetter(handler.BaseHandler):
             self.abort(403)
 
 app = webapp2.WSGIApplication([
-    ('/picks/data', PicksDataHandler),
+    webapp2.Route('/picks/games/<week>', PicksGamesHandler),
     webapp2.Route('/picks/<entry_id>', handler=PickSetter),
     ('/picks', PicksHandler),
 ],

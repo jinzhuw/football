@@ -1,4 +1,5 @@
 
+import time
 from db import settings, users, entries, weeks
 from util import view, handler, email as mail
 from collections import defaultdict
@@ -69,8 +70,11 @@ class NewEntriesHandler(handler.BaseHandler):
         user_id = int(user_id)
         entry = entries.Entry(user_id=user_id)
         entry.put()
+        user = users.User.get_by_id(user_id)
         logging.info('Adding new entry for user %d by admin %s', user_id, self.user.name)
-        self.response.write(entries.unnamed_entries(user_id))
+        num_entries = entries.unnamed_entries(user_id)
+        deferred.defer(mail.email_new_entries, user.email, users.make_login_token(user), num_entries, _queue='email')
+        self.response.write(num_entries)
 
 class NewUserHandler(handler.BaseHandler):
     @handler.admin
@@ -97,17 +101,42 @@ class ResendActivationHandler(handler.BaseHandler):
         num_entries = entries.unnamed_entries(user_id)
         deferred.defer(mail.email_new_user, user.email, users.make_login_token(user), num_entries, _queue='email')
 
+def _email_picks_link(user_id, alive_entries, week):
+    user = users.User.get_by_id(user_id)        
+    # wait for 10 secs so only the last link for buybacks is sent
+    time.sleep(5)
+    num_alive_entries = entries.Entry.gql('WHERE alive = True AND name != NULL AND user_id = :1', user_id).count()
+    if num_alive_entries != len(alive_entries):
+        return
+    mail.email_picks_link(user, alive_entries, week, False)
+
+def send_picks_email(user_id):
+    alive_entries = entries.Entry.gql('WHERE alive = True AND name != NULL AND user_id = :1', user_id)
+    if alive_entries.count() == 0:
+        logging.info('No active entries for %s', user.name)
+        return
+    alive_entries = sorted([e.name for e in alive_entries])
+    week = weeks.current()
+    deferred.defer(_email_picks_link, user_id, alive_entries, week, _queue='email')
+
+class PicksEmailHandler(handler.BaseHandler):
+    def post(self, user_id):
+        send_picks_email(int(user_id))
+
 class BuybackHandler(handler.BaseHandler):
     @handler.admin
     def post(self, entry_id):
-        if entries.buyback_entry(int(entry_id)) is None:
+        pick = entries.buyback_entry(int(entry_id))
+        if pick is None:
             self.abort(404)
+        send_picks_email(pick.user_id)
 
 app = webapp2.WSGIApplication([
     ('/users/newuser', NewUserHandler),
     webapp2.Route('/users/resend-activation/<user_id>', handler=ResendActivationHandler),
     webapp2.Route('/users/entries/<user_id>', handler=NewEntriesHandler),
     webapp2.Route('/users/buyback/<entry_id>', handler=BuybackHandler),
+    webapp2.Route('/users/picks-email/<user_id>', handler=PicksEmailHandler),
     ('/users/entries', GetEntriesHandler),
     ('/users', UsersHandler),
 ], 

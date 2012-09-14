@@ -74,17 +74,6 @@ class SendBreakdownHandler(handler.BaseHandler):
         emails = users.get_all_emails()
         deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')
-
-class SendSinglePickLinksHandler(handler.BaseHandler):
-    def post(self, user_id):
-        user_id = int(user_id)
-        alive_entries = entries.Entry.gql('WHERE alive = True and user_id = :1', user_id)
-        if alive_entries.count() == 0:
-            logging.info('No active entries for %s', user.name)
-            return
-        week = weeks.current()
-        user = users.User.get_by_id(user_id)        
-        deferred.defer(mail.email_picks_link, user, alive_entries, week, False, _queue='email')
         
 class SendPickLinksHandler(handler.BaseHandler):
     def get(self):
@@ -114,7 +103,6 @@ app = webapp2.WSGIApplication([
     ('/admin/close-picks', ClosePicksHandler),
     ('/admin/advance-week', AdvanceWeekHandler),
     ('/admin/send-breakdown', SendBreakdownHandler),
-    webapp2.Route('/admin/send-pick-links/<user_id>', SendSinglePickLinksHandler),
     ('/admin/send-pick-links', SendPickLinksHandler),
     ('/admin/send-analysis', SendAnalysisHandler),
     ('/admin', AdminHandler),

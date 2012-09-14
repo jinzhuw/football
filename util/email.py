@@ -4,6 +4,7 @@ from textwrap import dedent
 from google.appengine.api import mail
 import logging
 import time
+import ses.message
 
 def _html_template(tmpl):
     html = ['<html><body>']
@@ -13,7 +14,17 @@ def _html_template(tmpl):
     html.append('</body></html>')
     return '\n'.join(html)
 
+def _amazon_send_mail(subject, sender, to, body, html, bcc=None):
+    conn = ses.SimpleEmailService(settings.aws_access_key(), settings.aws_secret_key())
+    msg = ses.message.SimpleEmailServiceMessage(subject, body, sender, [to], body_html=html, bcc=bcc)
+    conn.SendEmail(msg)
+    
 def _send_mail(emails, subject, plain, html):
+    if settings.use_google_email():
+        _send = mail.send_mail
+    else:
+        _send = _amazon_send_mail
+
     if not settings.email_enabled():
         logging.warning('Email disabled, would have sent:')
         logging.warning('To: %s\nSubject: %s\nBody: %s', emails, subject, plain)
@@ -28,7 +39,7 @@ def _send_mail(emails, subject, plain, html):
     sleep = 2
     while num_retries > 0:
         try:
-            mail.send_mail(
+            _send(
                 subject=subject,
                 sender=settings.email_source(),
                 to=to,
@@ -67,6 +78,31 @@ def email_new_user(email, token, num_entries):
     args['link'] = '<a href="%(link)s">Activate Your Account</a>' % args
     html = html_new_user_template % args
     _send_mail([email], '2012 NFL Suicide Pool: Activate Your Account', plain, html)
+
+new_entries_template = dedent('''
+    You have %(num_entries)d new unnamed entries. Click the following link to name them:
+    %(link)s
+
+    You have until %(deadline)s to name your entries and make your picks for Week %(week)d.
+
+    Good luck!
+''')
+html_new_entries_template = _html_template(new_entries_template)
+
+def email_new_entries(email, token, num_entries):
+    logging.info('Emailing new user %s', email)
+    week = weeks.current()
+    args = {
+        'num_entries': num_entries,
+        'link': 'http://www.jgsuicidepool.com/login/' + token,
+        'week': week,
+        'deadline': weeks.deadline(week).strftime('%A, %B %d at %I:%M%p'),
+    }
+    plain = new_entries_template % args
+    args['deadline'] = '<strong>%s</strong>' % args['deadline']
+    args['link'] = '<a href="%(link)s">Name Your Entries</a>' % args
+    html = html_new_entries_template % args
+    _send_mail([email], '2012 NFL Suicide Pool: Name New Entries', plain, html)
 
 picks_template = dedent('''
     Hello %(name)s!
