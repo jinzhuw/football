@@ -22,6 +22,9 @@ function select_team(entry_id, team, team_info) {
 
             $('#entry-' + entry_id + '-team').html(team.city + ' ' + team.mascot); 
             entry.collapse('hide');
+        },
+        'error': function() {
+            window.location = '/picks';
         }
     });
 }

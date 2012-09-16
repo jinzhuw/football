@@ -57,7 +57,7 @@ class PicksGamesHandler(handler.BaseHandler):
                     'logo_y': g.visiting_y(),
                 }
             })
-        view.render_json(self, data)
+        return view.render_json(self, data)
 
 class PickSetter(handler.BaseHandler):
     def get(self, entry_id):

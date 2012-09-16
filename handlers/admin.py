@@ -70,7 +70,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
 class SendBreakdownHandler(handler.BaseHandler):
     def get(self):
         week = weeks.current()
-        (no_pick, picks) = analysis.get_counts(week)
+        (no_pick, picks) = analysis.get_team_counts(week)
         emails = users.get_all_emails()
         deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')

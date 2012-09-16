@@ -71,7 +71,7 @@ Results.prototype.set_data = function(results) {
         var num_weeks = results[s_index].length;
         var last_week = results[s_index][num_weeks - 1];
         var status = 0;
-        if (typeof(last_week) != 'string') {
+        if (typeof(last_week) != 'string' && last_week.status != 'buyback') {
             status = 1;
         }
         this._sorted.push({'name': s_index, 'weeks': num_weeks, 'status': status});

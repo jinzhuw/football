@@ -30,24 +30,12 @@
     <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">
     -->
 
-    <!-- dummy init() so page specific js files can override --> 
     <script type="text/javascript" src="/js/jquery-1.8.0.js"></script>
     <script type="text/javascript" src="/js/bootstrap.js"></script>
     <!--[if IE]>
     <script type="text/javascript" src="/js/ie-hacks.js"></script>
     <![endif]-->
-    <script type="text/javascript">
-        function init_page() {}
-        function init() {
-            $('.dropdown-toggle').dropdown();
-            // Fix input element click problem
-            $('.login_box input, .login_box label').click(function(e) {
-                e.stopPropagation();
-                return false;
-            });
-            init_page();
-        }
-    </script>
+    <script type="text/javascript" src="/js/base.js"></script>
     {% if js %}
     <script src="/js/{{ js }}.js" type="text/javascript"></script>
     {% endif %}
@@ -58,8 +46,8 @@
     <div class="navbar">
         <div class="navbar-inner">
             <div class="brand" style="margin-top: -10px">
-                <div>Jack Gonzales'</div>
-                <div>2012 NFL Suicide Pool</div>
+                <span class="head">Jack Gonzales'</span><br/>
+                <span>2012 NFL Suicide Pool</span>
             </div>
 
             <a class="btn btn-navbar" style="margin-top: 30px"
@@ -78,44 +66,28 @@
                     {% endfor %}
                 </ul>
                 <ul class="nav pull-right">
-                    <li class="login_container">
-                    <div>
+                    <li class="login-container"><div>
+                    <div class="dropdown">
                     {% if user %}
-                        <div class="btn-group">
-                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                {% if user.name %}{{ user.name }}{% else %}{{ user.email }}{% endif %}
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu pull-right">
-                                <li><a tabindex="-1" href="/setup/email">Change Email</a></li>
-                                <li><a tabindex="-1" href="/setup/password">{% if user.password %}Change{% else %}Add{% endif %} Password</a></li>
-                                <li class="divider"></li>
-                                <li><a tabindex="-1" href="/logout">Logout</a></li>
-                            </ul>
-                        </div>
+                        <a class="btn dropdown-toggle login-head" data-toggle="dropdown" href="#">
+                            {% if user.name %}{{ user.name }}{% else %}{{ user.email }}{% endif %}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu pull-right">
+                            <li><a tabindex="-1" href="/setup/email">Change Email</a></li>
+                            <li><a tabindex="-1" href="/setup/password">{% if user.password %}Change{% else %}Add{% endif %} Password</a></li>
+                            <li class="divider"></li>
+                            <li><a tabindex="-1" href="/logout">Logout</a></li>
+                        </ul>
                     {% else %}
-                        <div class="btn-group">
-                            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                                Login
-                                <span class="caret"></span>
-                            </a>
-                        <div class="dropdown-menu pull-right">
-                        <form class="login_box" action="/login" method="POST">
-                            <fieldset>
-                                <label for="email">Email</label>
-                                <input name="email" type="text"/>
-                            </fieldset>
-                            <fieldset>
-                                <label for="password">Password</label>
-                                <input name="password" type="password"/>
-                            </fieldset>
-                            <button class="btn btn-primary">Sign in</button>
-                        </form>
-                        </div>
-                        </div>
+                        <a class="btn dropdown-toggle login-head" data-toggle="dropdown" href="#">
+                            Login
+                            <span class="caret"></span>
+                        </a>
+                        <div class="dropdown-menu pull-right login-box"></div>
                     {% endif %}
                     </div>
-                    </li>
+                    </div></li>
                 </ul>
             </div>
         </div>

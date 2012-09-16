@@ -1,0 +1,11 @@
+
+@media screen and (max-width: 480px) {
+    h4 {
+        margin-top: 20px;
+        clear: both;
+    }
+}
+
+.btn-large {
+    margin: 10px;
+}

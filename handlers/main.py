@@ -5,7 +5,7 @@ import webapp2
 
 class HomeHandler(handler.BaseHandler):
     def get(self):
-        view.render(self, 'home', {})
+        view.render(self, 'home', {}, css=True)
 
 class RulesHandler(handler.BaseHandler):
     def get(self):
@@ -17,11 +17,11 @@ class LoginHandler(handler.BaseHandler):
             self.abort(403)
         self.login(user)
         if not self.user.name:
-            self.redirect('/setup/activation')
+            view.render_json(self, {'redirect': '/setup/activation'})
         elif entries.unnamed_entries(self.user.key().id()) > 0:
-            self.redirect('/setup/entries')
+            view.render_json(self, {'redirect': '/setup/entries'})
         else:
-            self.redirect('/picks')
+            view.render_json(self, {'redirect': '/picks'})
 
     def get(self, token):
         user = users.get_user_by_token(token)

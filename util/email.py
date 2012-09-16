@@ -4,7 +4,6 @@ from textwrap import dedent
 from google.appengine.api import mail
 import logging
 import time
-import ses.message
 
 def _html_template(tmpl):
     html = ['<html><body>']
@@ -14,17 +13,7 @@ def _html_template(tmpl):
     html.append('</body></html>')
     return '\n'.join(html)
 
-def _amazon_send_mail(subject, sender, to, body, html, bcc=None):
-    conn = ses.SimpleEmailService(settings.aws_access_key(), settings.aws_secret_key())
-    msg = ses.message.SimpleEmailServiceMessage(subject, body, sender, [to], body_html=html, bcc=bcc)
-    conn.SendEmail(msg)
-    
 def _send_mail(emails, subject, plain, html):
-    if settings.use_google_email():
-        _send = mail.send_mail
-    else:
-        _send = _amazon_send_mail
-
     if not settings.email_enabled():
         logging.warning('Email disabled, would have sent:')
         logging.warning('To: %s\nSubject: %s\nBody: %s', emails, subject, plain)
@@ -35,11 +24,11 @@ def _send_mail(emails, subject, plain, html):
     else:
         to = settings.email_source()
         kwargs['bcc'] = emails
-    num_retries = 3
+    num_retries = 1
     sleep = 2
     while num_retries > 0:
         try:
-            _send(
+            mail.send_mail(
                 subject=subject,
                 sender=settings.email_source(),
                 to=to,
@@ -49,7 +38,8 @@ def _send_mail(emails, subject, plain, html):
             )
             return
         except Exception:
-            logging.exception('Failed to send email to %s for %s, retrying', emails, subject) 
+            logging.exception('Failed to send email to %s for %s, retrying', emails, subject)
+            return
         num_retries -= 1
         time.sleep(sleep)
         sleep *= 2

@@ -126,10 +126,31 @@ class PicksEmailHandler(handler.BaseHandler):
 class BuybackHandler(handler.BaseHandler):
     @handler.admin
     def post(self, entry_id):
-        pick = entries.buyback_entry(int(entry_id))
-        if pick is None:
-            self.abort(404)
-        send_picks_email(pick.user_id)
+        send_email_user_id = entries.buyback_entry(int(entry_id))
+        if send_email_user_id:
+            send_picks_email(send_email_user_id)
+
+class CountBuybacksHandler(handler.BaseHandler):
+    @handler.admin
+    def get(self):
+        buybacks = defaultdict(list)
+        for p in entries.Pick.gql('WHERE week = 1 AND buyback = True'):
+            buybacks[p.user_id].append(p.entry_id)
+        data = {}
+        for user_id,entry_ids in buybacks.iteritems():
+            user = users.User.get_by_id(user_id)
+            entry_names = []
+            for entry_id in entry_ids:
+                entry_names.append(entries.Entry.get_by_id(entry_id).name)
+            data[user.name] = entry_names
+        buf = []
+        for user_name,entry_names in sorted(data.iteritems()):
+            buf.append('<strong>%s</strong>' % user_name)
+            for e in entry_names:
+                buf.append('-- %s' % e)
+        self.response.out.write('<br/>'.join(buf))
+        #view.render_json(self, data)
+        
 
 app = webapp2.WSGIApplication([
     ('/users/newuser', NewUserHandler),
@@ -138,6 +159,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/users/buyback/<entry_id>', handler=BuybackHandler),
     webapp2.Route('/users/picks-email/<user_id>', handler=PicksEmailHandler),
     ('/users/entries', GetEntriesHandler),
+    ('/users/count-buybacks', CountBuybacksHandler),
     ('/users', UsersHandler),
 ], 
 config=settings.app_config(),

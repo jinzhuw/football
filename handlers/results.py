@@ -36,8 +36,8 @@ class ResultsDataHandler(handler.BaseHandler):
                 status = 'violation'
                 if pick.status == entries.Status.LOSS:
                     status = 'loss'
-                #if current_entry.alive:
-                #    status = 'buyback'
+                if pick.buyback:
+                    status = 'buyback'
                 team = {'team': team, 'status': status}
             data[entries_by_id[pick.entry_id].name].append(team)
             current_week += 1

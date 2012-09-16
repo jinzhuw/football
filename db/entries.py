@@ -32,6 +32,7 @@ class Pick(db.Model):
     week = db.IntegerProperty()
     team = db.IntegerProperty(default=-1)
     closed = db.BooleanProperty(default=False)
+    buyback = db.BooleanProperty(default=False)
     status = db.IntegerProperty(default=Status.NONE, choices=range(4))
     modified = db.DateTimeProperty(auto_now=True) 
 
@@ -68,12 +69,20 @@ def name_entry(entry_id, name, week=None):
     return _create_pick(entry, week)
 
 def buyback_entry(entry_id):
+    week = weeks.current()
     entry = Entry.get_by_id(entry_id)
-    if not entry:
-        return None
     entry.alive = True
     entry.put()
-    return _create_pick(entry, weeks.current())
+    buyback_pick = Pick.get_by_key_name(_pick_key(week, entry_id))
+    send_email_user_id = None
+    if not buyback_pick:
+        # attempting to buyback after the week has ended
+        buyback_pick = Pick.get_by_key_name(_pick_key(week - 1, entry_id))
+        _create_pick(entry, week)
+        send_email_user_id = buyback_pick.user_id
+    buyback_pick.buyback = True
+    buyback_pick.put()
+    return send_email_user_id
 
 def create_picks(week, entries):
     new_picks = []
@@ -173,17 +182,34 @@ def close_picks(week, teams=None):
         query.append('AND team IN (%s)' % teams_list)
     else:
         logging.info('Closing all open entries')
-    to_save = []
+
     query = ' '.join(query)
-    logging.info('Finding picks: %s', query)
+    logging.info('Finding picks to close: %s', query)
     num_closed = 0
+    changed_picks = []
+    violation_entries = []
     for p in Pick.gql(query):
         num_closed += 1
         p.closed = True
         if p.team == last_week.get(p.entry_id) or teams is None and p.team == -1:
             p.status = Status.VIOLATION
-        to_save.append(p)
-    db.put(to_save)
+            violation_entries.append(p.entry_id)
+        changed_picks.append(p)
+    
+    changed_entries = []
+    for entry_id in violation_entries:
+        e = Entry.get_by_id(entry_id)
+        e.alive = False
+        changed_entries.append(e)
+
+    if teams is None:
+        # find any new entries that were never names, create picks
+        # TODO: handle this next year...
+        pass
+
+    db.put(changed_picks)
+    db.put(changed_entries)
+
     return num_closed
 
 def nopicks(week):
@@ -225,7 +251,7 @@ def set_pick_status(week, game_results=None):
     query = ' '.join(query)
     
     logging.info('Setting pick status: query = %s', query)
-    picks = []
+    changed_picks = []
     for p in Pick.gql(query):
         logging.info('Looking at pick %d, team %d', p.key().id(), p.team)
         if p.team in winners:
@@ -233,10 +259,21 @@ def set_pick_status(week, game_results=None):
         elif p.team in losers:
             p.status = Status.LOSS
         else:
-            logging.info('Skipping...')
             continue
-        picks.append(p)
-    db.put(picks)
+        changed_picks.append(p)
+    db.put(changed_picks)
+
+    changed_entries = []
+    for p in changed_picks:
+        e = Entry.get_by_id(p.entry_id)
+        if e.alive and p.status == Status.LOSS:
+            e.alive = False
+            changed_entries.append(e)
+        elif not e.alive and p.status == Status.WIN:
+            e.alive = True
+            changed_entries.append(e)
+    db.put(changed_entries)
+
     return len(picks) != 0
 
 def _name_unnamed_entries(user_id, entries, week):

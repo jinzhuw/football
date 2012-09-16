@@ -11,9 +11,6 @@ class _Settings(db.Model):
     email_source = db.StringProperty()
     email_enabled = db.BooleanProperty(default=True)
     debug = db.BooleanProperty()
-    aws_access_key = db.StringProperty(default='')
-    aws_secret_key = db.StringProperty(default='')
-    use_google_email = db.BooleanProperty(default=True)
     
 
 _cached_settings = None
@@ -62,17 +59,6 @@ def email_enabled():
     return _cached_settings.email_enabled
 
 @_cached
-def use_google_email():
-    return _cached_settings.use_google_email
-
-@_cached
 def debug():
     return _cached_settings.debug
     
-@_cached
-def aws_access_key():
-    return str(_cached_settings.aws_access_key)
-
-@_cached
-def aws_secret_key():
-    return str(_cached_settings.aws_secret_key)

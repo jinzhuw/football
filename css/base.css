@@ -1,25 +1,26 @@
 
-.login_container {
+.login-container {
     position: relative;
 }
 
-.login_button {
-    cursor: pointer;
-    margin-right: 15px;
+.login-box {
+    padding: 15px 15px 10px;
 }
 
-.login_box {
-    padding: 15px 15px 0;
+.login-btn {
+    float: right;
 }
 
-div.dropdown-menu {
-    background-color: #F2F2F2;
-    background: -moz-linear-gradient(top, #f2f2f2 0%, #ffffff 100%);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f2f2), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* IE10+ */
-    background: linear-gradient(to bottom, #f2f2f2 0%,#ffffff 100%); /* W3C */
+@media screen and (min-width: 480px) {
+    div.dropdown-menu {
+        background-color: #F2F2F2;
+        background: -moz-linear-gradient(top, #f2f2f2 0%, #ffffff 100%);
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f2f2f2), color-stop(100%,#ffffff)); /* Chrome,Safari4+ */
+        background: -webkit-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* Chrome10+,Safari5.1+ */
+        background: -o-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* Opera 11.10+ */
+        background: -ms-linear-gradient(top, #f2f2f2 0%,#ffffff 100%); /* IE10+ */
+        background: linear-gradient(to bottom, #f2f2f2 0%,#ffffff 100%); /* W3C */
+    }
 }
 
 /* turn off anchor focus border */
@@ -29,4 +30,14 @@ div.dropdown-menu {
 /* fix IE horribleness with bootsrap collapse*/
 .collapse {
     overflow: hidden !important;
+}
+
+.brand .head {
+    font-size: smaller;
+}
+
+@media screen and (max-width: 480px) {
+    .navbar .brand {
+        font-size: medium;
+    }
 }

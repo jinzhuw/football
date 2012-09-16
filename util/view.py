@@ -60,9 +60,12 @@ class cached:
             force = handler.request.get('force')
             if not force and _cache_hit(handler, handler.request.path):
                 return
-            logging.debug('Caching page %s', handler.request.path)
+            logging.debug('Caching page %s for %d seconds', handler.request.path, self.ttl)
             data = f(handler, *args, **kwargs)
-            memcache.set(handler.request.path, data, self.ttl)
+            if data is None:
+                logging.error('Bad cached handler: returned None')
+            elif not memcache.set(handler.request.path, data, time=self.ttl):
+                logging.error('Failed to cache page')
         return func
 
 def _cache_hit(handler, key):
