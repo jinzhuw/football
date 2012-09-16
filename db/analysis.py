@@ -10,7 +10,6 @@ class Analysis(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
     text = db.TextProperty()
     posted = db.BooleanProperty(default=False)
-    locked = db.BooleanProperty(default=True)
 
 class AnalysisComment(db.Model):
     week = db.IntegerProperty(required=True)

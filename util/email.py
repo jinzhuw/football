@@ -164,11 +164,12 @@ plain_breakdown = dedent('''
 ''')
 html_breakdown = _html_template(plain_breakdown)
 def email_breakdown(week, no_pick, picks, emails):
+    total = float(sum(p for p in picks.itervalues()))
     args = {
         'week': week,
         'link': 'http://www.jgsuicidepool.com/results',
         'no_pick': no_pick,
-        'picks': '\n'.join('%s - %d' % e for e in sorted(picks.iteritems()))
+        'picks': '\n'.join('%s - %d (%2.1f%%)' % (e[0], e[1], 100 * e[1] / total) for e in sorted(picks.iteritems()))
     }
     plain = plain_breakdown % args
     args['link'] = '<a href="%(link)s">%(link)s</a>' % args

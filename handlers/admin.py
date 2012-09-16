@@ -72,6 +72,7 @@ class SendBreakdownHandler(handler.BaseHandler):
         week = weeks.current()
         (no_pick, picks) = analysis.get_team_counts(week)
         emails = users.get_all_emails()
+        emails = ['ryan@iernst.net']
         deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')
         
