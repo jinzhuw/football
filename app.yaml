@@ -74,4 +74,5 @@ skip_files:
 - ^bin/
 - ^Crypto/
 - (.*\.py[co])
+- (.*\.DS_Store)
 

@@ -74,7 +74,7 @@ def load_schedule():
 
     return schedule
 
-def reset():
+def load_schedule_data():
     for g in Game.all():
         g.delete()
     
@@ -84,6 +84,16 @@ def reset():
             deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
             g = Game(week=week, home=game[1], visiting=game[2], date=date, deadline=deadline)
             g.put()
+
+def reset_for_week(week):
+    games_to_save = []
+    for g in Game.gql('WHERE week = :1', week):
+        if g.winner != -1:
+            g.winner = -1
+            g.home_score = -1
+            g.visiting_score = -1
+            games_to_save.append(g)
+    db.put(games_to_save)
 
 def load_scores(week):
     scores_url = 'http://www.nfl.com/liveupdate/scorestrip/ss.json'
@@ -176,7 +186,7 @@ def open_past_deadline(week, current_time):
 def results_for_week(week):
     winners = set()
     losers = set()
-    for g in Game.gql('WHERE week = :1', week):
+    for g in Game.gql('WHERE week = :1 AND winner != -1', week):
         winners.add(g.winner)
         if g.winner == g.home:
             losers.add(g.visiting)

@@ -253,7 +253,7 @@ def set_pick_status(week, game_results=None):
     logging.info('Setting pick status: query = %s', query)
     changed_picks = []
     for p in Pick.gql(query):
-        logging.info('Looking at pick %d, team %d', p.key().id(), p.team)
+        logging.info('Looking at pick %s, team %d', p.key(), p.team)
         if p.team in winners:
             p.status = Status.WIN
         elif p.team in losers:
@@ -274,7 +274,7 @@ def set_pick_status(week, game_results=None):
             changed_entries.append(e)
     db.put(changed_entries)
 
-    return len(picks) != 0
+    return len(changed_picks) != 0
 
 def _name_unnamed_entries(user_id, entries, week):
     # SPECIAL CASE
@@ -289,23 +289,20 @@ def _name_unnamed_entries(user_id, entries, week):
 
 def deactivate_dead_entries(week):
     picks = {}
-    for p in db.GqlQuery('SELECT entry_id,status FROM Pick WHERE week = :1', week):
-        picks[p.entry_id] = p.status
+    for p in Pick.gql('WHERE week = :1'):
+        picks[p.entry_id] = p
     
     unnamed = defaultdict(list)
     entries_to_save = []
     alive_entries = []
     for e in Entry.gql('WHERE alive = True'):
         entry_id = e.key().id()
-        status = picks.get(entry_id)
-        if status is None:
-            status = Status.VIOLATION
+        pick = picks.get(entry_id)
+        if pick is None:
             unnamed[e.user_id].append(entry_id)
-
-        if status != Status.WIN:
             e.alive = False
             entries_to_save.append(e)
-        else:
+        elif pick.status == Status.WIN or pick.buyback:
             alive_entries.append(e)
     db.put(entries_to_save)
 

@@ -35,7 +35,7 @@ class SetScoreHandler(handler.BaseHandler):
 class GamesResetHandler(handler.BaseHandler):
     @handler.admin
     def get(self):
-        games.reset()
+        games.reset_for_week(weeks.current())
         self.redirect('/')
 
 app = webapp2.WSGIApplication([

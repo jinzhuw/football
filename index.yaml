@@ -22,6 +22,11 @@ indexes:
   - name: winner
   - name: deadline
 
+- kind: Game
+  properties:
+  - name: week
+  - name: winner
+
 - kind: Pick
   properties:
   - name: closed

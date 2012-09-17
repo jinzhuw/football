@@ -12,26 +12,32 @@ class RulesHandler(handler.BaseHandler):
         view.render(self, 'rules', {})
 
 class LoginHandler(handler.BaseHandler):
-    def _login(self, user):
+    def _redirect(self, path, real):
+        if real:
+            self.redirect(path)
+        else:
+            view.render_json(self, {'redirect': path})
+            
+    def _login(self, user, real_redirect):
         if not user:
             self.abort(403)
         self.login(user)
         if not self.user.name:
-            view.render_json(self, {'redirect': '/setup/activation'})
+            self._redirect('/setup/activation', real_redirect)
         elif entries.unnamed_entries(self.user.key().id()) > 0:
-            view.render_json(self, {'redirect': '/setup/entries'})
+            self._redirect('/setup/entries', real_redirect)
         else:
-            view.render_json(self, {'redirect': '/picks'})
+            self._redirect('/picks', real_redirect)
 
     def get(self, token):
         user = users.get_user_by_token(token)
-        self._login(user)
+        self._login(user, True)
 
     def post(self):
         email = self.request.POST.get('email')
         password = self.request.POST.get('password')
         user = users.get_user_by_password(email, password)
-        self._login(user)
+        self._login(user, False)
 
 class LogoutHandler(handler.BaseHandler):
     def get(self):

@@ -72,7 +72,6 @@ class SendBreakdownHandler(handler.BaseHandler):
         week = weeks.current()
         (no_pick, picks) = analysis.get_team_counts(week)
         emails = users.get_all_emails()
-        emails = ['ryan@iernst.net']
         deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')
         
@@ -100,12 +99,22 @@ class AdminHandler(handler.BaseHandler):
     def get(self):
         view.render(self, 'admin', {})
 
+class ResetPicks(handler.BaseHandler):
+    def get(self):
+        to_save = []
+        for p in entries.Pick.gql('WHERE week = :1', weeks.current()):
+            if p.status != entries.Status.VIOLATION:
+                p.status = 0
+                to_save.append(p)
+        entries.db.put(to_save)
+
 app = webapp2.WSGIApplication([
     ('/admin/close-picks', ClosePicksHandler),
     ('/admin/advance-week', AdvanceWeekHandler),
     ('/admin/send-breakdown', SendBreakdownHandler),
     ('/admin/send-pick-links', SendPickLinksHandler),
     ('/admin/send-analysis', SendAnalysisHandler),
+    ('/admin/reset-picks', ResetPicks),
     ('/admin', AdminHandler),
 ], 
 config=settings.app_config(),
