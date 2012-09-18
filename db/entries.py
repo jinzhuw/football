@@ -157,7 +157,7 @@ def entry_name_exists(entry_name):
     return Entry.gql('WHERE name = :1', entry_name).count() > 0
 
 def unnamed_entries(user_id):
-    return Entry.gql('WHERE user_id = :1 AND name = NULL AND active = True', user_id).count()
+    return Entry.gql('WHERE user_id = :1 AND name = NULL AND alive = True', user_id).count()
 
 def picks_closed(week):
     return Pick.gql('WHERE week = :1 AND closed = False', week).count() == 0
@@ -289,7 +289,7 @@ def _name_unnamed_entries(user_id, entries, week):
 
 def deactivate_dead_entries(week):
     picks = {}
-    for p in Pick.gql('WHERE week = :1'):
+    for p in Pick.gql('WHERE week = :1', week):
         picks[p.entry_id] = p
     
     unnamed = defaultdict(list)

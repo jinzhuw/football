@@ -20,12 +20,12 @@ indexes:
   properties:
   - name: week
   - name: winner
-  - name: deadline
 
 - kind: Game
   properties:
   - name: week
   - name: winner
+  - name: deadline
 
 - kind: Pick
   properties:

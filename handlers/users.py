@@ -64,6 +64,28 @@ class GetEntriesHandler(handler.BaseHandler):
         buf.append('<br/><br/>Unknown %s' % unknown)
         self.response.out.write(''.join(buf))
 
+class GetPotHandler(handler.BaseHandler):
+    @handler.admin
+    def get(self):
+        current_entry = None 
+        base = defaultdict(int)
+        buybacks = defaultdict(int)
+        for p in entries.iterpicks():
+            if current_entry != p.entry_id:
+                current_entry = p.entry_id
+                base[p.week] += 1
+            if p.buyback:
+                buybacks[p.week] += 1
+        data = {
+            'buybacks': dict((w,t*25) for w,t in buybacks.iteritems()),
+            'weeks': dict((w,t*w*25) for w,t in base.iteritems())
+        }
+        data['total'] = sum(t for t in data['buybacks'].itervalues()) \
+                      + sum(t for t in data['weeks'].itervalues())
+        view.render_json(self, data)
+                
+                
+
 class NewEntriesHandler(handler.BaseHandler):
     @handler.admin
     def post(self, user_id):
@@ -129,6 +151,7 @@ class BuybackHandler(handler.BaseHandler):
         send_email_user_id = entries.buyback_entry(int(entry_id))
         if send_email_user_id:
             send_picks_email(send_email_user_id)
+        view.clear_cache('/results/data')
 
 class CountBuybacksHandler(handler.BaseHandler):
     @handler.admin
@@ -160,6 +183,7 @@ app = webapp2.WSGIApplication([
     webapp2.Route('/users/picks-email/<user_id>', handler=PicksEmailHandler),
     ('/users/entries', GetEntriesHandler),
     ('/users/count-buybacks', CountBuybacksHandler),
+    ('/users/pot', GetPotHandler),
     ('/users', UsersHandler),
 ], 
 config=settings.app_config(),
