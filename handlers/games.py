@@ -13,13 +13,18 @@ class GamesHandler(handler.BaseHandler):
             'games': sorted(current_games, key=lambda x: x.date),
         }, css=True, js=True)
 
+def load_scores(week):
+    (results, in_progress) = games.load_scores(week)
+    if entries.set_pick_status(week, results):
+        view.clear_cache('/results/data')
+    if in_progress > 0:
+        deferred.defer(load_scores, week, _countdown=300)
+
 class LoadScoresHandler(handler.BaseHandler):
     @handler.admin
     def get(self):
         week = weeks.current()
-        results = games.load_scores(week)
-        if entries.set_pick_status(week, results):
-            view.clear_cache('/results/data')
+        load_scores(week) 
         self.redirect('/games')
 
 class SetScoreHandler(handler.BaseHandler):

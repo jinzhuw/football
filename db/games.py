@@ -1,5 +1,6 @@
 
 import json
+import lxml.objectify
 import logging
 import urllib2
 from datetime import datetime, timedelta
@@ -49,7 +50,17 @@ class Game(db.Model):
     def visiting_y(self):
         return teams.large_logo_y(self.visiting)
 
-def load_schedule():
+class TeamRankingData(db.Model):
+    wins = db.IntegerProperty(default=0)
+    losses = db.IntegerProperty(default=0)
+    power_rank = db.IntegerProperty(default=-1)
+    rush_defense_rank = db.IntegerProperty(default=-1)
+    rush_offense_rank = db.IntegerProperty(default=-1)
+    pass_defense_rank = db.IntegerProperty(default=-1)
+    pass_offense_rank = db.IntegerProperty(default=-1)
+
+
+def read_static_schedule():
     schedule = defaultdict(list)
     f = open('data/schedule.txt', 'r')
     week = 0 
@@ -74,11 +85,11 @@ def load_schedule():
 
     return schedule
 
-def load_schedule_data():
+def load_static_schedule():
     for g in Game.all():
         g.delete()
     
-    for week,games in load_schedule().iteritems():
+    for week,games in read_static_schedule().iteritems():
         for game in games:
             date = game[0]
             deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
@@ -95,25 +106,42 @@ def reset_for_week(week):
             games_to_save.append(g)
     db.put(games_to_save)
 
-def load_scores(week):
-    scores_url = 'http://www.nfl.com/liveupdate/scorestrip/ss.json'
-    data = urllib2.urlopen(scores_url)
+def _load_url(url, xml):
+    data = None
+    retries = 3
+    while data is None:
+        try:
+            data = urllib2.urlopen(url)
+        except urllib2.URLError:
+            logging.exception('Failed to get url %s', url)
+            if retries == 0:
+                raise
+            time.sleep(5)
+            retries -= 1
+        
+    if xml:
+        return lxml.objectify.fromstring(data.read())
+    else: # json
+        return json.loads(data.read())
 
-    if not data:
-        logging.error('Failed to retrieve scores data')
-        return
-    
-    j = json.loads(data.read())
-    if j['w'] != str(week):
+def load_scores(week):
+    j = _load_url('http://www.nfl.com/liveupdate/scorestrip/ss.json', xml=False)
+
+    if j['w'] != week:
         logging.warning('Could not load scores for week %d, data contains week %s', week, j['w'])
+        return
 
     games = Game.gql('WHERE week = :1 AND winner = -1', week)        
     scores = {}
+    in_progress = 0
     for g in j['gms']:
         if 'F' in g['q']:
             scores[g['h']] = (g['hs'], g['vs'])
+        elif 'P' != g['q']:
+            logging.debug('Game %s v %s in progress, state %s', g['v'], g['h'], g['q'])
+            in_progress += 1
         else:
-            logging.debug('Skipping game %s vs %s, game state is %s', g['h'], g['v'], g['q'])
+            logging.debug('Skipping game %s vs %s, game state is %s', g['v'], g['h'], g['q'])
 
     winners = set()
     losers = set()
@@ -126,9 +154,45 @@ def load_scores(week):
             winners.add(winner)
             losers.add(loser)
 
-    if winners:
-        return (winners, losers)
-    return None
+    return (winners, losers, in_progress)
+
+def _set_rankings(team):
+    rankings = TeamRankingData.get_or_insert(team.get('id'))
+    rankings.rush_defense_rank = int(team.get('rushDefenseRank')) 
+    rankings.rush_offense_rank = int(team.get('rushOffenseRank')) 
+    rankings.pass_defense_rank = int(team.get('passDefenseRank')) 
+    rankings.pass_offense_rank = int(team.get('passOffenseRank')) 
+    rankings.put()
+
+def load_schedule(week):
+    if week < 18:
+        logging.warning('Cannot load schedule for week %d, which is a static week', week)
+
+    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule&W=%d' % week, xml=True)
+
+    if int(x.nflSchedule.get('week', 0)) != week:
+        logging.warning('Could not load schedule for week %d', week)
+        return
+
+    for game in x.nflSchedule.matchup:
+        date = datetime.fromtimestamp(int(game.get('kickoff')))
+        deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
+        assert game.team[0].get('isHome') == '0'
+        visiting = teams.id(game.team[0].get('id'))
+        home = teams.id(game.team[1].get('id'))
+        g = Game(week=week, home=home, visiting=visiting, date=date, deadline=deadline)
+        g.put()
+        
+def update_rankings():
+    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule', xml=True)
+
+    if int(x.nflSchedule.get('week', 0)) != week:
+        logging.warning('Could not update rankings for week %d', week)
+        return
+
+    for game in x.nflSchedule.matchup:
+        for team in game.team:
+            _set_rankings(team)
 
 def update(game, home_score, visiting_score):
     logging.info('Updating status for game %s (%d) vs %s (%d)',

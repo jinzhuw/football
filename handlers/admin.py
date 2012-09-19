@@ -45,7 +45,10 @@ class AdvanceWeekHandler(handler.BaseHandler):
             return
 
         if not games.games_complete(week):
-            results = games.load_scores(week)
+            (results, in_progress) = games.load_scores(week)
+            if in_progress > 0:
+                logging.error('%d games for week %d are still in progress', in_progress, week)
+                self.abort(409)
             if entries.set_pick_status(week, results):
                 view.clear_cache('/results/data')
         # all the games better be complete by now...
