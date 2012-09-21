@@ -1,6 +1,8 @@
 
 import json
 import lxml.objectify
+import lxml.html
+import re
 import logging
 import urllib2
 from datetime import datetime, timedelta
@@ -8,7 +10,7 @@ from collections import defaultdict
 
 from google.appengine.ext import db
 
-from db import teams
+from db import teams, weeks
 from util import timezone
 
 class Game(db.Model):
@@ -20,6 +22,7 @@ class Game(db.Model):
     home_score = db.IntegerProperty(default=-1)
     visiting_score = db.IntegerProperty(default=-1)
     winner = db.IntegerProperty(default=-1)
+    home_spread = db.FloatProperty(default=0.0)
 
     def tz_date(self):
         d = self.date
@@ -50,7 +53,7 @@ class Game(db.Model):
     def visiting_y(self):
         return teams.large_logo_y(self.visiting)
 
-class TeamRankingData(db.Model):
+class TeamRanking(db.Model):
     wins = db.IntegerProperty(default=0)
     losses = db.IntegerProperty(default=0)
     power_rank = db.IntegerProperty(default=-1)
@@ -97,6 +100,10 @@ def load_static_schedule():
             g.put()
 
 def reset_for_week(week):
+    if Game.gql('WHERE week = :1', week).count() == 0:
+        load_schedule(week)
+        return
+ 
     games_to_save = []
     for g in Game.gql('WHERE week = :1', week):
         if g.winner != -1:
@@ -106,7 +113,7 @@ def reset_for_week(week):
             games_to_save.append(g)
     db.put(games_to_save)
 
-def _load_url(url, xml):
+def _load_url(url, type):
     data = None
     retries = 3
     while data is None:
@@ -119,17 +126,18 @@ def _load_url(url, xml):
             time.sleep(5)
             retries -= 1
         
-    if xml:
+    if type == 'xml':
         return lxml.objectify.fromstring(data.read())
-    else: # json
+    elif type == 'json':
         return json.loads(data.read())
+    return data.read() # text
 
 def load_scores(week):
-    j = _load_url('http://www.nfl.com/liveupdate/scorestrip/ss.json', xml=False)
+    j = _load_url('http://www.nfl.com/liveupdate/scorestrip/ss.json', type='json')
 
     if j['w'] != week:
         logging.warning('Could not load scores for week %d, data contains week %s', week, j['w'])
-        return
+        return (None, None)
 
     games = Game.gql('WHERE week = :1 AND winner = -1', week)        
     scores = {}
@@ -154,45 +162,113 @@ def load_scores(week):
             winners.add(winner)
             losers.add(loser)
 
-    return (winners, losers, in_progress)
+    return ((winners, losers), in_progress)
 
 def _set_rankings(team):
-    rankings = TeamRankingData.get_or_insert(team.get('id'))
+    team_id = teams.shortname(teams.id(team.get('id')))
+    rankings = TeamRanking.get_or_insert(team_id)
     rankings.rush_defense_rank = int(team.get('rushDefenseRank')) 
     rankings.rush_offense_rank = int(team.get('rushOffenseRank')) 
     rankings.pass_defense_rank = int(team.get('passDefenseRank')) 
     rankings.pass_offense_rank = int(team.get('passOffenseRank')) 
     rankings.put()
 
-def load_schedule(week):
-    if week < 18:
+def load_schedule(week, force=False):
+    if Game.gql('WHERE week = :1', week).count() > 0 and not force:
         logging.warning('Cannot load schedule for week %d, which is a static week', week)
 
-    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule&W=%d' % week, xml=True)
+    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule&W=%d' % week, type='xml')
 
-    if int(x.nflSchedule.get('week', 0)) != week:
+    if int(x.get('week', 0)) != week:
         logging.warning('Could not load schedule for week %d', week)
         return
 
-    for game in x.nflSchedule.matchup:
+    games = []
+    for game in x.matchup:
         date = datetime.fromtimestamp(int(game.get('kickoff')))
+        date = date.replace(tzinfo=timezone.utc).astimezone(timezone.Pacific)
         deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
         assert game.team[0].get('isHome') == '0'
         visiting = teams.id(game.team[0].get('id'))
         home = teams.id(game.team[1].get('id'))
         g = Game(week=week, home=home, visiting=visiting, date=date, deadline=deadline)
+        logging.info('Adding game %s vs %s on %s, deadline %s',
+                     teams.shortname(visiting), teams.shortname(home), date, deadline)
         g.put()
+        games.append(g)
+
+    return games
         
 def update_rankings():
-    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule', xml=True)
+    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule', type='xml')
 
-    if int(x.nflSchedule.get('week', 0)) != week:
-        logging.warning('Could not update rankings for week %d', week)
-        return
-
-    for game in x.nflSchedule.matchup:
+    for game in x.matchup:
         for team in game.team:
             _set_rankings(team)
+
+def team_rankings():
+    return TeamRanking.all()
+
+def _extract_team_power_rank(row):
+    rank_elem = row.find_class('pr-rank')
+    if not rank_elem:
+        return (None, None) # extra element at bottom of table for explanation is not a rank
+    rank = int(rank_elem[0].text_content())
+    team_name = [x[0] for x in row.iterlinks()][1].text_content()
+    return (teams.id(team_name), rank)
+
+def update_power_ranks():
+    t = _load_url('http://espn.go.com/nfl/powerrankings', type='text')
+    x = lxml.html.document_fromstring(t)
+    logging.info('Updating power ranks')
+    rankings = []
+    for row in x.find_class('oddrow'):
+        rankings.append(_extract_team_power_rank(row))
+    for row in x.find_class('evenrow'):
+        rankings.append(_extract_team_power_rank(row))
+    changed_rankings = []
+    for team_id,rank in rankings:
+        if team_id is None: continue
+        logging.info('Looking up team %s', team_id)
+        ranking = TeamRanking.get_by_key_name(teams.shortname(team_id))
+        ranking.power_rank = rank
+        changed_rankings.append(ranking)
+    db.put(changed_rankings)
+
+def _update_team_standings(standings, team, winner):
+    ndx = 0 if team == winner else 1
+    standings[team][ndx] += 1
+
+def update_standings():
+    standings = defaultdict(lambda: [0, 0])
+    for g in Game.all():
+        if g.winner == -1: continue
+        _update_team_standings(standings, g.home, g.winner)
+        _update_team_standings(standings, g.visiting, g.winner)
+    changed_rankings = []
+    for team_id, (wins, losses) in standings.iteritems():
+        ranking = TeamRanking.get_by_key_name(teams.shortname(team_id))
+        ranking.wins = wins
+        ranking.losses = losses
+        changed_rankings.append(ranking)
+    db.put(changed_rankings)
+
+_home_team_re = re.compile('\S+ \S+ @ \S+ (\S+)')
+def update_spreads():
+    week = weeks.current()
+    changed_games = []
+    x = _load_url('http://www.sportsbook.ag/rss/live-nfl-football.rss', type='xml')
+    for game in x.channel.item:
+        logging.info('Finding home team in title %s', game.title)
+        home_team = _home_team_re.search(str(game.title)).group(1)
+        spread_re = home_team + " <a href=[^>]+>(\-?\d+\.\d)"
+        spread = float(re.search(spread_re, str(game.description)).group(1))
+        logging.info('Home team = %r, id = %d', home_team, teams.id(home_team))
+        game = Game.gql('WHERE week = :1 AND home = :2', week, teams.id(home_team)).get()
+        game.home_spread = spread
+        changed_games.append(game)
+        logging.info('Team %s, spread %f', spread)
+    db.put(changed_games)
 
 def update(game, home_score, visiting_score):
     logging.info('Updating status for game %s (%d) vs %s (%d)',
@@ -215,33 +291,10 @@ def update(game, home_score, visiting_score):
     return (winner, loser)
 
 def games_for_week(week):
-    """
-    Returns a dict of games for a given week, keyed by date. Each game is a dict of:
-    id - Game unique id
-    h - Home team name
-    v - Visiting team name
-    f - boolean, True if the game is finished
-    hs - Home team score
-    vs - Visiting team score
-    """
-    return Game.gql('WHERE week = :1', week)
-    """
-    status = defaultdict(list)
-    for g in Game.gql('WHERE week = :1', week):
-        date = g.date.strftime('%A, %B %d')
-        home = teams.cityname(g.home)
-        visiting = teams.cityname(g.visiting)
-        status[date].append({
-            'id': g.key().id(),
-            'h': teams.cityname(g.home),
-            'v': teams.cityname(g.visiting),
-            'f': g.winner != -1,
-            'hs': g.home_score,
-            'vs': g.visiting_score,
-        })
-            
-    return status
-    """
+    games = Game.gql('WHERE week = :1', week)
+    if games.count() == 0:
+        return load_schedule(week)
+    return games
 
 def open_past_deadline(week, current_time):
     return Game.gql('WHERE week = :1 AND winner = -1 AND deadline < :2',

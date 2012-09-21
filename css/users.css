@@ -86,3 +86,8 @@ hr.line {
     /*width: 300px;*/
 }
 
+.user-actions a {
+    display: inline-block;
+    margin: 10px;
+}
+

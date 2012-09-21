@@ -63,7 +63,8 @@ class cached:
             logging.debug('Caching page %s for %d seconds', handler.request.path, self.ttl)
             data = f(handler, *args, **kwargs)
             if data is None:
-                logging.error('Bad cached handler: returned None')
+                logging.warning('Bad cached handler: returned None')
+                return
             elif not memcache.set(handler.request.path, data, time=self.ttl):
                 logging.error('Failed to cache page')
         return func

@@ -30,7 +30,7 @@ class PicksHandler(handler.BaseHandler):
 
 class PicksGamesHandler(handler.BaseHandler):
     @handler.user
-    @view.cached(86400)
+    @view.cached(604800)
     def get(self, week):
         week = int(week)
         data = []
@@ -40,6 +40,7 @@ class PicksGamesHandler(handler.BaseHandler):
                 'time_str': g.date.strftime('%I:%M %p').lstrip('0'),
                 'datetime': time.mktime(g.tz_date().timetuple()),
                 'deadline': time.mktime(g.tz_deadline().timetuple()),
+                'home_spread': g.home_spread,
                 'home_team': {
                     'short': teams.shortname(g.home),
                     'city': teams.cityname(g.home),
@@ -57,7 +58,28 @@ class PicksGamesHandler(handler.BaseHandler):
                     'logo_y': g.visiting_y(),
                 }
             })
+        if not data:
+            return None
         return view.render_json(self, data)
+
+class PicksRankingsHandler(handler.BaseHandler):
+    @handler.user
+    #@view.cached(86400)
+    def get(self):
+        data = {}
+        for t in games.team_rankings():
+            team_name = str(t.key().name())
+            data[teams.id(team_name)] = {
+                'team': team_name,
+                'wins': t.wins,
+                'losses': t.losses,
+                'power_rank': t.power_rank,
+                'rush_defense': t.rush_defense_rank,
+                'rush_offense': t.rush_offense_rank,
+                'pass_defense': t.pass_defense_rank,
+                'pass_offense': t.pass_offense_rank,
+            }
+        view.render_json(self, data)
 
 class PickSetter(handler.BaseHandler):
     def get(self, entry_id):
@@ -78,6 +100,7 @@ class PickSetter(handler.BaseHandler):
             self.abort(403)
 
 app = webapp2.WSGIApplication([
+    ('/picks/rankings', PicksRankingsHandler),
     webapp2.Route('/picks/games/<week>', PicksGamesHandler),
     webapp2.Route('/picks/<entry_id>', handler=PickSetter),
     ('/picks', PicksHandler),

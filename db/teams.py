@@ -1,15 +1,15 @@
 
 _rawnames = (
-    ('San Francisco', 'SF',  '49ers'),
+    ('San Francisco', 'SF',  '49ers',      'SFO'),
     ('Chicago',       'CHI', 'Bears'),
     ('Cincinnati',    'CIN', 'Bengals'),
     ('Buffalo',       'BUF', 'Bills'),
     ('Denver',        'DEN', 'Broncos'),
     ('Cleveland',     'CLE', 'Browns'),
-    ('Tampa Bay',     'TB',  'Buccaneers'),
+    ('Tampa Bay',     'TB',  'Buccaneers', 'TBB'),
     ('Arizona',       'ARI', 'Cardinals'),
-    ('San Diego',     'SD',  'Chargers'),
-    ('Kansas City',   'KC',  'Chiefs'),
+    ('San Diego',     'SD',  'Chargers',   'SDC'),
+    ('Kansas City',   'KC',  'Chiefs',     'KCC'),
     ('Indianapolis',  'IND', 'Colts'),
     ('Dallas',        'DAL', 'Cowboys'),
     ('Miami',         'MIA', 'Dolphins'),
@@ -19,14 +19,14 @@ _rawnames = (
     ('New York',      'NYJ', 'Jets'),
     ('Jacksonville',  'JAC', 'Jaguars'),
     ('Detroit',       'DET', 'Lions'),
-    ('Green Bay',     'GB',  'Packers'),
+    ('Green Bay',     'GB',  'Packers',    'GBP'),
     ('Carolina',      'CAR', 'Panthers'),
-    ('New England',   'NE',  'Patriots'),
+    ('New England',   'NE',  'Patriots',   'NEP'),
     ('Oakland',       'OAK', 'Raiders'),
     ('St. Louis',     'STL', 'Rams'),
     ('Baltimore',     'BAL', 'Ravens'),
-    ('Washington',    'WSH', 'Redskins'),
-    ('New Orleans',   'NO',  'Saints'),
+    ('Washington',    'WSH', 'Redskins',   'WAS'),
+    ('New Orleans',   'NO',  'Saints',     'NOS'),
     ('Seattle',       'SEA', 'Seahawks'),
     ('Pittsburgh',    'PIT', 'Steelers'),
     ('Houston',       'HOU', 'Texans'),
@@ -69,6 +69,8 @@ for i,name in enumerate(_rawnames):
     _ids[name[0]] = i
     _ids[name[1]] = i
     _ids[name[2]] = i
+    if len(name) == 4:
+        _ids[name[3]] = i
     _ids['%s %s' % (name[0], name[2])] = i
 
 def id(name):

@@ -3,12 +3,25 @@
 {% block title %}Admin{% endblock %}
 
 {% block content %}
-    ('/admin/close-picks', ClosePicksHandler),
-    ('/admin/advance-week', AdvanceWeekHandler),
-    ('/admin/send-breakdown', SendBreakdownHandler),
-    webapp2.Route('/admin/send-pick-links/<user_id>', SendSinglePickLinksHandler),
-    ('/admin/send-pick-links', SendPickLinksHandler),
-    ('/admin/send-analysis', SendAnalysisHandler),
-    ('/admin', AdminHandler),
-admin settings
+<div class="btn-group btn-toolbar">
+    <a href="/admin/close-picks" class="btn">Close Picks</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/advance-week" class="btn">Advance Week</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/send-breakdown" class="btn">Send Breakdown</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/send-pick-links" class="btn">Send Pick Links</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/send-analysis" class="btn disabled">Send Analysis</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/update-power-ranks" class="btn">Update Power Ranks</a>
+</div>
+<div class="btn-group btn-toolbar">
+    <a href="/admin/update-spreads" class="btn">Update Spreads</a>
+</div>
 {% endblock %}

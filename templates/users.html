@@ -46,7 +46,7 @@
                 <div class="accordion-heading"><a class="accordion-toggle" href="#user{{ user.0.key.id }}" data-toggle="collapse" data-parent="#users{{ section.0 }}">{{ user.0.name }} <small> - {{user.0.email }}</small></a></div>
                 <div id="user{{ user.0.key.id }}" class="accordion-body collapse">
                     <h5>Actions</h5>
-                    <div class="btn-group btn-group-vertical" user-id="{{ user.0.key.id }}">
+                    <div class="user-actions" user-id="{{ user.0.key.id }}">
                         <a class="btn" href="/login/{{ user.3 }}" >Login as user</a>
                         <a class="btn send-pick-links">Send Picks Email</a>
                         <a class="btn new-entry-btn">Add Entry</a>

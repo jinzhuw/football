@@ -63,6 +63,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
             counts.get(entries.Status.LOSS, 0),
             counts.get(entries.Status.VIOLATION, 0)
         )
+        games.update_standings()
 
         alive_entries = entries.deactivate_dead_entries(week)
         weeks.increment()
@@ -102,6 +103,16 @@ class AdminHandler(handler.BaseHandler):
     def get(self):
         view.render(self, 'admin', {})
 
+class UpdatePowerRanksHandler(handler.BaseHandler):
+    def get(self):
+        games.update_power_ranks()
+        self.redirect('/admin')
+
+class UpdateSpreadsHandler(handler.BaseHandler):
+    def get(self):
+        games.update_spreads()
+        self.redirect('/admin')
+
 class ResetPicks(handler.BaseHandler):
     def get(self):
         to_save = []
@@ -118,6 +129,8 @@ app = webapp2.WSGIApplication([
     ('/admin/send-pick-links', SendPickLinksHandler),
     ('/admin/send-analysis', SendAnalysisHandler),
     ('/admin/reset-picks', ResetPicks),
+    ('/admin/update-power-ranks', UpdatePowerRanksHandler),
+    ('/admin/update-spreads', UpdateSpreadsHandler),
     ('/admin', AdminHandler),
 ], 
 config=settings.app_config(),
