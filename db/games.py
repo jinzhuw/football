@@ -22,7 +22,8 @@ class Game(db.Model):
     home_score = db.IntegerProperty(default=-1)
     visiting_score = db.IntegerProperty(default=-1)
     winner = db.IntegerProperty(default=-1)
-    home_spread = db.FloatProperty(default=0.0)
+    favorite = db.IntegerProperty(default=-1) 
+    spread = db.FloatProperty(default=0.0)
 
     def tz_date(self):
         d = self.date
@@ -175,7 +176,7 @@ def _set_rankings(team):
 
 def load_schedule(week, force=False):
     if Game.gql('WHERE week = :1', week).count() > 0 and not force:
-        logging.warning('Cannot load schedule for week %d, which is a static week', week)
+        logging.warning('Schedule for week %s is already loaded', week)
 
     x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule&W=%d' % week, type='xml')
 
@@ -186,7 +187,7 @@ def load_schedule(week, force=False):
     games = []
     for game in x.matchup:
         date = datetime.fromtimestamp(int(game.get('kickoff')))
-        date = date.replace(tzinfo=timezone.utc).astimezone(timezone.Pacific)
+        #date = date.replace(tzinfo=timezone.Pacific)
         deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
         assert game.team[0].get('isHome') == '0'
         visiting = teams.id(game.team[0].get('id'))
@@ -253,21 +254,30 @@ def update_standings():
         changed_rankings.append(ranking)
     db.put(changed_rankings)
 
-_home_team_re = re.compile('\S+ \S+ @ \S+ (\S+)')
+def _find_spread(team, data):
+    spread_re = team + " <a href=[^>]+>(\-?\d+\.\d)"
+    return float(re.search(spread_re, str(data)).group(1))
+
+_team_re = re.compile('\S+ (\S+) @ \S+ (\S+)')
 def update_spreads():
     week = weeks.current()
     changed_games = []
     x = _load_url('http://www.sportsbook.ag/rss/live-nfl-football.rss', type='xml')
     for game in x.channel.item:
         logging.info('Finding home team in title %s', game.title)
-        home_team = _home_team_re.search(str(game.title)).group(1)
-        spread_re = home_team + " <a href=[^>]+>(\-?\d+\.\d)"
-        spread = float(re.search(spread_re, str(game.description)).group(1))
-        logging.info('Home team = %r, id = %d', home_team, teams.id(home_team))
-        game = Game.gql('WHERE week = :1 AND home = :2', week, teams.id(home_team)).get()
-        game.home_spread = spread
-        changed_games.append(game)
-        logging.info('Team %s, spread %f', spread)
+        team_names = _team_re.search(str(game.title)).group(1, 2)
+        visiting_spread = _find_spread(team_names[0], game.description)
+        home_spread = _find_spread(team_names[1], game.description)
+        g = Game.gql('WHERE week = :1 AND home = :2', week, teams.id(team_names[1])).get()
+        if visiting_spread > 0:
+            g.favorite = g.home
+        elif home_spread > 0:
+            g.favorite = g.visiting
+        g.spread = abs(home_spread)
+        changed_games.append(g)
+        logging.info('%s vs %s, Favorite: %s, spread %f', 
+                     teams.shortname(g.visiting), teams.shortname(g.home),
+                     teams.shortname(g.favorite), g.spread)
     db.put(changed_games)
 
 def update(game, home_score, visiting_score):

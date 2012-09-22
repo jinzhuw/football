@@ -28,25 +28,45 @@ cron:
 #  url: /admin/send-analysis
 #  schedule: every tue 8:00
 #  timezone: America/Los_Angeles
+#
+- description: update game spreads
+  url: /admin/update-spreads
+  schedule: every 12 hours
+  timezone: America/Los_Angeles
+
+- description: update power ranks
+  url: /admin/update-power-ranks
+  schedule: every 12 hours
+  timezone: America/Los_Angeles
+
+- description: update pass/rush rankings
+  url: /admin/update-rankings
+  schedule: every 12 hours
+  timezone: America/Los_Angeles
+
+- description: load scores for MNF
+  url: /games/load-scores
+  schedule: every mon 20:00
+  timezone: America/Los_Angeles
 
 - description: load scores for MNF and TNF
   url: /games/load-scores
-  schedule: every mon,thu 21:00
+  schedule: every thu 20:00
   timezone: America/Los_Angeles
 
 - description: load scores for 10am games on Sunday
   url: /games/load-scores
-  schedule: every sun 13:45
+  schedule: every sun 12:30
   timezone: America/Los_Angeles
 
 - description: load scores for 1:30pm games on Sunday
   url: /games/load-scores
-  schedule: every sun 17:15
+  schedule: every sun 16:45
   timezone: America/Los_Angeles
 
 - description: load score for Sunday night game
   url: /games/load-scores
-  schedule: every sun 21:00
+  schedule: every sun 20:00
   timezone: America/Los_Angeles
 
 

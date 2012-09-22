@@ -163,3 +163,38 @@ hr.line {
 .closed {
     background-color: #D8D8D8
 }
+
+.spread {
+    position: relative;
+    clear: both;
+    background-color: #D4D4D4;
+    border-top: 1px solid #999999;
+}
+
+.fav strong {
+    margin-right: 5px;
+}
+
+.fav {
+    margin-right: 10px;
+}
+
+.line strong {
+    margin-right: 5px; 
+}
+
+.stats-wrapper {
+    position: relative;
+}
+
+.stats {
+    width: 111px;
+}
+
+.stats img {
+    margin: auto;
+}
+
+.team-stats {
+}
+

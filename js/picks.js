@@ -57,10 +57,33 @@ function make_team_info(entry_id, team, visiting, selected_id) {
     team_info.click(function() { select_team(entry_id, team, team_info); });
     team_info.hover(function() { $(this).addClass('hilight-team'); },
                     function() { $(this).removeClass('hilight-team'); });
+
+    /*
+    var popover_alignment = 'right';
+    if (visiting) {
+        popover_alignment = 'left';
+    }
+    team_info.popover({
+        trigger: 'hover',
+        placement: popover_alignment,
+        html: true,
+        content: '<div class="stats"><img src="/img/loading.gif"/></div>'
+        title: 'Stats',
+    });
+    */
+
     if (selected_id == team.id) {
         visually_select_team(team_info, entry_id);
     }
     return team_info;
+}
+
+function make_spread(favorite, spread) {
+    s = '<div class="spread">';
+    s += '<span class="fav"><strong>Favored:</strong>' + favorite + '</span>';
+    s += '<span class="line"><strong>Line:</strong>' + spread + '</span>';
+    s += '</div>';
+    return $(s);
 }
 
 function add_picker_for_entry(entry_section, games, start_ndx) {
@@ -78,6 +101,7 @@ function add_picker_for_entry(entry_section, games, start_ndx) {
         game_info.append(make_team_info(entry_id, game.visiting_team, true, selected_team_id));
         game_info.append(make_team_info(entry_id, game.home_team, false, selected_team_id));
         game_info.append('<div class="at">at</div>');
+        game_info.append(make_spread(game.favorite, game.spread));
         picker.after(game_info);
     }
     //picker.hide();
@@ -103,6 +127,9 @@ function init_page() {
             $('.accordion-group').each(function() {
                 add_picker_for_entry($(this), data, start_ndx);
             });
+            /*$('.team-stats').hide();
+            $('.stats').hide();
+            */
         }
     });
 }

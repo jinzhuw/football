@@ -27,12 +27,6 @@ class LoadScoresHandler(handler.BaseHandler):
         load_scores(week) 
         self.redirect('/games')
 
-class UpdateRankingsHandler(handler.BaseHandler):
-    @handler.admin
-    def get(self):
-        games.update_rankings()
-        self.redirect('/games')
-
 class SetScoreHandler(handler.BaseHandler):
     @handler.admin
     def post(self, game_id):
@@ -52,7 +46,6 @@ class GamesResetHandler(handler.BaseHandler):
 app = webapp2.WSGIApplication([
     ('/games/reset', GamesResetHandler),
     ('/games/load-scores', LoadScoresHandler),
-    ('/games/update-rankings', UpdateRankingsHandler),
     webapp2.Route('/games/<game_id>', handler=SetScoreHandler),
     ('/games', GamesHandler),
 ],

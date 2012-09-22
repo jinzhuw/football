@@ -30,7 +30,7 @@ class PicksHandler(handler.BaseHandler):
 
 class PicksGamesHandler(handler.BaseHandler):
     @handler.user
-    @view.cached(604800)
+    @view.cached(43200)
     def get(self, week):
         week = int(week)
         data = []
@@ -40,7 +40,8 @@ class PicksGamesHandler(handler.BaseHandler):
                 'time_str': g.date.strftime('%I:%M %p').lstrip('0'),
                 'datetime': time.mktime(g.tz_date().timetuple()),
                 'deadline': time.mktime(g.tz_deadline().timetuple()),
-                'home_spread': g.home_spread,
+                'favorite': teams.mascotname(g.favorite),
+                'spread': g.spread,
                 'home_team': {
                     'short': teams.shortname(g.home),
                     'city': teams.cityname(g.home),
@@ -64,7 +65,7 @@ class PicksGamesHandler(handler.BaseHandler):
 
 class PicksRankingsHandler(handler.BaseHandler):
     @handler.user
-    #@view.cached(86400)
+    @view.cached(43200)
     def get(self):
         data = {}
         for t in games.team_rankings():

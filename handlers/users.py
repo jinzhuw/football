@@ -70,12 +70,15 @@ class GetPotHandler(handler.BaseHandler):
         current_entry = None 
         base = defaultdict(int)
         buybacks = defaultdict(int)
+        prev_week = 0
         for p in entries.iterpicks():
             if current_entry != p.entry_id:
                 current_entry = p.entry_id
                 base[p.week] += 1
+                prev_week = 0
             if p.buyback:
-                buybacks[p.week] += 1
+                buybacks[p.week] += p.week - prev_week
+            prev_week = p.week
         data = {
             'buybacks': dict((w,t*25) for w,t in buybacks.iteritems()),
             'weeks': dict((w,t*w*25) for w,t in base.iteritems())

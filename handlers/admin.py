@@ -113,6 +113,17 @@ class UpdateSpreadsHandler(handler.BaseHandler):
         games.update_spreads()
         self.redirect('/admin')
 
+class UpdateStandingsHandler(handler.BaseHandler):
+    def get(self):
+        games.update_standings()
+        self.redirect('/admin')
+
+class UpdateRankingsHandler(handler.BaseHandler):
+    @handler.admin
+    def get(self):
+        games.update_rankings()
+        self.redirect('/games')
+
 class ResetPicks(handler.BaseHandler):
     def get(self):
         to_save = []
@@ -131,6 +142,8 @@ app = webapp2.WSGIApplication([
     ('/admin/reset-picks', ResetPicks),
     ('/admin/update-power-ranks', UpdatePowerRanksHandler),
     ('/admin/update-spreads', UpdateSpreadsHandler),
+    ('/admin/update-standings', UpdateStandingsHandler),
+    ('/admin/update-rankings', UpdateRankingsHandler),
     ('/admin', AdminHandler),
 ], 
 config=settings.app_config(),
