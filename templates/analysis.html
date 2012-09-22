@@ -11,38 +11,79 @@
         <div class="btn-toolbar">
 	    <div class="btn-group" style="margin: 1px">
 	        <button id="w1" class="btn-week btn">1</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w2" class="btn-week btn">2</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w3" class="btn-week btn">3</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w4" class="btn-week btn">4</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w5" class="btn-week btn">5</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w6" class="btn-week btn">6</button>
 	    </div>
 	    <div class="btn-group" style="margin: 1px">
 	        <button id="w7" class="btn-week btn">7</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w8" class="btn-week btn">8</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w9" class="btn-week btn">9</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w10" class="btn-week btn">10</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w11" class="btn-week btn">11</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w12" class="btn-week btn">12</button>
 	    </div>
 	    <div class="btn-group" style="margin: 1px">
 	        <button id="w13" class="btn-week btn">13</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w14" class="btn-week btn">14</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w15" class="btn-week btn">15</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w16" class="btn-week btn">16</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="w17" class="btn-week btn">17</button>
 	    </div>
 	    <div class="btn-group" style="margin: 1px">
 	        <button id="wWC" class="btn-week btn">WC</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="wDR" class="btn-week btn">DR</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="wCC" class="btn-week btn">CC</button>
+	    </div>
+	    <div class="btn-group" style="margin: 1px">
 		<button id="wSB" class="btn-week btn">SB</button>
 	    </div>
 	</div>
     </div>
     <div class="well well-small span12" style="margin: 0 0 10px 0">
       <div style="margin: 0 auto 40px">
-	  <div><h5>Jack's Weekly Shaming</h5></div>
+	  <div>
+	    <div id="edit_blurb_div" class="pull-right">
+	      <button id="edit_blurb" class="btn btn-mini">
+		<i class="icon-edit"></i>
+	      </button>
+	    </div>
+	    <h5>Jack's Weekly Shaming</h5>
+	  </div>
           <div id="blurb" class="well well-small" style="margin: 0 15px; background-color: #F7F8FF">
 	  </div>
       </div>
@@ -64,13 +105,16 @@
 	      <div id="comments"></div>
 	  </div>
       </div>
-    </div>
+   </div>
 </div>
 
 <script type="text/javascript">
     $(document).ready(function() {
        analysis = new Analysis();
        analysis.update_week($('#wSB'));
+
+       //if admin
+       $('#edit_blurb').click(function() {analysis.modify_blurb()});
     });
 </script>
 {% endblock %}
