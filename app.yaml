@@ -29,8 +29,8 @@ handlers:
 - url: /results.*
   script: handlers.results.app
 
-- url: /analysis.*
-  script: handlers.analysis.app
+- url: /breakdown.*
+  script: handlers.breakdown.app
 
 - url: /rules.*
   script: handlers.main.app
@@ -72,7 +72,7 @@ skip_files:
 - ^old/
 - ^lib/
 - ^bin/
-- ^Crypto/
+#- ^Crypto/
 - (.*\.py[co])
 - (.*\.DS_Store)
 

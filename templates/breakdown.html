@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}Breakdown{% endblock %}
+
+{% block content %}
+<div id="breakdown-selector" current-week="{{ week }}" class="span2"></div>
+<div class="span7">
+    <div id="blog" {% if user.is_admin %}admin="true"{% endif %}></div>
+    <div id="comments"></div>
+</div>
+<div id="stats" class="span3"></div>
+{% endblock %}

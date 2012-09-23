@@ -5,17 +5,18 @@ from google.appengine.ext import db
 
 from db import teams, weeks, settings, games
 
-class Analysis(db.Model):
-    week = db.IntegerProperty(required=True)
+class Blog(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
-    text = db.TextProperty()
+    title = db.StringProperty()
+    content = db.TextProperty()
     posted = db.BooleanProperty(default=False)
 
-class AnalysisComment(db.Model):
+class Comment(db.Model):
     week = db.IntegerProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     text = db.TextProperty(required=True)
     user = db.StringProperty(required=True)
+    user_id = db.IntegerProperty(required=True)
 
 class Stats(db.Model):
     week = db.IntegerProperty(required=True)
@@ -49,11 +50,42 @@ def get_team_counts(week):
     return (no_pick, picks)
 
 def save_status_counts(week, wins, losses, violations):
-    stats = Stats.gql('WHERE week = :1', week).get() 
-    if stats is None:
+    stats = Stats.gql('WHERE week = :1', week).get()
+    if not stats:
         stats = Stats(week=week)
     stats.wins = wins
     stats.losses = losses
     stats.violations = violations
     stats.put()
+
+def get_status_counts(week):
+    return Stats.get_or_insert(str(week))
         
+def get_blog(week):
+    return Blog.get_or_insert(str(week))
+
+def save_blog(week, title, content):
+    blog = Blog.get_or_insert(str(week))
+    blog.title = title
+    blog.content = content
+    blog.put()
+
+def post_blog(week):
+    blog = Blog.get_or_insert(str(week))
+    blog.posted = True
+    blog.put()
+
+def get_comments(week, count=None, before=None, after=None):
+    q = ['WHERE week = %d' % week]
+    if before:
+        q.append('AND created < %s' % before)
+    elif after:
+        q.append('AND created > %s' % after)
+    q.append('ORDER BY created DESC')
+    if count:
+        q.append('LIMIT %d' % count)
+    return Comment.gql(' '.join(q))
+
+def save_comment(week, user, text):
+    c = Comment(week=week, text=text, username=user.name, user_id=user.key().id())
+    c.put()

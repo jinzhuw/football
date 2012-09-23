@@ -187,7 +187,7 @@ def load_schedule(week, force=False):
     games = []
     for game in x.matchup:
         date = datetime.fromtimestamp(int(game.get('kickoff')))
-        #date = date.replace(tzinfo=timezone.Pacific)
+        date = date.replace(tzinfo=timezone.utc).astimezone(timezone.Pacific).replace(tzinfo=None)
         deadline = datetime(date.year, date.month, date.day, 23, 0) - timedelta(days=1)
         assert game.team[0].get('isHome') == '0'
         visiting = teams.id(game.team[0].get('id'))
