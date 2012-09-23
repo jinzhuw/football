@@ -9,7 +9,6 @@ class ResultsHandler(handler.BaseHandler):
         view.render(self, 'results', {}, js=True, css=True)
 
 class ResultsDataHandler(handler.BaseHandler):
-    type = 'json'
 
     @view.cached(604800)
     def get(self):

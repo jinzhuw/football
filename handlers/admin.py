@@ -1,5 +1,5 @@
 
-from db import settings, users, entries, weeks, games, analysis
+from db import settings, users, entries, weeks, games, breakdown
 from util import view, handler, email as mail
 from collections import defaultdict
 import string
@@ -17,7 +17,7 @@ class ClosePicksHandler(handler.BaseHandler):
                 view.clear_cache('/results/data')
             counts = entries.get_team_counts(week)
             logging.info('Saving counts: %s', counts)
-            analysis.save_team_counts(week, counts)
+            breakdown.save_team_counts(week, counts)
             self.redirect('/admin')
             return
 
@@ -46,7 +46,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
 
         if not games.games_complete(week):
             (results, in_progress) = games.load_scores(week)
-            if in_progress > 0:
+            if in_progress > 0 and not settings.debug():
                 logging.error('%d games for week %d are still in progress', in_progress, week)
                 self.abort(409)
             if entries.set_pick_status(week, results):
@@ -57,7 +57,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
             self.abort(409)
         
         counts = entries.get_status_counts(week)
-        analysis.save_status_counts(
+        breakdown.save_status_counts(
             week,
             counts.get(entries.Status.WIN, 0),
             counts.get(entries.Status.LOSS, 0),
@@ -74,7 +74,7 @@ class AdvanceWeekHandler(handler.BaseHandler):
 class SendBreakdownHandler(handler.BaseHandler):
     def get(self):
         week = weeks.current()
-        (no_pick, picks) = analysis.get_team_counts(week)
+        (no_pick, picks) = breakdown.get_team_counts(week)
         emails = users.get_all_emails()
         deferred.defer(mail.email_breakdown, week, no_pick, picks, emails, _queue='email')
         self.redirect('/admin')

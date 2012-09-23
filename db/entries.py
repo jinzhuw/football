@@ -73,15 +73,18 @@ def buyback_entry(entry_id):
     entry = Entry.get_by_id(entry_id)
     entry.alive = True
     entry.put()
-    buyback_pick = Pick.get_by_key_name(_pick_key(week, entry_id))
     send_email_user_id = None
-    if not buyback_pick:
+    if not weeks.check_deadline(week):
+        # buying back before the new week has started
+        buyback_pick = Pick.get_by_key_name(_pick_key(week, entry_id))
+    else:
         # attempting to buyback after the week has ended
         buyback_pick = Pick.get_by_key_name(_pick_key(week - 1, entry_id))
         _create_pick(entry, week)
-        send_email_user_id = buyback_pick.user_id
-    buyback_pick.buyback = True
-    buyback_pick.put()
+        send_email_user_id = entry.user_id
+    if buyback_pick:
+        buyback_pick.buyback = True
+        buyback_pick.put()
     return send_email_user_id
 
 def create_picks(week, entries):
@@ -243,7 +246,7 @@ def set_pick_status(week, game_results=None):
         winners, losers = games.results_for_week(week)
     else:
         winners, losers = game_results
-        if len(winners) < 10:
+        if 0 < len(winners) < 10:
             # if there are a lot of games being handled, look at all picks for the week
             winners_list = ', '.join('%d' % x for x in winners)
             losers_list = ', '.join('%d' % x for x in losers)

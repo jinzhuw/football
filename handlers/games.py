@@ -1,5 +1,6 @@
 
 from db import settings, games, weeks, entries
+from google.appengine.ext import deferred
 from util import view, handler
 import webapp2
 

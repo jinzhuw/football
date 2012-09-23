@@ -43,4 +43,4 @@ def results(week):
      
 def current_time():
     #return datetime.now(timezone.Pacific)
-    return datetime(2012, 9, 20, 23, 01, tzinfo=timezone.Pacific)
+    return datetime(2012, 9, 22, 23, 01, tzinfo=timezone.Pacific)
