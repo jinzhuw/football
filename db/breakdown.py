@@ -42,12 +42,14 @@ def save_team_counts(week, team_counts):
 def get_team_counts(week):
     picks = {}
     no_pick = 0 
+    total = 0
     for s in TeamStats.gql('WHERE week = :1', week):
         if s.team == -1:
             no_pick = s.count
         else:
             picks[teams.fullname(s.team)] = s.count
-    return (no_pick, picks)
+        total += s.count
+    return (no_pick, picks, total)
 
 def save_status_counts(week, wins, losses, violations):
     stats = Stats.gql('WHERE week = :1', week).get()
@@ -59,7 +61,7 @@ def save_status_counts(week, wins, losses, violations):
     stats.put()
 
 def get_status_counts(week):
-    return Stats.get_or_insert(str(week))
+    return Stats.gql('WHERE week = :1', week).get()
         
 def get_blog(week):
     return Blog.get_or_insert(str(week))

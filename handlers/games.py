@@ -2,6 +2,7 @@
 from db import settings, games, weeks, entries
 from google.appengine.ext import deferred
 from util import view, handler
+from google.appengine.ext import deferred
 import webapp2
 
 class GamesHandler(handler.BaseHandler):

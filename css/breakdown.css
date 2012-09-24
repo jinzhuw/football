@@ -1,35 +1,42 @@
 
+#breakdown .row {
+    padding-top: 30px;
+}
 
-#breakdown-selector .nav-list {
+.selector {
+    text-align: center;
+}
+
+.selector .nav-list {
+    text-align: left;
     background-color: #FFFFFF;
     border-radius: 6px 6px 6px 6px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-    margin: 30px 0 0;
     padding: 0;
 }
 
-#breakdown-selector li:first-child a {
+.selector li:first-child a {
     border-radius: 6px 6px 0 0;
 }
 
-#breakdown-selector li:last-child a {
+.selector li:last-child a {
     border-radius: 0 0 6px 6px;
 }
 
-#breakdown-selector .nav-list a {
+.selector .nav-list a {
     border: 1px solid #E5E5E5;
     display: block;
     margin: 0 0 -1px;
     padding: 8px 14px;
 }
 
-#breakdown-selector .nav-list a:hover {
+.selector .nav-list a:hover {
     background-color: #F5F5F5;
     text-decoration: none;
     cursor: pointer;
 }
 
-#breakdown-selector .nav-list .active a {
+.selector .nav-list .active a {
     border: 0 none;
     box-shadow: 1px 0 0 rgba(0, 0, 0, 0.1) inset, -1px 0 0 rgba(0, 0, 0, 0.1) inset;
     padding: 9px 15px;
@@ -38,20 +45,20 @@
     z-index: 2;
 }
 
-#breakdown-selector .nav-list .active a:hover {
+.selector .nav-list .active a:hover {
     background-color: #0088CC;
     color: #FFFFFF;
     text-shadow: 0 -1px 0 rbga(0, 0, 0, 0.2);
 }
 
-#breakdown-selector .icon-chevron-right {
+.selector .icon-chevron-right {
     float: right;
     margin-right: -6px;
     margin-top: 2px;
     opacity: 0.25;
 }
 
-#breakdown-selector .active .icon-chevron-right {
+.selector .active .icon-chevron-right {
     opacity: 1;
 }
 
@@ -82,3 +89,48 @@
 .controls button {
     margin-left: 10px;
 }
+
+.stats-data {
+    border: 1px solid #E5E5E5;
+    border-radius: 6px 6px 6px 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+    padding: 0 10px 10px 10px;
+    width: 280px;
+}
+
+.stats-data h4 {
+    text-align: center;
+    border-bottom: 1px solid #E5E5E5;
+    padding-bottom: 5px;
+}
+
+.stats-data table {
+    margin: 10px;
+    background: transparent;
+}
+
+.stats-data td {
+    padding: 3px;
+    vertical-align: middle;
+}
+
+.stats-data td.name {
+    width: 150px;
+}
+
+.stats-data td.count {
+    text-align: center; 
+    width: 50px;
+}
+
+.stats-data td.percent {
+    text-align: right; 
+    padding-right: 20px;
+    font-size: smaller;
+    width: 50px;
+}
+
+.stats-data table.teams {
+    margin-top: 20px;
+}
+

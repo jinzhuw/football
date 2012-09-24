@@ -8,18 +8,32 @@ import webapp2
 class BreakdownHandler(handler.BaseHandler):
     def get(self):
         week = weeks.current() - 1
-        if self.user.is_admin and not weeks.check_deadline(weeks.current()):
+        if not weeks.check_deadline(weeks.current()):
+            # after the deadline users can see the stats breakdown
             week += 1
         view.render(self, 'breakdown', {'week': week}, js=True, css=True)
 
-class BlogHandler(handler.BaseHandler):
+class BreakdownDataHandler(handler.BaseHandler):
     def get(self, week):
-        blog = breakdown.get_blog(int(week))
+        week = int(week)
+        blog = breakdown.get_blog(week)
+        (no_pick, picks, total) = breakdown.get_team_counts(week)
+        status = breakdown.get_status_counts(week)
         data = {
-            'updated': str(blog.updated), # TODO: format this date
-            'title': blog.title,
-            'content': blog.content,
-            'posted': blog.posted,
+            'blog': {
+                'updated': str(blog.updated), # TODO: format this date
+                'title': blog.title,
+                'content': blog.content,
+                'posted': blog.posted,
+            },
+            'stats': {
+                'no_pick': no_pick,
+                'teams': picks,
+                'total': total,
+                'wins': status.wins,
+                'losses': status.losses,
+                'violations': status.violations,
+            },
         }
         view.render_json(self, data)
 
@@ -54,26 +68,9 @@ class CommentsHandler(handler.BaseHandler):
         text = self.request.POST.get('text')
         breakdown.save_comment(int(week), self.user, text)
 
-class StatsHandler(handler.BaseHandler):
-    # TODO: add caching
-    def get(self, week):
-        week = int(week)
-        (no_pick, picks) = breakdown.get_team_counts(week)
-        status = breakdown.get_status_counts(week)
-        data = {
-            'no-pick': no_pick,
-            'teams': picks,
-            'wins': status.wins,
-            'losses': status.losses,
-            'violations': status.violations,
-        }
-        view.render_json(self, self.request.path, data)
-        
-
 app = webapp2.WSGIApplication([
-    webapp2.Route('/breakdown/stats/<week>', StatsHandler),
     webapp2.Route('/breakdown/comments/<week>', CommentsHandler),
-    webapp2.Route('/breakdown/blog/<week>', BlogHandler),
+    webapp2.Route('/breakdown/data/<week>', BreakdownDataHandler),
     ('/breakdown', BreakdownHandler),
 ],
 config=settings.app_config(),
