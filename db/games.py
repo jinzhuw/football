@@ -145,6 +145,7 @@ def load_scores(week):
     in_progress = 0
     for g in j['gms']:
         if 'F' in g['q']:
+            logging.debug('Found score for %s vs %s', g['h'], g['v'])
             scores[g['h']] = (g['hs'], g['vs'])
         elif 'P' != g['q']:
             logging.debug('Game %s v %s in progress, state %s', g['v'], g['h'], g['q'])
@@ -157,8 +158,11 @@ def load_scores(week):
     for g in games:
         if g.winner != -1:
             continue
-        s = scores.get(teams.shortname(g.home))
+        home_team = teams.shortname(g.home)
+        s = scores.get(home_team)
         if s:
+            logging.info('Setting score for %s (%d) vs %s (%d)',
+                         home_team, s[0], teams.shortname(g.visiting), s[1])
             (winner, loser) = update(g, s[0], s[1])
             winners.add(winner)
             losers.add(loser)

@@ -54,15 +54,12 @@
 }
 
 #results-table-data td.loss {
-    background-color: #FF0033;
+    background-color: #B94A48;
 }
 #results-table-data td.buyback {
-    background-color: #33FF00;
+    background-color: #468847;
 }
 #results-table-data td.violation {
-    background-color: #996633;
-}
-#results-table-data td.empty {
-    background-color: #F5F5F5;
+    background-color: #F89406;
 }
 

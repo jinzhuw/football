@@ -25,7 +25,7 @@ _rawnames = (
     ('Oakland',       'OAK', 'Raiders'),
     ('St. Louis',     'STL', 'Rams'),
     ('Baltimore',     'BAL', 'Ravens'),
-    ('Washington',    'WSH', 'Redskins',   'WAS'),
+    ('Washington',    'WAS', 'Redskins'),
     ('New Orleans',   'NO',  'Saints',     'NOS'),
     ('Seattle',       'SEA', 'Seahawks'),
     ('Pittsburgh',    'PIT', 'Steelers'),

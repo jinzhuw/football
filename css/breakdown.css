@@ -62,6 +62,9 @@
     opacity: 1;
 }
 
+.blog {
+    padding: 10px 20px;
+}
 
 .blog textarea {
     resize: none;
@@ -76,19 +79,40 @@
 .blog .title {
     font-size: x-large;
     font-weight: bold;
-    /*margin-bottom: 10px;*/
+    margin-bottom: 10px;
 }
 
 .blog .alert {
     text-align: center;
 }
 
-.controls button {
+.comments {
+    padding: 0 20px;
+}
+
+.comment-controls {
+    width: 100%;
+}
+
+.comment-controls input {
+    width: 80%;
+}
+
+.comment-controls button {
+    float: right;
     margin-left: 10px;
 }
 
-.controls {
+.blog-controls button {
+    margin-left: 10px;
+}
+
+.blog-controls {
     text-align: right;
+}
+
+.sidebar {
+    text-align: center;
 }
 
 .stats-data {
@@ -99,13 +123,13 @@
 }
 
 .stats-data h4 {
-    text-align: center;
     border-bottom: 1px solid #E5E5E5;
     padding-bottom: 5px;
 }
 
 .stats-data table {
-    margin: 10px;
+    margin: 10px 10px;
+    width: 100%; 
     background: transparent;
 }
 
@@ -138,19 +162,20 @@
 }
 
 .stats-data td.name {
+    text-align: left;
     width: 160px;
 }
 
 .stats-data td.count {
     text-align: right; 
-    width: 50px;
+    width: 40px;
 }
 
 .stats-data td.percent {
     text-align: right; 
     padding-right: 20px;
     font-size: smaller;
-    width: 50px;
+    width: 40px;
 }
 
 .stats-data table.teams {

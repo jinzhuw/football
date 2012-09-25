@@ -29,6 +29,12 @@ function percent(x, y) {
     return (100.0 * x / y).toFixed(1) + '%';
 }
 
+function display_error(msg, element) {
+    element.find('.blog-error').hide();
+    var error_msg = $('<div class="alert alert-error blog-error">' + msg + '</div>');
+    element.prepend(error_msg);
+}
+
 function init_page() {
     
     container = $('#breakdown');
@@ -38,6 +44,7 @@ function init_page() {
 
     $(window).resize(function() {
         breakdown.resize();
+        breakdown.rebuild();
     });
 }
 
@@ -49,22 +56,21 @@ var Breakdown = function(container, max_week, admin) {
     this.data = null;
     this.compact = null;
     this.resize();
+    this.load_week(max_week);
 }
 
 Breakdown.prototype.resize = function() {
     compact = parseInt(this.container.css('width'), 10) < 800;
-    console.log('resizing, compact = ' + compact);
     if (this.compact == compact) {
         return;
     }
     this.compact = compact;
     container = this.make_new_container();
-    this.setup_selector(container);
+    this.build_selector(container);
     this.container.replaceWith(container); 
     this.container = container;
     this.main = container.find('.main');
     this.sidebar = container.find('.sidebar');
-    this.change_week(this.week);
 }
 
 Breakdown.prototype.make_new_container = function() {
@@ -83,7 +89,7 @@ Breakdown.prototype.make_new_container = function() {
     return $('<div id="breakdown">' + layout + '</div>');
 }
 
-Breakdown.prototype.setup_selector = function(container) {
+Breakdown.prototype.build_selector = function(container) {
 
     var selector = container.find('.selector');
     var breakdown = this;
@@ -92,7 +98,7 @@ Breakdown.prototype.setup_selector = function(container) {
     if (this.compact) {
         links = $('<select></select>');
         links.change(function() {
-            breakdown.change_week(parseInt(links.val()));
+            breakdown.load_week(parseInt(links.val()));
         });
         make_link = function(week, selected) {
             var link = $('<option value="' + week + '">' + week_name(week) + '</option>');
@@ -110,7 +116,7 @@ Breakdown.prototype.setup_selector = function(container) {
             selector.click(function() {
                 links.children('.active').removeClass('active');
                 $(this).parent().addClass('active');
-                breakdown.change_week(parseInt($(this).attr('week')));
+                breakdown.load_week(parseInt($(this).attr('week')));
             });
             var link = $('<li></li>').append(selector);
             if (selected) {
@@ -126,27 +132,35 @@ Breakdown.prototype.setup_selector = function(container) {
     }
 }
 
-Breakdown.prototype.change_week = function(week) {
-    this.main.empty();
-    this.main.html('<div class="pagination-centered"><img src="/img/loading-big.gif"/></div>');
-    this.main.show();
-    this.sidebar.empty();
-    if (!this.compact) {
-        this.sidebar.html('<div class="pagination-centered"><img src="/img/loading.gif"/></div>');
+Breakdown.prototype.rebuild = function() {
+
+    this.rebuild_sidebar(this.sidebar);
+    if (!this.data.blog.posted && !this.admin) {
+        this.main.hide();
+        return;
     }
-    this.sidebar.show();
-    this.week = week;
-    var breakdown = this;
-    $.ajax({
-        'url': '/breakdown/data/' + week,
-        'dataType': 'json',
-        'success': function(data) {
-            breakdown.set_data(data);
+
+    var blog = $('<div class="blog"></div>');
+    this.rebuild_blog(blog, !this.data.blog.posted);
+    var comments = null;
+    if (false) {//this.data.blog.posted) {
+        comments = $('<div class="comments"></div>');
+        comments.html('<div class="pagination-centered"><img src="/img/loading-big.gif"/></div>');
+        if (this.data.comments) {
+            this.rebuild_comments(comments);
+        } else {
+            this.load_comments(comments);
         }
-    });
+    }
+    this.main.empty();
+    this.main.append(blog);
+    if (comments) {
+        this.main.append($('<hr/>'));
+        this.main.append(comments);
+    }
 }
 
-Breakdown.prototype.format_stats = function() {
+Breakdown.prototype.rebuild_sidebar = function(sidebar) {
     var stats = this.data.stats;
     var total = stats.total;
     var s = '<h4>Stats</h4>' +
@@ -180,7 +194,7 @@ Breakdown.prototype.format_stats = function() {
              '</tr>';
     }
     s += '</table>';
-    return '<div class="stats-data">' + s + '</div>';
+    this.sidebar.html('<div class="stats-data">' + s + '</div>');
 }
 
 Breakdown.prototype.rebuild_blog = function(blog, edit) {
@@ -189,18 +203,19 @@ Breakdown.prototype.rebuild_blog = function(blog, edit) {
     var title = $('<div class="title"></div>');
     var content = $('<div class="content"></div>');
     var controls = null;
+    var alert_msg = null;
     if (this.admin) {
-        controls = $('<div class="controls"></div>');
+        controls = $('<div class="blog-controls"></div>');
     }
 
     if (edit) {
         title.html(make_title_input(this.data.blog.title));
         content.html(make_content_input(this.data.blog.content));
 
-        var save_btn = $('<button class="btn">Save</button>');
+        var save_btn = $('<button class="btn"><i class="icon-ok"></i> Save</button>');
         save_btn.click(function() {
             if (!breakdown.save_blog(blog)) return false;
-            breakdown.rebuild_blog(blog);
+            breakdown.rebuild_blog(blog, false);
             return false;
         });
         controls.append(save_btn);
@@ -209,8 +224,7 @@ Breakdown.prototype.rebuild_blog = function(blog, edit) {
         title.html(this.data.blog.title);
         content.html(this.data.blog.content);
         if (this.admin) {
-            console.log('adding edit button');
-            var edit_btn = $('<button class="btn">Edit</button>');
+            var edit_btn = $('<button class="btn"><i class="icon-edit"></i> Edit</button>');
             edit_btn.click(function() {
                 breakdown.rebuild_blog(blog, true);
                 return false;
@@ -220,22 +234,23 @@ Breakdown.prototype.rebuild_blog = function(blog, edit) {
     }
 
     if (!this.data.blog.posted) {
-        var alert_msg = $('<div class="alert alert-info">This commentary is not yet visible to users.  Click Post to make visible, or Save it to post later</div>');
-        controls.before(alert_msg);
-        var post_btn = $('<button class="btn btn-primary">Post</button>');
+        alert_msg = $('<div class="alert alert-info">This commentary is not visible to users. Click Post to make it visible.</div>');
+        var post_btn = $('<button class="btn btn-primary"><i class="icon-share"></i> Post</button>');
         post_btn.click(function() {
             if (edit) {
                 if (!breakdown.save_blog(blog)) return false;
             }
             if (!breakdown.post_blog(blog)) return false;
-            breakdown.rebuild_blog(blog);
+            breakdown.rebuild_blog(blog, false);
             return false;
         });
-        console.log('adding post button');
         controls.prepend(post_btn);
     }
 
     blog.empty();
+    if (alert_msg) {
+        blog.append(alert_msg);
+    }
     blog.append(title);
     blog.append(content);
     if (controls) {
@@ -243,10 +258,69 @@ Breakdown.prototype.rebuild_blog = function(blog, edit) {
     }
 }
 
-function display_error(msg, blog) {
-    blog.find('.blog-error').hide();
-    var error_msg = $('<div class="alert alert-error blog-error">' + msg + '</div>');
-    blog.prepend(error_msg);
+Breakdown.prototype.rebuild_comments = function(comments) {
+    var breakdown = this; 
+    var header = $('<div><h5>Comments</h5></div>');
+    var list = $('<ul class="comment-data"></ul>');
+    var refresh_btn = $('<button class="btn btn-mini pull-right"><i class="icon-refresh"></i></button>');
+    refresh_btn.click(function() {
+        refresh_btn.replaceWith('<img class="pull-right" src="/img/loading.gif"/>');
+        breakdown.load_comments(comments);
+        return false;
+    });
+    header.prepend(refresh_btn);
+
+    var controls = $('<div class="form-inline comment-controls"></div>');
+    controls.append($('<input type="text" id="new-comment" placeholder="Write a comment"/>'));
+    var add_btn = $('<button class="btn"><i class="icon-pencil"></i> Add</button>');
+    add_btn.click(function() {
+        var loading = $('<img class="pull-right" src="/img/loading.gif"/>');
+        add_btn.replaceWith(loading);
+        breakdown.save_comment(list);
+        loading.replaceWith(add_btn);
+        return false;
+    });
+    controls.append(add_btn);
+
+    this.add_comments(list, this.data.comments, true);
+
+    comments.empty(); 
+    comments.append(header);
+    comments.append(controls);
+    comments.append(list);
+}
+
+Breakdown.prototype.load_week = function(week) {
+    this.main.empty();
+    this.main.html('<div class="pagination-centered"><img src="/img/loading-big.gif"/></div>');
+    this.main.show();
+    this.sidebar.empty();
+    if (!this.compact) {
+        this.sidebar.html('<div class="pagination-centered"><img src="/img/loading.gif"/></div>');
+    }
+    this.sidebar.show();
+    this.week = week;
+    var breakdown = this;
+    $.ajax({
+        'url': '/breakdown/data/' + week,
+        'dataType': 'json',
+        'success': function(data) {
+            breakdown.data = data;
+            breakdown.rebuild();
+        }
+    });
+}
+
+Breakdown.prototype.load_comments = function(comments) {
+    var breakdown = this;
+    $.ajax({
+        'url': '/breakdown/comments/' + this.week,
+        'dataType': 'json',
+        'success': function(data) {
+            breakdown.data.comments = data;
+            breakdown.rebuild_comments(comments);
+        }
+    });
 }
 
 Breakdown.prototype.save_blog = function(blog) {
@@ -276,7 +350,7 @@ Breakdown.prototype.save_blog = function(blog) {
             result = true;
         },
         'error': function(xhr) {
-            var msg = 'Server Error (' + xhr.status + '): ' + xhr.responseText + '</div>';
+            var msg = 'Server Error (' + xhr.status + '): ' + xhr.responseText;
             display_error(msg, blog);
         }
     });
@@ -296,34 +370,38 @@ Breakdown.prototype.post_blog = function(blog) {
             result = true;
         },
         'error': function(xhr) {
-            var msg = 'Server Error (' + xhr.status + '): ' + xhr.responseText + '</div>';
+            var msg = 'Server Error (' + xhr.status + '): ' + xhr.responseText;
             display_error(msg, blog);
         }
     });
     return result;
 }
 
-Breakdown.prototype.set_data = function(data) {
-
-    // TODO: dont reload data on resize
-    this.data = data;
-    this.sidebar.html(this.format_stats());
-    if (!data.blog.posted && !this.admin) {
-        this.main.hide();
+Breakdown.prototype.save_comment = function(list) {
+    var comment = $('#new-comment').val();
+    if (!comment) {
         return;
     }
 
-    var blog = $('<div class="blog"></div>');
-    this.rebuild_blog(blog, !data.blog.posted);
-    var comments = null;
-    if (data.blog.posted) {
-        comments = $('<div class="comments"></div>');
-        comments.html('<div class="pagination-centered"><img src="/img/loading-big.gif"/></div>');
-    }
-    this.main.empty();
-    this.main.append(blog);
-    if (comments) {
-        this.main.append(comments);
-    }
+    var breakdown = this;
+    $.ajax({
+        'url': '/breakdown/comments/' + this.week,
+        'type': 'POST',
+        'async': false,
+        'data': {'comment':comment},
+        'dataType': 'json',
+        'success': function(data) {
+            // TODO: prepend data to breakdown.data.comments
+            // TODO: logic to replace all comments if too many have been added
+            breakdown.add_comments(list, data, false);
+        }
+    });
 }
 
+Breakdown.prototype.add_comments = function(list, data, append) {
+    // loop over data
+    // format comment
+    // remove focus handler from list
+    // add focus handler to last comment (or some number of comments from the end)
+    // append or prepend to list 
+}
