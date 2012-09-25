@@ -18,6 +18,7 @@ class ClosePicksHandler(handler.BaseHandler):
             counts = entries.get_team_counts(week)
             logging.info('Saving counts: %s', counts)
             breakdown.save_team_counts(week, counts)
+            breakdown.save_status_counts(week, 0, 0, entries.num_violations(week))
             self.redirect('/admin')
             return
 
@@ -49,7 +50,8 @@ class AdvanceWeekHandler(handler.BaseHandler):
             if in_progress > 0 and not settings.debug():
                 logging.error('%d games for week %d are still in progress', in_progress, week)
                 self.abort(409)
-            if entries.set_pick_status(week, results):
+            num_winners, num_losers = entries.set_pick_status(week, results)
+            if num_winners > 0 or num_losers > 0:
                 view.clear_cache('/results/data')
         # all the games better be complete by now...
         if not games.games_complete(week) and not settings.debug():

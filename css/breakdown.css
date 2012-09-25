@@ -1,6 +1,6 @@
 
-#breakdown .row {
-    padding-top: 30px;
+#breakdown {
+    margin: 30px 0;
 }
 
 .selector {
@@ -62,27 +62,24 @@
     opacity: 1;
 }
 
-#blog {
-    margin-top: 30px;
-}
 
-#blog textarea {
+.blog textarea {
     resize: none;
     width: 100%;
     height: 130px;
 }
 
-#blog input {
+.blog input {
     width: 100%;
 }
 
-#blog .title {
+.blog .title {
     font-size: x-large;
     font-weight: bold;
     /*margin-bottom: 10px;*/
 }
 
-#blog .alert {
+.blog .alert {
     text-align: center;
 }
 
@@ -90,12 +87,15 @@
     margin-left: 10px;
 }
 
+.controls {
+    text-align: right;
+}
+
 .stats-data {
     border: 1px solid #E5E5E5;
     border-radius: 6px 6px 6px 6px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-    padding: 0 10px 10px 10px;
-    width: 280px;
+    margin: 0 auto;
 }
 
 .stats-data h4 {
@@ -109,17 +109,40 @@
     background: transparent;
 }
 
+.stats-data table.overall tr {
+    height: 30px;
+}
+
+.stats-data td.count div {
+    padding-right: 5px;
+    border-radius: 10px 10px 10px 10px;
+    color: #FEFEFE;
+    letter-spacing: 1px;
+}
+
+.stats-data div.count-win {
+    background-color: #468847;
+}
+
+.stats-data div.count-loss {
+    background-color: #B94A48;
+}
+
+.stats-data div.count-violation {
+    background-color: #F89406;
+}
+
 .stats-data td {
     padding: 3px;
     vertical-align: middle;
 }
 
 .stats-data td.name {
-    width: 150px;
+    width: 160px;
 }
 
 .stats-data td.count {
-    text-align: center; 
+    text-align: right; 
     width: 50px;
 }
 

@@ -42,5 +42,5 @@ def results(week):
     return deadline(week) + timedelta(days=2, hours=9)
      
 def current_time():
-    #return datetime.now(timezone.Pacific)
-    return datetime(2012, 9, 22, 23, 01, tzinfo=timezone.Pacific)
+    return datetime.now(timezone.Pacific)
+    #return datetime(2012, 9, 22, 23, 01, tzinfo=timezone.Pacific)

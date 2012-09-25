@@ -60,6 +60,15 @@ def save_status_counts(week, wins, losses, violations):
     stats.violations = violations
     stats.put()
 
+def update_status_counts(week, wins, losses):
+    stats = Stats.gql('WHERE week = :1', week).get()
+    if not stats:
+        stats = Stats(week=week)
+    stats.wins += wins
+    stats.losses += losses
+    stats.put()
+    
+
 def get_status_counts(week):
     return Stats.gql('WHERE week = :1', week).get()
         
@@ -71,6 +80,7 @@ def save_blog(week, title, content):
     blog.title = title
     blog.content = content
     blog.put()
+    return blog;
 
 def post_blog(week):
     blog = Blog.get_or_insert(str(week))

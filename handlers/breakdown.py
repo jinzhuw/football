@@ -13,6 +13,14 @@ class BreakdownHandler(handler.BaseHandler):
             week += 1
         view.render(self, 'breakdown', {'week': week}, js=True, css=True)
 
+def build_blog_response(blog):
+    return {
+        'updated': str(blog.updated), # TODO: format this date
+        'title': blog.title,
+        'content': blog.content,
+        'posted': blog.posted,
+    }
+
 class BreakdownDataHandler(handler.BaseHandler):
     def get(self, week):
         week = int(week)
@@ -20,12 +28,7 @@ class BreakdownDataHandler(handler.BaseHandler):
         (no_pick, picks, total) = breakdown.get_team_counts(week)
         status = breakdown.get_status_counts(week)
         data = {
-            'blog': {
-                'updated': str(blog.updated), # TODO: format this date
-                'title': blog.title,
-                'content': blog.content,
-                'posted': blog.posted,
-            },
+            'blog': build_blog_response(blog),
             'stats': {
                 'no_pick': no_pick,
                 'teams': picks,
@@ -42,7 +45,8 @@ class BreakdownDataHandler(handler.BaseHandler):
         title = self.request.POST.get('title')
         content = self.request.POST.get('content')
         if content:
-            breakdown.save_blog(week, title, content)
+            blog = breakdown.save_blog(week, title, content)
+            view.render_json(self, build_blog_response(blog))
         post = self.request.POST.get('post') == 'true'
         if post:
             breakdown.post_blog(week)

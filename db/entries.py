@@ -218,6 +218,9 @@ def close_picks(week, teams=None):
 def nopicks(week):
     return Pick.gql('WHERE week = :1 AND team = -1', week)
 
+def num_violations(week):
+    return Pick.gql('WHERE week = :1 AND status = :2', week, Status.VIOLATION).count()
+
 def last_week_picks(week):
     if week == 1:
         return {}
@@ -254,12 +257,16 @@ def set_pick_status(week, game_results=None):
     query = ' '.join(query)
     
     logging.info('Setting pick status: query = %s', query)
+    num_winners = 0
+    num_losers = 0
     changed_picks = []
     for p in Pick.gql(query):
         logging.info('Looking at pick %s, team %d', p.key(), p.team)
         if p.team in winners:
+            num_winners += 1
             p.status = Status.WIN
         elif p.team in losers:
+            num_losers += 1
             p.status = Status.LOSS
         else:
             continue
@@ -277,7 +284,7 @@ def set_pick_status(week, game_results=None):
             changed_entries.append(e)
     db.put(changed_entries)
 
-    return len(changed_picks) != 0
+    return num_winners, num_losers
 
 def _name_unnamed_entries(user_id, entries, week):
     # SPECIAL CASE
