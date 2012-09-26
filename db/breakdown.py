@@ -1,9 +1,13 @@
 
 import logging
+import time
+import copy
 
 from google.appengine.ext import db
 
 from db import teams, weeks, settings, games
+from datetime import datetime, timedelta
+from util import timezone
 
 class Blog(db.Model):
     updated = db.DateTimeProperty(auto_now=True)
@@ -15,8 +19,14 @@ class Comment(db.Model):
     week = db.IntegerProperty(required=True)
     created = db.DateTimeProperty(auto_now_add=True)
     text = db.TextProperty(required=True)
-    user = db.StringProperty(required=True)
+    username = db.StringProperty(required=True)
     user_id = db.IntegerProperty(required=True)
+
+    def created_ts(self):
+        ts = time.mktime(self.created.timetuple())
+        ts *= 1e3
+        ts += self.created.microsecond % 1e3
+        return ts
 
 class Stats(db.Model):
     week = db.IntegerProperty(required=True)
@@ -87,17 +97,28 @@ def post_blog(week):
     blog.posted = True
     blog.put()
 
+def _dt_from_ts(ts):
+    t = int(ts)
+    dt = datetime.fromtimestamp(t/1e3)
+    dt += timedelta(milliseconds=t % 1e3)
+    return dt
+
 def get_comments(week, count=None, before=None, after=None):
     q = ['WHERE week = %d' % week]
+    args = []
     if before:
-        q.append('AND created < %s' % before)
+        q.append('AND created < :1')
+        args.append(_dt_from_ts(before))
     elif after:
-        q.append('AND created > %s' % after)
+        q.append('AND created > :1')
+        args.append(_dt_from_ts(after))
     q.append('ORDER BY created DESC')
     if count:
         q.append('LIMIT %d' % count)
-    return Comment.gql(' '.join(q))
+    logging.debug('Finding comments: %s, args = %s', ' '.join(q), args)
+    return Comment.gql(' '.join(q), *args)
 
 def save_comment(week, user, text):
     c = Comment(week=week, text=text, username=user.name, user_id=user.key().id())
     c.put()
+    return c

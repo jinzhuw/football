@@ -46,6 +46,12 @@ function init_page() {
         breakdown.resize();
         breakdown.rebuild();
     });
+    $(window).scroll(function() {
+        if (breakdown.more_comments_handler) {
+            setTimeout(breakdown.more_comments_handler, Math.random() % 500);
+        }
+    });
+    breakdown.load_week(week);
 }
 
 var Breakdown = function(container, max_week, admin) {
@@ -55,8 +61,8 @@ var Breakdown = function(container, max_week, admin) {
     this.admin = admin
     this.data = null;
     this.compact = null;
+    this.more_comments_handler = null;
     this.resize();
-    this.load_week(max_week);
 }
 
 Breakdown.prototype.resize = function() {
@@ -143,7 +149,7 @@ Breakdown.prototype.rebuild = function() {
     var blog = $('<div class="blog"></div>');
     this.rebuild_blog(blog, !this.data.blog.posted);
     var comments = null;
-    if (false) {//this.data.blog.posted) {
+    if (this.data.blog.posted) {
         comments = $('<div class="comments"></div>');
         comments.html('<div class="pagination-centered"><img src="/img/loading-big.gif"/></div>');
         if (this.data.comments) {
@@ -271,15 +277,24 @@ Breakdown.prototype.rebuild_comments = function(comments) {
     header.prepend(refresh_btn);
 
     var controls = $('<div class="form-inline comment-controls"></div>');
-    controls.append($('<input type="text" id="new-comment" placeholder="Write a comment"/>'));
+    var input = $('<input type="text" id="new-comment" placeholder="Write a comment"/>');
     var add_btn = $('<button class="btn"><i class="icon-pencil"></i> Add</button>');
-    add_btn.click(function() {
+    var add_function = function() {
         var loading = $('<img class="pull-right" src="/img/loading.gif"/>');
-        add_btn.replaceWith(loading);
+        var parent = add_btn.parent();
+        add_btn.detach();
+        parent.append(loading);
         breakdown.save_comment(list);
         loading.replaceWith(add_btn);
         return false;
+    };
+    input.keypress(function(e) {
+        if (e.which == 13) {
+            add_function();
+        }
     });
+    add_btn.click(add_function);
+    controls.append(input);
     controls.append(add_btn);
 
     this.add_comments(list, this.data.comments, true);
@@ -311,17 +326,61 @@ Breakdown.prototype.load_week = function(week) {
     });
 }
 
-Breakdown.prototype.load_comments = function(comments) {
+Breakdown.prototype.load_comments = function(comments, append) {
+    var num_comments = 10;
+    var url = '/breakdown/comments/' + this.week + '?count=' + num_comments;
+    if (append) {
+        // when appending, find the last element's id 
+        var last_comment = this.data.comments[this.data.comments.length - 1];
+        url += '&created-before=' + last_comment.created;
+    }
     var breakdown = this;
     $.ajax({
-        'url': '/breakdown/comments/' + this.week,
+        'url': url,
         'dataType': 'json',
         'success': function(data) {
-            breakdown.data.comments = data;
-            breakdown.rebuild_comments(comments);
+            if (append) {
+                // comments is the comments list
+                breakdown.add_comments(comments, data.comments, true);
+            } else {
+                breakdown.data.comments = data.comments;
+                breakdown.rebuild_comments(comments);
+            }
         }
     });
 }
+
+Breakdown.prototype.save_comment = function(list) {
+    var comment = $('#new-comment').val();
+    if (!comment) {
+        return;
+    }
+
+    var data = { 'text': comment, 'count': 10 };
+    if (this.data.comments.length > 0) {
+        data['created-after'] = this.data.comments[0].created;
+    }
+    var breakdown = this;
+    $.ajax({
+        'url': '/breakdown/comments/' + this.week,
+        'type': 'POST',
+        'async': false,
+        'data': data,
+        'dataType': 'json',
+        'success': function(data) {
+            if (data.limited) {
+                var add_to = list.clone(); 
+                add_to.empty();
+                breakdown.add_comments(add_to, data.comments, true);
+                list.replaceWith(add_to);
+            } else {
+                breakdown.add_comments(list, data.comments, breakdown.data.comments.length == 0);
+            }
+            $('#new-comment').val('');
+        }
+    });
+}
+
 
 Breakdown.prototype.save_blog = function(blog) {
     var breakdown = this;
@@ -377,31 +436,44 @@ Breakdown.prototype.post_blog = function(blog) {
     return result;
 }
 
-Breakdown.prototype.save_comment = function(list) {
-    var comment = $('#new-comment').val();
-    if (!comment) {
-        return;
+Breakdown.prototype.add_comments = function(list, data, append) {
+    if (append) {
+        this.data.comments = this.data.comments.concat(data);
+    } else {
+        this.data.comments = data.concat(this.data.comments);
+    }
+    console.log('Num comments: ' + this.data.comments.length);
+
+    var extra = $([]);
+    var s = '';
+    for (var i = 0; i < data.length; i++) {
+        var comment = data[i];
+        s += '<div class="comment">' +
+                '<div class="name">' + comment.user + '</div>' +
+                '<div class="date">' + comment.created_str + '</div>' +
+                '<div class="content">' + comment.text + '</div>' +
+             '</div>';
     }
 
-    var breakdown = this;
-    $.ajax({
-        'url': '/breakdown/comments/' + this.week,
-        'type': 'POST',
-        'async': false,
-        'data': {'comment':comment},
-        'dataType': 'json',
-        'success': function(data) {
-            // TODO: prepend data to breakdown.data.comments
-            // TODO: logic to replace all comments if too many have been added
-            breakdown.add_comments(list, data, false);
-        }
-    });
+    var new_comments = $(s);
+    if (append) {
+        var breakdown = this;
+        var more_comments_trigger = new_comments.first();
+        this.more_comments_handler = function() {
+            if (!more_comments_trigger.closest('html').length ||
+                !breakdown.more_comments_handler) {
+                // not yet in the dom, or another thread already handling check
+                return;
+            }
+            var bottom = $(window).scrollTop() + $(window).height();
+            if (more_comments_trigger.offset().top < bottom) {
+                breakdown.more_comments_handler = null;
+                breakdown.load_comments(list, true);
+            }
+        };
+        list.append(new_comments);
+    } else {
+        list.prepend(new_comments);
+    }
 }
 
-Breakdown.prototype.add_comments = function(list, data, append) {
-    // loop over data
-    // format comment
-    // remove focus handler from list
-    // add focus handler to last comment (or some number of comments from the end)
-    // append or prepend to list 
-}

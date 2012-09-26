@@ -1,7 +1,8 @@
 
 from db import settings, breakdown, weeks
-from util import view, handler
+from util import view, handler, timezone
 import webapp2
+import copy
 
 # TODO: add user auth restriction to all pages here
 
@@ -52,25 +53,45 @@ class BreakdownDataHandler(handler.BaseHandler):
             breakdown.post_blog(week)
 
 class CommentsHandler(handler.BaseHandler):
-    def get(self, week):
-        count = self.request.get('count')
-        created_after = self.request.get('created-after')
-        created_before = self.request.get('created-before')
+
+    def return_comments(self, week, limit, before=None, after=None):
         data = []
-        for c in breakdown.get_comments(int(week), count, after=created_after, before=created_before):
+        count = 0
+        for c in breakdown.get_comments(week, limit + 1, before=before, after=after):
+            count += 1
+            dt = copy.copy(c.created).replace(tzinfo=timezone.utc).astimezone(timezone.Pacific)
             data.append({
-                'created': str(c.created), # TODO: format this time
+                'created_str': dt.strftime('%B %d, %H:%I %p').replace(' 0', ' '),
+                'created': c.created_ts(),
                 'text': c.text,
-                'user': c.user,
+                'user': c.username,
             })
+            if count == limit:
+                break
+        if data and before and data[-1]['created'] == int(before):
+            # remove incorrectly match element from results...
+            data = data[:-1]
+            count -= 1
+        data = {
+            'limited': count >= limit,
+            'comments': data
+        }
         view.render_json(self, data)
+    
+    def get(self, week):
+        count = int(self.request.get('count'))
+        created_before = self.request.get('created-before')
+        self.return_comments(int(week), count, before=created_before)
 
     def post(self, week):
         week = int(week)
-        if week + 1 < weeks.current() or weeks.deadline_passed(week + 1):
+        if week + 1 < weeks.current() or not weeks.check_deadline(week + 1):
             self.abort(403)
         text = self.request.POST.get('text')
-        breakdown.save_comment(int(week), self.user, text)
+        count = int(self.request.get('count'))
+        created_after = self.request.get('created-after')
+        breakdown.save_comment(week, self.user, text)
+        self.return_comments(week, count, after=created_after)
 
 app = webapp2.WSGIApplication([
     webapp2.Route('/breakdown/comments/<week>', CommentsHandler),

@@ -45,8 +45,6 @@ class GetEntriesHandler(handler.BaseHandler):
         unknown = []
         for e in entries.get_all_entries():
             if e.user_id not in players:
-                #    logging.error('Entry %d, %s is for non existing user %d', e.key().id(), e.name, e.user_id)
-                #    self.abort(500)
                 unknown.append((e.user_id, e.key().id()))
                 continue
             data[players[e.user_id].email].append({
@@ -109,7 +107,7 @@ class NewUserHandler(handler.BaseHandler):
         user = users.create(email)
         logging.info('Got user %s', user)
         if not user:
-            logging.error('Cannot create user, email already used: %s', email)
+            logging.warning('Cannot create user, email already used: %s', email)
             self.abort(409)
         else:
             for i in range(num_entries):

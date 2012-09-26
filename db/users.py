@@ -24,7 +24,7 @@ def create(email):
     email = email.lower()
     existing = User.gql('WHERE email = :1', email)
     if existing.count() != 0:
-        logging.error('Email %s already exists', email)
+        logging.warning('Email %s already exists', email)
         return None
     user = User(email=email)
     user.put()
@@ -45,11 +45,11 @@ def get_user_by_password(email, password):
     email = email.lower()
     user = [u for u in User.gql('WHERE email = :1', email)]
     if not user:
-        logging.error('Bad login: unknown email %s', email)
+        logging.warning('Bad login: unknown email %s', email)
         return None
     user = user[0]
     if user.password != _hash_password(user.salt, password):
-        logging.error('Bad login: Incorrect password for user %s', email)
+        logging.warning('Bad login: Incorrect password for user %s', email)
         return None
     return user
 
@@ -71,7 +71,7 @@ def get_user_by_token(token):
     user_id, extra = data.split(',', 2)
     user = User.get_by_id(int(user_id))
     if not user:
-        logging.error('Bad login: invalid token, user_id = %s', user_id)
+        logging.warning('Bad login: invalid token, user_id = %s', user_id)
     return user
 
 def get_all_emails():

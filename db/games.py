@@ -268,11 +268,13 @@ def update_spreads():
     changed_games = []
     x = _load_url('http://www.sportsbook.ag/rss/live-nfl-football.rss', type='xml')
     for game in x.channel.item:
-        logging.info('Finding home team in title %s', game.title)
         team_names = _team_re.search(str(game.title)).group(1, 2)
         visiting_spread = _find_spread(team_names[0], game.description)
         home_spread = _find_spread(team_names[1], game.description)
-        g = Game.gql('WHERE week = :1 AND home = :2', week, teams.id(team_names[1])).get()
+        g = Game.gql('WHERE week = :1 AND home = :2 AND visiting = :3',
+                     week, teams.id(team_names[1]), teams.id(team_names[0])).get()
+        if not g:
+            continue
         if visiting_spread > 0:
             g.favorite = g.home
         elif home_spread > 0:
