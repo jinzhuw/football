@@ -27,6 +27,8 @@
 
 #results-header a {
     cursor: pointer;
+    top:0;
+    z-index: 100;
 }
 
 .results-elements {
@@ -44,22 +46,57 @@
     text-align: center;
 }
 
+#results-table-header table {
+    margin-bottom: 0;
+    font-weight: bold;
+}
+#results-table-header td:first-child {
+    border-radius: 4px 0 0 0;
+}
+#results-table-header td:last-child {
+    border-radius: 0 4px 0 0;
+}
+#results-table-data table {
+    border-top: none;
+}
+#results-table-data td:first-child {
+    border-radius: 0;
+}
+#results-table-data td:last-child {
+    border-radius: 0;
+}
+
+#results-container td.results-table-number {
+    width: 18px;
+    text-align: center;
+    font-size: smaller;
+}
+
 #results-container td.results-table-entryname {
     width: 200px;
 }
 
 #results-container td.results-table-week {
-    width: 80px;
+    width: 90px;
+    padding: 5px 0;
     text-align: center;
+}
+
+#results-container .compact td.results-table-week {
+    width: 55px;
+    font-size: small;
 }
 
 #results-table-data td.loss {
     background-color: #B94A48;
+    /*color: #DDDDDD;*/
 }
 #results-table-data td.buyback {
     background-color: #468847;
+    /*color: #DDDDDD;*/
 }
 #results-table-data td.violation {
     background-color: #F89406;
+    /*color: #DDDDDD;*/
 }
 

@@ -1,5 +1,5 @@
 
-from db import settings, users, entries
+from db import settings, users, entries, weeks
 from util import view, handler
 import webapp2
 
@@ -26,6 +26,8 @@ class LoginHandler(handler.BaseHandler):
             self._redirect('/setup/activation', real_redirect)
         elif entries.unnamed_entries(self.user.key().id()) > 0:
             self._redirect('/setup/entries', real_redirect)
+        elif not weeks.check_deadline(weeks.current()):
+            self._redirect('/breakdown', real_redirect)
         else:
             self._redirect('/picks', real_redirect)
 

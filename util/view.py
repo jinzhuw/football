@@ -15,9 +15,9 @@ pages = (
 )
 user_pages = (
     ('Picks', '/picks'),
+    ('Breakdown', '/breakdown'),
 )
 admin_pages = (
-    ('Breakdown', '/breakdown'),
     ('Users', '/users'),
     ('Games', '/games'),
     ('Admin', '/admin'),

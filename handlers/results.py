@@ -8,6 +8,10 @@ class ResultsHandler(handler.BaseHandler):
     def get(self):
         view.render(self, 'results', {}, js=True, css=True)
 
+class Results2011Handler(handler.BaseHandler):
+    def get(self):
+        view.render(self, 'results', {'static_results': '/js/2011-results.js'}, js=True, css=True)
+
 class ResultsDataHandler(handler.BaseHandler):
 
     @view.cached(604800)
@@ -44,6 +48,7 @@ class ResultsDataHandler(handler.BaseHandler):
 
 app = webapp2.WSGIApplication([
     ('/results/data', ResultsDataHandler),
+    ('/results/2011', Results2011Handler),
     ('/results', ResultsHandler),
 ],
 config=settings.app_config(),

@@ -5,10 +5,15 @@ function init_page() {
         results.set_table($('#results-table-header'), $('#results-table-data'));
         results.update_controls();
     }
+    var results_url = '/results/data';
+    var static_results = $('#results-container').attr('static-results');
+    if (static_results) {
+        results_url = static_results;
+    }
 
-    results_data = {}
+    var results_data = {}
     $.ajax({
-        'url': '/results/data',
+        'url': results_url,
         'method': 'GET',
         'async': false,
         'dataType': 'json',
@@ -17,7 +22,7 @@ function init_page() {
         }
     });    
 
-    results = new Results();
+    var results = new Results();
     results.set_data(results_data);
     results.set_table($('#results-table-header'), $('#results-table-data'));
     results.set_header($('#results-container'), $('#results-header'));
@@ -59,7 +64,6 @@ var Results = function() {
     this._start_week = null;
 
     this._header_top = null;
-    this._week_names = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8', 'Week 9', 'Week 10', 'Week 11', 'Week 12', 'Week 13', 'Week 14', 'Week 15', 'Week 16', 'Week 17', 'Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
 };
 
 Results.prototype.set_data = function(results) {
@@ -114,44 +118,93 @@ Results.prototype.set_header = function(container, header) {
             header.css('top', (top - header_top - header_margin_top - 2) + 'px');
         }
         else {
-	    header.css('top', '0');
+        header.css('top', '0');
         }
     });
+    /*
+    var results = this;
+    $(window).scroll(function(event) {
+        var top = $(window).scrollTop();    
+        var header_top = container.position().top;
+        if (header_top < top && !results.anchored) {
+            console.log('Anchoring header');
+            header.css('position', 'absolute');
+            header.width(container.width() - 2);
+            container.css('margin-top', header.height());
+            results.anchored = true;
+        
+            //header.css('top', (top - header_top - header_margin_top - 2) + 'px');
+        } else if (results.anchored) {
+            console.log('Unanchoring header');
+            header.css('position', '');
+            container.css('margin-top', 0);
+            results.anchored = false;
+	    //header.css('top', '0');
+        }
+
+    });
+    */
 };
+
+playoff_weeks = ['Wildcard', 'Divisional', 'Conference', 'Super Bowl'];
+playoff_weeks_compact = ['WC', 'Div', 'Conf', 'SB'];
+function week_name(i, compact) {
+    if (i < 18) {
+        i += 1;
+        return compact ? i : 'Week ' + i;
+    }
+    names = playoff_weeks;
+    if (compact) names = playoff_weeks_compact;
+    return names[i - 18];
+}
 
 Results.prototype.set_table = function(header, div) {
     if (!this._max_week) {
         return;
     }
 
-    var max_width = parseInt(div.css('width'), 10) - 20;
-    var max_weeks = parseInt((max_width - 200)/90);
+    var max_width = parseInt(div.css('width'), 10) - 30;
+    var left_side = 18 + 200; // number + name
+    var week_width = 90;
+    var compact = false;
+    if (max_width < 400) {
+        week_width = 55;
+        compact = true;
+    }
+    var max_weeks = parseInt((max_width - left_side)/week_width);
     max_weeks = max_weeks < 1 ? 1 : max_weeks;
     var start_week = this._end_week - max_weeks;
     start_week = start_week < 0 ? 0 : start_week;
     this._start_week = start_week;
 
-    table_html = '<table class="table table-striped table-bordered table-condensed"' +
-                 ' style="margin: 0 auto; text-align: center">';
+    table_html = '<table class="table table-striped table-bordered table-condensed';
+    if (compact) {
+        table_html += ' compact';
+    }
+    table_html += '">';
     
     var entry_sorted = null;
     var entry_data = null;
 
-    table_html += '<tr><td class="results-table-entryname"><strong>Entry</strong></td>';
+    table_html += '<tr><td class="results-table-number">#</td>';
+    table_html += '<td class="results-table-entryname">Entry</td>';
 
     var team;
     var type;
 
     for (var week_header = start_week; week_header < this._end_week; week_header++) {
-        table_html +=  '<td class="results-table-week"><strong>' + this._week_names[week_header] + '</strong></td>';
+        table_html +=  '<td class="results-table-week">' + week_name(week_header, compact) + '</td>';
     }
 
     table_html += '</tr>';
     table_html += '</table>';
     header.html(table_html);
 
-    table_html = '<table class="table table-striped table-bordered table-condensed"' +
-                 ' style="margin: 0 auto; text-align: center">';
+    table_html = '<table class="table table-striped table-bordered table-condensed';
+    if (compact) {
+        table_html += ' compact';
+    }
+    table_html += '">';
 
     for (var entry = 0; entry < this._sorted.length; entry++) {
         entry_sorted = this._sorted[entry];
@@ -161,9 +214,8 @@ Results.prototype.set_table = function(header, div) {
 	        continue;
         }
 
-        table_html += '<tr><td class="results-table-entryname">';
-        table_html += entry_sorted.name;
-        table_html += '</td>';
+        table_html += '<tr><td class="results-table-number">' + (entry + 1) + '</td>';
+        table_html += '<td class="results-table-entryname">' + entry_sorted.name + '</td>';
 
         for (var week_count = start_week; week_count < this._end_week; week_count++) {
             classes = ['results-table-week'];
@@ -183,6 +235,9 @@ Results.prototype.set_table = function(header, div) {
             table_html += '<td class="';
             for (var i = 0; i < classes.length; i++) {
                 table_html += classes[i] + ' ';
+            }
+            if (team == 'No Pick' && compact) {
+                team = 'np';
             }
             table_html += '">' + team + '</td>';
         }

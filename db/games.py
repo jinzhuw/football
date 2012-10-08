@@ -331,6 +331,8 @@ def games_complete(week):
     return Game.gql('WHERE week = :1 AND winner = -1', week).count() == 0
 
 def game_for_team(week, team):
+    if team == -1:
+        return None
     home = Game.gql('WHERE week = :1 AND home = :2', week, team).get()
     if home:
         return home

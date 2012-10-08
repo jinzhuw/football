@@ -61,7 +61,7 @@ class CommentsHandler(handler.BaseHandler):
             count += 1
             dt = copy.copy(c.created).replace(tzinfo=timezone.utc).astimezone(timezone.Pacific)
             data.append({
-                'created_str': dt.strftime('%B %d, %H:%I %p').replace(' 0', ' '),
+                'created_str': dt.strftime('%B %d, %H:%M %p').replace(' 0', ' '),
                 'created': c.created_ts(),
                 'text': c.text,
                 'user': c.username,

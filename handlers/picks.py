@@ -88,13 +88,17 @@ class PickSetter(handler.BaseHandler):
 
     @handler.user
     def post(self, entry_id):
+        entry_id = int(entry_id)
         team = int(self.request.POST.get('team'))
         week = weeks.current()
         game = games.game_for_team(week, team)
+        current_pick = entries.pick_for_entry(entry_id, week)
+        current_game = games.game_for_team(week, current_pick.team)
         current_time = weeks.current_time()
         if current_time < weeks.deadline(week) and \
-           current_time < game.tz_deadline():
-            entries.select_team(int(entry_id), weeks.current(), team)
+           current_time < game.tz_deadline() and \
+           (current_game is None or current_time < current_game.tz_deadline()):
+            entries.select_team(entry_id, weeks.current(), team)
         else:
             logging.warning('Attempt to set pick after deadline, user %s, team %s',
                             self.user.name, teams.shortname(team))

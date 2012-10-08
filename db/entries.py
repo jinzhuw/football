@@ -111,6 +111,9 @@ def entries_for_user(user):
         entries[e.key().id()] = e
     return entries
 
+def pick_for_entry(entry_id, week):
+    return Pick.gql('WHERE week = :1 AND entry_id = :2', week, entry_id).get()
+
 def picks_for_user(user, week):
     picks = {}
     for p in Pick.gql('WHERE week = :1 and user_id = :2', week, user.key().id()):

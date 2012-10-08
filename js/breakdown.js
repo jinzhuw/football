@@ -48,7 +48,7 @@ function init_page() {
     });
     $(window).scroll(function() {
         if (breakdown.more_comments_handler) {
-            setTimeout(breakdown.more_comments_handler, Math.random() % 500);
+            breakdown.more_comments_handler();
         }
     });
     breakdown.load_week(week);
@@ -449,9 +449,11 @@ Breakdown.prototype.add_comments = function(list, data, append) {
     for (var i = 0; i < data.length; i++) {
         var comment = data[i];
         s += '<div class="comment">' +
-                '<div class="name">' + comment.user + '</div>' +
-                '<div class="date">' + comment.created_str + '</div>' +
-                '<div class="content">' + comment.text + '</div>' +
+                '<div class="head">' + 
+                    '<span class="name">' + comment.user + '</span>' +
+                    '<span class="date">' + comment.created_str + '</span>' +
+                '</div>' +
+                '<div class="text">' + comment.text + '</div>' +
              '</div>';
     }
 
@@ -460,9 +462,8 @@ Breakdown.prototype.add_comments = function(list, data, append) {
         var breakdown = this;
         var more_comments_trigger = new_comments.first();
         this.more_comments_handler = function() {
-            if (!more_comments_trigger.closest('html').length ||
-                !breakdown.more_comments_handler) {
-                // not yet in the dom, or another thread already handling check
+            if (!more_comments_trigger.closest('html').length) {
+                // not yet in the dom
                 return;
             }
             var bottom = $(window).scrollTop() + $(window).height();
