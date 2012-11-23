@@ -23,8 +23,7 @@ class ResultsDataHandler(handler.BaseHandler):
         current_entry_id = None
         current_entry = None
         current_week = 1
-        current_data = []
-        for pick in entries.iterpicks():
+        for pick in entries.iterpicks(True):
             if current_entry_id != pick.entry_id:
                 current_entry_id = pick.entry_id
                 current_entry = entries_by_id[current_entry_id]

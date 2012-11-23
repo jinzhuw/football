@@ -133,26 +133,27 @@ def iterpicks(use_cursors=False):
     if use_cursors:
         return _iterpicks_with_cursors()
     else:
-        return Pick.gql('WHERE closed = True ORDER BY entry_id')
+        return Pick.gql('WHERE closed = True ORDER BY entry_id, week')
 
 def _iterpicks_with_cursors():
     limit = 100
-    picks = Pick.gql('ORDER BY entry_id LIMIT %d' % limit)
-    found = limit
-    while found == limit:
+    picks = Pick.gql('ORDER BY entry_id, week LIMIT %d' % limit)
+    while True:
         found = 0
         for pick in picks.fetch(limit):
             found += 1
             if not pick.closed:
                 continue
             yield pick
+        if found != limit:
+            break
         logging.info('Finished fetch. Found %d', found)
         picks.with_cursor(picks.cursor())
 
 def all_picks(week):
     picks = {}
     for p in Pick.gql('WHERE week = :1', week):
-        picks[p.entry.key().id()] = p
+        picks[p.entry_id] = p
     return picks
 
 ####################################################

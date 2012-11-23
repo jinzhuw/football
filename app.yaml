@@ -72,7 +72,7 @@ skip_files:
 - ^old/
 - ^lib/
 - ^bin/
-#- ^Crypto/
+- ^Crypto/
 - (.*\.py[co])
 - (.*\.DS_Store)
 

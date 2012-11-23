@@ -34,7 +34,7 @@ class Game(db.Model):
         return datetime(d.year, d.month, d.day, d.hour, d.minute, tzinfo=timezone.Pacific)
 
     def complete(self):
-        return self.winner != -1
+        return self.winner != -1 or self.home_score != -1 and self.home_score == self.visiting_score # tie game
 
     def home_fullname(self):
         return teams.fullname(self.home)
@@ -107,7 +107,7 @@ def reset_for_week(week):
  
     games_to_save = []
     for g in Game.gql('WHERE week = :1', week):
-        if g.winner != -1:
+        if g.complete():
             g.winner = -1
             g.home_score = -1
             g.visiting_score = -1
@@ -133,39 +133,56 @@ def _load_url(url, type):
         return json.loads(data.read())
     return data.read() # text
 
+def load_old_scores(week):
+    x = _load_url('http://football.myfantasyleague.com/2012/export?TYPE=nflSchedule&W=%d' % week, type='xml')
+    scores = {}
+    for game in x.matchup:
+        visiting_name = teams.shortname(teams.id(game.team[0].get('id')))
+        home_name = teams.shortname(teams.id(game.team[1].get('id')))
+        visiting_score = int(game.team[0].get('score'))
+        home_score = int(game.team[1].get('score'))
+        logging.debug('Found score for old game %s vs %s', home_name, visiting_name)
+        scores[home_name] = (home_score, visiting_score)
+
+    return scores
+    
+
 def load_scores(week):
     j = _load_url('http://www.nfl.com/liveupdate/scorestrip/ss.json', type='json')
 
+    in_progress = 0
     if j['w'] != week:
-        logging.warning('Could not load scores for week %d, data contains week %s', week, j['w'])
-        return (None, None)
+        scores = load_old_scores(week)
+    else:
+        scores = {}
+        for g in j['gms']:
+            if 'F' in g['q']:
+                logging.debug('Found score for %s vs %s', g['h'], g['v'])
+                scores[g['h']] = (g['hs'], g['vs'])
+            elif 'P' != g['q']:
+                logging.debug('Game %s v %s in progress, state %s', g['v'], g['h'], g['q'])
+                in_progress += 1
+            else:
+                logging.debug('Skipping game %s vs %s, game state is %s', g['v'], g['h'], g['q'])
 
     games = Game.gql('WHERE week = :1 AND winner = -1', week)        
-    scores = {}
-    in_progress = 0
-    for g in j['gms']:
-        if 'F' in g['q']:
-            logging.debug('Found score for %s vs %s', g['h'], g['v'])
-            scores[g['h']] = (g['hs'], g['vs'])
-        elif 'P' != g['q']:
-            logging.debug('Game %s v %s in progress, state %s', g['v'], g['h'], g['q'])
-            in_progress += 1
-        else:
-            logging.debug('Skipping game %s vs %s, game state is %s', g['v'], g['h'], g['q'])
-
     winners = set()
     losers = set()
     for g in games:
-        if g.winner != -1:
+        if g.complete():
             continue
         home_team = teams.shortname(g.home)
         s = scores.get(home_team)
         if s:
             logging.info('Setting score for %s (%d) vs %s (%d)',
                          home_team, s[0], teams.shortname(g.visiting), s[1])
-            (winner, loser) = update(g, s[0], s[1])
-            winners.add(winner)
-            losers.add(loser)
+            (winner, loser, tie) = update(g, s[0], s[1])
+            if tie:
+                losers.add(g.home)
+                losers.add(g.visiting)
+            else:
+                winners.add(winner)
+                losers.add(loser)
 
     return ((winners, losers), in_progress)
 
@@ -299,12 +316,12 @@ def update(game, home_score, visiting_score):
         winner = game.visiting
         loser = game.home
     else:
-        raise Exception('Tie game (%d - %d, %d - %d)...dont know what to do....' % \
-                        game.home, home_score, game.visiting, visiting_score)
+        game.put() # save scores
+        return (None, None, True)
         
     game.winner = winner
     game.put() 
-    return (winner, loser)
+    return (winner, loser, False)
 
 def games_for_week(week):
     games = Game.gql('WHERE week = :1', week)
@@ -319,7 +336,13 @@ def open_past_deadline(week, current_time):
 def results_for_week(week):
     winners = set()
     losers = set()
-    for g in Game.gql('WHERE week = :1 AND winner != -1', week):
+    for g in Game.gql('WHERE week = :1', week):
+        if not g.complete(): continue
+        if g.home_score == g.visiting_score:
+            losers.add(g.home)
+            losers.add(g.visiting)
+            continue
+
         winners.add(g.winner)
         if g.winner == g.home:
             losers.add(g.visiting)
@@ -328,7 +351,7 @@ def results_for_week(week):
     return (winners, losers)
 
 def games_complete(week):
-    return Game.gql('WHERE week = :1 AND winner = -1', week).count() == 0
+    return Game.gql('WHERE week = :1 AND home_score = -1 AND visiting_score = -1', week).count() == 0
 
 def game_for_team(week, team):
     if team == -1:

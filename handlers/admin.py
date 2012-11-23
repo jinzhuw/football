@@ -32,8 +32,31 @@ class ClosePicksHandler(handler.BaseHandler):
             view.clear_cache('/results/data')
         self.redirect('/admin')
 
-def ok_to_advance(week):
-    return entries.picks_closed(week) and (games.games_complete(week) or settings.debug())
+def complete_games(handler, week):
+    if not games.games_complete(week):
+        (results, in_progress) = games.load_scores(week)
+        if in_progress > 0 and not settings.debug():
+            logging.error('%d games for week %d are still in progress', in_progress, week)
+            handler.abort(409)
+            return
+        num_winners, num_losers = entries.set_pick_status(week, results)
+        if num_winners > 0 or num_losers > 0:
+            view.clear_cache('/results/data')
+    # all the games better be complete by now...
+    if not games.games_complete(week) and not settings.debug():
+        logging.error('Cannot advance week, games are not complete')
+        handler.abort(409)
+        return
+
+def update_stats(week):
+    counts = entries.get_status_counts(week)
+    breakdown.save_status_counts(
+        week,
+        counts.get(entries.Status.WIN, 0),
+        counts.get(entries.Status.LOSS, 0),
+        counts.get(entries.Status.VIOLATION, 0)
+    )
+    games.update_standings()
 
 class AdvanceWeekHandler(handler.BaseHandler):
     def get(self):
@@ -44,32 +67,38 @@ class AdvanceWeekHandler(handler.BaseHandler):
             logging.error('Cannot advance week, all picks are not closed')
             self.abort(409)
             return
-
-        if not games.games_complete(week):
-            (results, in_progress) = games.load_scores(week)
-            if in_progress > 0 and not settings.debug():
-                logging.error('%d games for week %d are still in progress', in_progress, week)
-                self.abort(409)
-            num_winners, num_losers = entries.set_pick_status(week, results)
-            if num_winners > 0 or num_losers > 0:
-                view.clear_cache('/results/data')
-        # all the games better be complete by now...
-        if not games.games_complete(week) and not settings.debug():
-            logging.error('Cannot advance week, games are not complete')
-            self.abort(409)
-        
-        counts = entries.get_status_counts(week)
-        breakdown.save_status_counts(
-            week,
-            counts.get(entries.Status.WIN, 0),
-            counts.get(entries.Status.LOSS, 0),
-            counts.get(entries.Status.VIOLATION, 0)
-        )
-        games.update_standings()
+    
+        complete_games(self, week)
+        update_stats(week) 
 
         alive_entries = entries.deactivate_dead_entries(week)
         weeks.increment()
         entries.create_picks(weeks.current(), alive_entries)
+
+        self.redirect('/admin')
+
+class AuditLastWeekHandler(handler.BaseHandler):
+    def get(self):
+        week = weeks.current() 
+
+        # re-evaluate games/stats for last week
+        last_week = week - 1
+        complete_games(self, last_week)
+        update_stats(last_week)
+        
+        # find any picks that need to be created based on changes
+        picks_to_create = []
+        picks_for_week = entries.all_picks(week)
+        for entry_id,e in entries.alive_entries().iteritems():
+            if entry_id not in picks_for_week:
+                picks_to_create.append(e)
+        entries.create_picks(week, picks_to_create)
+
+        # send pick links for any newly created picks
+        users_by_id = users.users_by_id()
+        for entry in picks_to_create:
+            user = users_by_id[entry.user_id]
+            deferred.defer(mail.email_picks_link, user, [entry], week, False, _queue='email')
 
         self.redirect('/admin')
 
@@ -138,6 +167,7 @@ class ResetPicks(handler.BaseHandler):
 app = webapp2.WSGIApplication([
     ('/admin/close-picks', ClosePicksHandler),
     ('/admin/advance-week', AdvanceWeekHandler),
+    ('/admin/audit-last-week', AuditLastWeekHandler),
     ('/admin/send-breakdown', SendBreakdownHandler),
     ('/admin/send-pick-links', SendPickLinksHandler),
     ('/admin/send-analysis', SendAnalysisHandler),

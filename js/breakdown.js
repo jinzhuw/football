@@ -142,7 +142,8 @@ Breakdown.prototype.rebuild = function() {
 
     this.rebuild_sidebar(this.sidebar);
     if (!this.data.blog.posted && !this.admin) {
-        this.main.hide();
+        //this.main.hide();
+        this.main.html('<div class="alert alert-invo">Jack has not posted commentary yet for this week</div>');
         return;
     }
 

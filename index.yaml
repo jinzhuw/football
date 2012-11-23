@@ -45,6 +45,11 @@ indexes:
 
 - kind: Pick
   properties:
+  - name: entry_id 
+  - name: week
+
+- kind: Pick
+  properties:
   - name: status
   - name: week
   - name: entry_id
